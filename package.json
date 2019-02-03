@@ -5,8 +5,11 @@
     "start": "next start"
   },
   "dependencies": {
+    "dotenv": "^6.2.0",
     "next": "^7.0.2",
+    "next-auth": "^1.12.1",
     "prop-types": "^15.6.2",
+    "quagga": "^0.12.1",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
     "styled-components": "^4.1.3"
