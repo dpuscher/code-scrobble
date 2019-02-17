@@ -1,73 +1,10 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import Quagga from 'quagga';
-import styled from 'styled-components';
-import { grey, yellow } from '../../lib/colors';
-import Spinner from '../layout/Spinner';
-import ErrorIconSVG from '../icons/ErrorIcon';
-
-const ErrorIcon = styled(ErrorIconSVG)`
-  width: 30%;
-  height: auto;
-  margin-bottom: 15px;
-`;
-
-const ErrorDescription = styled.div`
-  margin: 10px 0;
-`;
-
-const Camera = styled.div`
-  visibility: ${props => (props.visible ? 'visible' : 'hidden')};
-  position: absolute;
-  width: 100%;
-  height: 100%;
-
-  video, canvas {
-    width: 100%;
-    height: 100%;
-  }
-`;
-
-const Wrapper = styled.div`
-  position: relative;
-  width: 600px;
-  max-width: 80%;
-  margin: 0 auto;
-  overflow: hidden;
-  border-radius: 50%;
-  background: ${grey};
-`;
-
-const HeightWrapper = styled.div`
-  width: 100%;
-  height: 0;
-  padding-bottom: 100%;
-`;
-
-const Error = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  padding: 10%;
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  text-align: center;
-`;
-
-const Loading = styled(Spinner)`
-  width: 30%;
-  height: 30%;
-`;
-
-const LoadingWrapper = styled.div`
-  position: absolute;
-  display: flex;
-  width: 100%;
-  height: 100%;
-  align-items: center;
-  justify-content: center;
-`;
+import { yellow } from '../../lib/colors';
+import {
+  Camera, Error, ErrorDescription, ErrorIcon, HeightWrapper, Loading, LoadingWrapper, Wrapper,
+} from './styles/Scanner.styles';
 
 class Scanner extends React.Component {
   constructor(props) {
@@ -116,8 +53,10 @@ class Scanner extends React.Component {
   }
 
   onDetected(result) {
+    const { onDetected } = this.props;
+
     Quagga.offDetected(this.onDetected);
-    this.props.onDetected(result);
+    onDetected(result);
   }
 
 
@@ -143,5 +82,8 @@ class Scanner extends React.Component {
   }
 }
 
+Scanner.propTypes = {
+  onDetected: PropTypes.func.isRequired,
+};
 
 export default Scanner;

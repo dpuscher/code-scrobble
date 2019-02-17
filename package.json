@@ -1,14 +1,22 @@
 {
   "scripts": {
-    "dev": "next",
+    "dev": "node server.js",
     "build": "next build",
-    "start": "next start -p $PORT",
+    "start": "NODE_ENV=production node server.js",
     "heroku-postbuild": "yarn build"
   },
   "dependencies": {
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "^1.4.4",
     "dotenv": "^6.2.0",
+    "express": "^4.16.4",
+    "express-session": "^1.15.6",
+    "lodash": "^4.17.11",
+    "mongoose": "^5.4.13",
+    "morgan": "^1.9.1",
     "next": "^7.0.2",
-    "next-auth": "^1.12.1",
+    "passport": "^0.4.0",
+    "passport-lastfm": "^1.0.1",
     "prop-types": "^15.6.2",
     "quagga": "^0.12.1",
     "react": "^16.7.0",
