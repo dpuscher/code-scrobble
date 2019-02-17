@@ -15,7 +15,7 @@ const app = next({ dev });
 const handle = app.getRequestHandler();
 
 // Connect to mongo db
-mongoose.connect(process.env.MONGODB_URI);
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true });
 
 // configure passport instance
 passportConfig(passport);
@@ -32,6 +32,6 @@ app.prepare().then(() => {
   server.listen(port, (err) => {
     if (err) throw err;
     // eslint-disable-next-line no-console
-    if (dev) console.log(`> Ready on http://localhost:${port}`);
+    console.log(`> Ready on http://localhost:${port}`);
   });
 });

@@ -1,10 +1,8 @@
 const mongoose = require('mongoose');
 
 const userSchema = mongoose.Schema({
-  lastfm: {
-    username: String,
-    key: String,
-  },
+  name: String,
+  key: String,
 });
 
 module.exports = mongoose.model('User', userSchema);

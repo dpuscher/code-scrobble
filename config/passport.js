@@ -1,5 +1,3 @@
-const find = require('lodash/find');
-
 const LastFMStrategy = require('passport-lastfm');
 const User = require('../app/models/user');
 
@@ -23,24 +21,20 @@ module.exports = function passortConfig(passport) {
         callbackURL: `${process.env.SERVER_URL}/auth/lastfm/callback`,
       },
 
-      ((req, sessionKey, done) => {
+      ((req, userData, done) => {
         // eslint-disable-next-line consistent-return
-        User.findOne({ 'lastfm.id': req.user.id }, (userErr, user) => {
+        User.findOne({ name: userData.name }, (userErr, user) => {
           if (userErr) return done(userErr);
 
-          const creds = find(req.user.tokens, { type: 'lastfm' });
-          if (user.lastfm && creds) {
-            return done(null, user);
-          }
+          let currentUser = user;
+          if (!currentUser) currentUser = new User();
 
-          const newUser = new User();
-          newUser.lastfm.id = req.user.id;
-          newUser.lastfm.username = sessionKey.username;
-          newUser.lastfm.key = sessionKey.key;
+          currentUser.name = userData.name;
+          currentUser.key = userData.key;
 
-          newUser.save((saveErr) => {
+          currentUser.save((saveErr) => {
             if (saveErr) throw saveErr;
-            return done(null, newUser);
+            return done(null, currentUser);
           });
         });
       }),
