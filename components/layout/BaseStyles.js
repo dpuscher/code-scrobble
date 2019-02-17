@@ -24,4 +24,7 @@ export default createGlobalStyle`
   body, a {
     color: ${silver};
   }
+  html, body, #__next {
+    height: 100%;
+  }
 `;

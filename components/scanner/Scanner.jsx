@@ -12,6 +12,7 @@ class Scanner extends React.Component {
     this.state = {
       init: false,
       videoError: false,
+      error: '',
     };
 
     this.onInitSuccess = this.onInitSuccess.bind(this);
@@ -27,18 +28,27 @@ class Scanner extends React.Component {
           type: 'LiveStream',
           target: document.querySelector('#camera'),
           constraints: {
-            width: 600,
-            height: 600,
+            width: { min: 640 },
+            height: { min: 480 },
+            facingMode: 'environment',
+            frameRate: 15,
+            aspectRatio: { min: 1, max: 2 },
           },
         },
-        numOfWorkers: 1,
+        locator: {
+          patchSize: 'medium',
+          halfSample: true,
+        },
+        numOfWorkers: 4,
         locate: true,
+        frequency: 10,
         decoder: {
-          readers: ['ean_reader', 'ean_8_reader', 'upc_reader', 'code_128_reader'],
+          readers: ['ean_reader'],
         },
       }, (err) => {
         if (err) {
-          this.setState({ videoError: true });
+          console.error(err.message);
+          this.setState({ videoError: true, error: err.message });
           return;
         }
         this.onInitSuccess();
@@ -72,10 +82,11 @@ class Scanner extends React.Component {
             <Error>
               <ErrorIcon color={yellow} />
               <b>Ein Fehler ist aufgetreten</b>
-              <ErrorDescription>Bitte gebe dieser Website Zugriff auf die Kamera.</ErrorDescription>
+              {/* Bitte gebe dieser Website Zugriff auf die Kamera. */}
+              <ErrorDescription>{this.state.error}</ErrorDescription>
             </Error>
           )}
-          <Camera id="camera" visible={ready} />
+          <Camera id="camera" visible={ready}><video playsinline autoPlay /></Camera>
         </HeightWrapper>
       </Wrapper>
     );
