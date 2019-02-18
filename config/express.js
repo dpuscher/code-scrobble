@@ -1,12 +1,14 @@
 const flash = require('connect-flash');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
 const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
 
 module.exports = function expressConfig(express, app, passport, dev = false) {
   if (dev) app.use(morgan('dev'));
   app.use(cookieParser());
+  app.use(bodyParser.json());
 
   app.use(session({
     store: new RedisStore({ url: process.env.REDISCLOUD_URL }),

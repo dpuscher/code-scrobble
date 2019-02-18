@@ -1,10 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import Quagga from 'quagga';
-import { yellow } from '../../lib/colors';
-import {
-  Camera, Error, ErrorDescription, ErrorIcon, HeightWrapper, Loading, LoadingWrapper, Wrapper,
-} from './styles/Scanner.styles';
+import { yellow } from '../lib/colors';
+import { Error, ErrorDescription, ErrorIcon } from './styles/Error.styles';
+import { Camera, Loading, LoadingWrapper } from './styles/Scanner.styles';
 
 class Scanner extends React.Component {
   constructor(props) {
@@ -12,13 +11,11 @@ class Scanner extends React.Component {
     this.state = {
       init: false,
       videoError: false,
-      error: '',
     };
 
     this.onInitSuccess = this.onInitSuccess.bind(this);
     this.onDetected = this.onDetected.bind(this);
   }
-
 
   componentDidMount() {
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
@@ -47,14 +44,17 @@ class Scanner extends React.Component {
         },
       }, (err) => {
         if (err) {
-          console.error(err.message);
-          this.setState({ videoError: true, error: err.message });
+          this.setState({ videoError: true });
           return;
         }
         this.onInitSuccess();
       });
       Quagga.onDetected(this.onDetected);
     }
+  }
+
+  componentWillUnmount() {
+    Quagga.stop();
   }
 
   onInitSuccess() {
@@ -69,26 +69,23 @@ class Scanner extends React.Component {
     onDetected(result);
   }
 
-
   render() {
     const { videoError, init } = this.state;
     const loading = !init && !videoError;
     const ready = init && !videoError;
     return (
-      <Wrapper>
-        <HeightWrapper>
-          {loading && <LoadingWrapper><Loading size="300" /></LoadingWrapper> }
-          {videoError && (
-            <Error>
-              <ErrorIcon color={yellow} />
-              <b>Ein Fehler ist aufgetreten</b>
-              {/* Bitte gebe dieser Website Zugriff auf die Kamera. */}
-              <ErrorDescription>{this.state.error}</ErrorDescription>
-            </Error>
-          )}
-          <Camera id="camera" visible={ready}><video playsinline autoPlay /></Camera>
-        </HeightWrapper>
-      </Wrapper>
+      <>
+        {loading && <LoadingWrapper><Loading size="300" /></LoadingWrapper> }
+        {videoError && (
+          <Error>
+            <ErrorIcon color={yellow} />
+            <b>Ein Fehler ist aufgetreten</b>
+            <ErrorDescription>Bitte gebe dieser Website Zugriff auf die Kamera.</ErrorDescription>
+          </Error>
+        )}
+        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+        <Camera id="camera" visible={ready}><video playsInline autoPlay /></Camera>
+      </>
     );
   }
 }

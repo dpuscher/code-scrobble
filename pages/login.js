@@ -13,8 +13,7 @@ const Index = () => (
       <Wrapper>
         <Logo />
         <Description>
-          CodeScrobbler ermöglicht es, mit einfachem Abscannen des Barcodes einer
-          CD oder einer Vinyl diesen Tonträger auf Last.fm zu scrobbeln:
+          CodeScrobbler makes it easy to scan the barcode of a CD or vinyl to scrobble this record on Last.fm
         </Description>
         <Link href="/auth/lastfm">
           <a><LoginButton /></a>

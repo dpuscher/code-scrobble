@@ -25,7 +25,7 @@ Layout.propTypes = {
 
 Layout.defaultProps = {
   children: null,
-  title: 'FastScrobble',
+  title: 'CodeScrobble',
 };
 
 export default Layout;
