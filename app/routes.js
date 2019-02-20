@@ -68,8 +68,7 @@ module.exports = function routes(server, app, passport) {
     }
 
     res.setHeader('Content-Type', 'application/json');
-    const releaseId = req.body.id;
-    const { user } = req;
+    const { body: { id: releaseId, autoScrobble }, user } = req;
 
     Release.findOne({ _id: releaseId }, async (err, release) => {
       try {
@@ -77,8 +76,10 @@ module.exports = function routes(server, app, passport) {
           return res.status(400).send(JSON.stringify({ error: 'Release not found' }));
         }
 
-        user.instantScrobbles.addToSet(release.id);
-        user.save();
+        if (autoScrobble) {
+          user.instantScrobbles.addToSet(release.id);
+          await user.save();
+        }
 
         const response = await LastFM.scrobbleTracks(req.user.name, req.user.key, release);
 

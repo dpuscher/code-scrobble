@@ -1,20 +1,16 @@
 import PropTypes from 'prop-types';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { FaCheckCircle } from 'react-icons/fa';
-import { MdClose } from 'react-icons/md';
 import { IoMdQrScanner, IoIosRefresh } from 'react-icons/io';
 import { yellow } from '../lib/colors';
 import { Error, ErrorIcon, RetryButton } from './styles/Error.styles';
-import {
-  Button, Loading, LoadingContent, LoadingWrapper, Poster, PosterContent, PosterFallback,
-} from './styles/Scrobble.styles';
+import { Loading, LoadingContent, LoadingWrapper } from './styles/Scrobble.styles';
 
 class Scrobble extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       loading: true,
-      data: null,
       loadingError: false,
     };
     this.doRequest = this.doRequest.bind(this);
@@ -27,14 +23,14 @@ class Scrobble extends React.Component {
   async doRequest() {
     try {
       this.setState({ loading: true, loadingError: false });
+      const { data: { id }, autoScrobble } = this.props;
 
       const response = await fetch('/scrobble', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: this.props.data.id }),
+        body: JSON.stringify({ id, autoScrobble }),
       });
-      const data = await response.json();
-      this.setState({ data });
+      await response.json();
     } catch (error) {
       this.setState({ loadingError: true });
     }
@@ -80,6 +76,7 @@ class Scrobble extends React.Component {
 Scrobble.propTypes = {
   data: PropTypes.object.isRequired,
   onRetry: PropTypes.func.isRequired,
+  autoScrobble: PropTypes.bool.isRequired,
 };
 
 export default Scrobble;
