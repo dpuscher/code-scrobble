@@ -1,5 +1,6 @@
 const Discogs = require('disconnect').Client;
 const dig = require('object-dig');
+const orderBy = require('lodash/orderBy');
 
 const Database = new Discogs({
   consumerKey: process.env.DISCOGS_KEY,
@@ -19,11 +20,16 @@ const convertTimecode = timecode => (
 module.exports = {
   search: barcode => (
     new Promise((resolve) => {
-      Database.search(barcode, (err, data) => {
+      Database.search(undefined, { barcode, type: 'release' }, (err, data) => {
         if (err || !data || !data.results || !data.results.length) {
           return resolve();
         }
-        return resolve(data.results[0].id);
+        const results = orderBy(
+          data.results,
+          ['community.have', 'community.want'],
+          ['desc', 'desc'],
+        );
+        return resolve(results[0].id);
       });
     })
   ),

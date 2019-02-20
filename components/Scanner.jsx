@@ -25,22 +25,22 @@ class Scanner extends React.Component {
           type: 'LiveStream',
           target: document.querySelector('#camera'),
           constraints: {
-            width: { min: 640 },
-            height: { min: 480 },
+            width: { min: 1280 },
+            height: { min: 720 },
             facingMode: 'environment',
             frameRate: 15,
             aspectRatio: { min: 1, max: 2 },
           },
         },
         locator: {
-          patchSize: 'medium',
+          patchSize: 'large',
           halfSample: true,
         },
-        numOfWorkers: 4,
+        numOfWorkers: 2,
         locate: true,
         frequency: 10,
         decoder: {
-          readers: ['ean_reader'],
+          readers: ['ean_8_reader', 'ean_reader'],
         },
       }, (err) => {
         if (err) {

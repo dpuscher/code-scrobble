@@ -13,15 +13,6 @@ function isNotLoggedIn(req, res, next) {
   return res.redirect('/');
 }
 
-async function updateModelFromDiscogs(model) {
-  const data = await Discogs.getRelease(model.id);
-  model.artist = data.artist;
-  model.title = data.title;
-  model.image = data.image;
-  model.tracks = data.tracks;
-  model.save();
-}
-
 module.exports = function routes(server, app, passport) {
   server.get('/', (req, res) => (
     res.redirect(req.isAuthenticated() ? '/scan' : '/login')
@@ -48,12 +39,20 @@ module.exports = function routes(server, app, passport) {
       if (err || !release) {
         const id = await Discogs.search(req.params.id);
         if (id) {
-          const newRelease = new Release();
-          newRelease.barcode = req.params.id;
-          newRelease.id = id;
-          await updateModelFromDiscogs(newRelease);
+          const data = await Discogs.getRelease(id);
 
-          return res.send(JSON.stringify(newRelease.toJSON()));
+          if (data) {
+            const newRelease = new Release();
+            newRelease.barcode = req.params.id;
+            newRelease.id = id;
+            newRelease.artist = data.artist;
+            newRelease.title = data.title;
+            newRelease.image = data.image;
+            newRelease.tracks = data.tracks;
+            await newRelease.save();
+
+            return res.send(JSON.stringify(newRelease.toJSON()));
+          }
         }
         return res.send(JSON.stringify({}));
       }
