@@ -41,7 +41,7 @@ const SearchRelease = ({ code, onScrobble, onCancel }) => {
       {!loading && loadingError && (
         <Error>
           <ErrorIcon color={yellow} />
-          <b>No release found</b>
+          <b>No release found <br />{code}</b>
           <RetryButton onClick={onCancel}>
             <IoIosRefresh size="30px" css="margin-bottom: 7px" />
             Retry

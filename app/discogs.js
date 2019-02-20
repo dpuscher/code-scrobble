@@ -19,7 +19,7 @@ const convertTimecode = timecode => (
 module.exports = {
   search: barcode => (
     new Promise((resolve) => {
-      Database.search(barcode, (err, data) => {
+      Database.search(undefined, { barcode }, (err, data) => {
         if (err || !data || !data.results || !data.results.length) {
           return resolve();
         }
