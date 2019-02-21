@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const omit = require('lodash/omit');
 const Discogs = require('../discogs');
 
 const releaseSchema = mongoose.Schema(
@@ -26,6 +25,20 @@ releaseSchema.methods.toJSON = function toJSON() {
     title: this.title,
     image: this.image,
   };
+};
+
+releaseSchema.methods.updateFromDiscogs = async function updateFromDiscogs() {
+  const data = await Discogs.getRelease(this.id);
+
+  if (!data) return false;
+
+  this.artist = data.artist;
+  this.title = data.title;
+  this.image = data.image;
+  this.tracks = data.tracks;
+  await this.save();
+
+  return true;
 };
 
 module.exports = mongoose.model('Release', releaseSchema);

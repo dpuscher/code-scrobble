@@ -39,22 +39,19 @@ module.exports = function routes(server, app, passport) {
       if (err || !release) {
         const id = await Discogs.search(req.params.id);
         if (id) {
-          const data = await Discogs.getRelease(id);
-
-          if (data) {
-            const newRelease = new Release();
-            newRelease.barcode = req.params.id;
-            newRelease.id = id;
-            newRelease.artist = data.artist;
-            newRelease.title = data.title;
-            newRelease.image = data.image;
-            newRelease.tracks = data.tracks;
-            await newRelease.save();
-
+          const newRelease = new Release();
+          newRelease.barcode = req.params.id;
+          newRelease.id = id;
+          if (await newRelease.updateFromDiscogs()) {
             return res.send(JSON.stringify(newRelease.toJSON()));
           }
         }
         return res.send(JSON.stringify({}));
+      }
+
+      // Data is older than one week
+      if (new Date().getTime() - release.updatedAt.getTime() > 604800000) {
+        await release.updateFromDiscogs();
       }
 
       const instantScrobble = req.user.instantScrobbles.includes(release.id);

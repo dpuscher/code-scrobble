@@ -17,6 +17,10 @@ module.exports = function expressConfig(express, app, passport, dev = false) {
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
+    rolling: true,
+    cookie: {
+      maxAge: 2592000000,
+    },
   })); // session secret
   app.use(passport.initialize());
   app.use(passport.session()); // persistent login sessions
