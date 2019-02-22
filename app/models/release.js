@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const pick = require('lodash/pick');
 const Discogs = require('../discogs');
 
 const releaseSchema = mongoose.Schema(
@@ -7,12 +8,14 @@ const releaseSchema = mongoose.Schema(
     artist: String,
     title: String,
     image: String,
+    url: String,
+    year: String,
     tracks: [{
       title: String,
       trackNumber: Number,
       duration: Number,
     }],
-    barcode: Number,
+    barcode: String,
   },
   { timestamps: true },
 );
@@ -24,11 +27,14 @@ releaseSchema.methods.toJSON = function toJSON() {
     artist: this.artist,
     title: this.title,
     image: this.image,
+    url: this.url,
+    year: this.year,
+    tracks: this.tracks.map(track => pick(track, ['title', 'trackNumber', 'duration'])),
   };
 };
 
 releaseSchema.methods.updateFromDiscogs = async function updateFromDiscogs() {
-  const data = await Discogs.getRelease(this.id);
+  const data = await Discogs.getMaster(this.id);
 
   if (!data) return false;
 

@@ -29,27 +29,32 @@ module.exports = {
           ['community.have', 'community.want'],
           ['desc', 'desc'],
         );
-        return resolve(results[0].id);
+        return resolve(results[0].master_id);
       });
     })
   ),
 
-  getRelease: id => (
-    new Promise((resolve) => {
-      Database.getRelease(id, (err, data) => {
+  getMaster: id => (
+    new Promise((resolve, reject) => {
+      Database.getMaster(id, (err, data) => {
         if (err || !data) {
-          resolve();
+          reject();
         } else {
           resolve({
             id,
-            artist: dig(data, 'artists_sort'),
+            artist: data.artists.map(a => a.name).join(', '),
             title: data.title,
             image: dig(data, 'images', 0, 'uri'),
-            tracks: data.tracklist.map((track, index) => ({
-              title: track.title,
-              trackNumber: index + 1,
-              duration: convertTimecode(track.duration),
-            })),
+            url: data.uri,
+            year: data.year,
+            tracks: data
+              .tracklist
+              .filter(track => track.type_ === 'track') // eslint-disable-line no-underscore-dangle
+              .map((track, index) => ({
+                title: track.title,
+                trackNumber: index + 1,
+                duration: convertTimecode(track.duration),
+              })),
           });
         }
       });

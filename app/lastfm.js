@@ -1,5 +1,4 @@
 const LastFM = require('lastfmapi');
-const dig = require('object-dig');
 
 const getScrobble = (data) => {
   let nextTimestamp = Math.floor(Date.now() / 1000);

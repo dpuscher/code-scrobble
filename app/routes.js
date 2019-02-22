@@ -29,46 +29,51 @@ module.exports = function routes(server, app, passport) {
   );
 
   server.get('/search/:id', async (req, res) => {
-    if (!req.isAuthenticated()) {
-      return res.status(401).send('Unauthorized');
-    }
-
     res.setHeader('Content-Type', 'application/json');
 
-    Release.findOne({ barcode: req.params.id }, async (err, release) => {
-      if (err || !release) {
-        const id = await Discogs.search(req.params.id);
-        if (id) {
-          const newRelease = new Release();
-          newRelease.barcode = req.params.id;
-          newRelease.id = id;
-          if (await newRelease.updateFromDiscogs()) {
-            return res.send(JSON.stringify(newRelease.toJSON()));
+    if (!req.isAuthenticated()) {
+      return res.status(401).send({ error: 'Unauthorized' });
+    }
+
+    try {
+      Release.findOne({ barcode: req.params.id }, async (err, release) => {
+        if (err || !release) {
+          const id = await Discogs.search(req.params.id);
+          if (id) {
+            const newRelease = new Release();
+            newRelease.barcode = req.params.id;
+            newRelease.id = id;
+            if (await newRelease.updateFromDiscogs()) {
+              return res.send(JSON.stringify(newRelease.toJSON()));
+            }
           }
+          return res.send(JSON.stringify({}));
         }
-        return res.send(JSON.stringify({}));
-      }
 
-      // Data is older than one week
-      if (new Date().getTime() - release.updatedAt.getTime() > 604800000) {
-        await release.updateFromDiscogs();
-      }
+        // Data is older than one week
+        if (new Date().getTime() - release.updatedAt.getTime() > 604800000) {
+          await release.updateFromDiscogs();
+        }
 
-      const instantScrobble = req.user.instantScrobbles.includes(release.id);
-      return res.send(JSON.stringify(Object.assign({ instantScrobble }, release.toJSON())));
-    });
+        const instantScrobble = req.user.instantScrobbles.includes(release.id);
+        return res.send(JSON.stringify(Object.assign({ instantScrobble }, release.toJSON())));
+      });
+    } catch (error) {
+      return res.status(400).send({ error });
+    }
   });
 
   server.post('/scrobble', async (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+
     if (!req.isAuthenticated()) {
-      return res.status(401).send('Unauthorized');
+      return res.status(401).send({ error: 'Unauthorized' });
     }
 
-    res.setHeader('Content-Type', 'application/json');
-    const { body: { id: releaseId, autoScrobble }, user } = req;
+    try {
+      const { body: { id: releaseId, autoScrobble }, user } = req;
 
-    Release.findOne({ _id: releaseId }, async (err, release) => {
-      try {
+      Release.findOne({ _id: releaseId }, async (err, release) => {
         if (err || !release) {
           return res.status(400).send(JSON.stringify({ error: 'Release not found' }));
         }
@@ -81,10 +86,10 @@ module.exports = function routes(server, app, passport) {
         const response = await LastFM.scrobbleTracks(req.user.name, req.user.key, release);
 
         return res.send(JSON.stringify(response));
-      } catch (error) {
-        return res.status(400).send(JSON.stringify({ error }));
-      }
-    });
+      });
+    } catch (error) {
+      return res.status(400).send({ error });
+    }
   });
 
   server.get('/scan', isLoggedIn, (req, res) => {

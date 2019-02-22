@@ -13,7 +13,8 @@ const Index = () => (
       <Wrapper>
         <Logo />
         <Description>
-          CodeScrobbler makes it easy to scan the barcode of a CD or vinyl to scrobble this record on Last.fm
+          CodeScrobbler makes it easy to scan the barcode of
+          a CD or vinyl to scrobble this record on Last.fm
         </Description>
         <Link href="/auth/lastfm">
           <a><LoginButton /></a>
