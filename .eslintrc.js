@@ -6,6 +6,7 @@ module.exports = {
   },
   "extends": ["eslint:recommended", "plugin:react/recommended", "airbnb"],
   "plugins": ["react"],
+  "parser": "babel-eslint",
   "rules": {
     "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
     "no-unused-vars": ["error", { "args": "none" }],
