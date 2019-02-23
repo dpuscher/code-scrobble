@@ -20,5 +20,6 @@ module.exports = {
     "import/no-unresolved": "off",
     "react/react-in-jsx-scope": "off",
     "react/jsx-one-expression-per-line": "off",
+    "react/forbid-prop-types": "off",
   }
 };

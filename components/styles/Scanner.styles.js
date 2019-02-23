@@ -1,6 +1,6 @@
 import styled from 'styled-components';
-import Spinner from '../layout/Spinner';
 
+// eslint-disable-next-line import/prefer-default-export
 export const Camera = styled.div`
   visibility: ${props => (props.visible ? 'visible' : 'hidden')};
   position: absolute;
@@ -16,18 +16,4 @@ export const Camera = styled.div`
     height: 100%;
     object-fit: cover;
   }
-`;
-
-export const Loading = styled(Spinner)`
-  width: 30%;
-  height: 30%;
-`;
-
-export const LoadingWrapper = styled.div`
-  display: flex;
-  position: absolute;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
 `;

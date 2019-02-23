@@ -1,27 +1,34 @@
 import React from 'react';
 import Link from 'next/link';
 
-import Layout from '../components/layout/Layout';
+import LoginButton from '../components/LoginButton';
 import { Center } from '../styles/layout.styles';
 import {
-  Description, LoginButton, Logo, Wrapper,
+  Description, H1, Logo, P, Wrapper,
 } from '../styles/login.styles';
 
 const Index = () => (
-  <Layout>
-    <Center>
-      <Wrapper>
-        <Logo />
+  <Center min>
+    <Wrapper>
+      <header>
+        <H1><Logo alt="CodeScrobble" /></H1>
+      </header>
+      <main>
         <Description>
-          CodeScrobbler makes it easy to scan the barcode of
-          a CD or vinyl to scrobble this record on Last.fm
+          <P>
+            CodeScrobble makes it easy to scrobble your CD or vinyl records to Last.fm.
+          </P>
+          <P>
+            Just use you smartphone camera to scan the barcode, check the result and you
+            are done. We also have an auto-scrobble mode, that makes scrobbling even faster.
+          </P>
         </Description>
-        <Link href="/auth/lastfm">
-          <a><LoginButton /></a>
+        <Link href="/auth/lastfm" passHref>
+          <LoginButton />
         </Link>
-      </Wrapper>
-    </Center>
-  </Layout>
+      </main>
+    </Wrapper>
+  </Center>
 );
 
 export default Index;

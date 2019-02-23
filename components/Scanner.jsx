@@ -2,19 +2,18 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import Quagga from 'quagga';
 import { yellow } from '../lib/colors';
-import { Error, ErrorDescription, ErrorIcon } from './styles/Error.styles';
-import { Camera, Loading, LoadingWrapper } from './styles/Scanner.styles';
+import { FlexContent } from '../styles/layout.styles';
+import { ErrorDescription, ErrorIcon } from './styles/Error.styles';
+import { Camera } from './styles/Scanner.styles';
+import Loading from './Loading';
 
 class Scanner extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      init: false,
+      loading: true,
       videoError: false,
     };
-
-    this.onInitSuccess = this.onInitSuccess.bind(this);
-    this.onDetected = this.onDetected.bind(this);
   }
 
   componentDidMount() {
@@ -57,31 +56,33 @@ class Scanner extends React.Component {
     Quagga.stop();
   }
 
-  onInitSuccess() {
+  onInitSuccess = () => {
     Quagga.start();
-    this.setState({ init: true });
+    this.setState({ loading: false });
   }
 
-  onDetected(result) {
+  onDetected = (result) => {
     const { onDetected } = this.props;
+    this.setState({ loading: true });
 
     Quagga.offDetected(this.onDetected);
     onDetected(result);
   }
 
   render() {
-    const { videoError, init } = this.state;
-    const loading = !init && !videoError;
-    const ready = init && !videoError;
+    const { videoError, loading } = this.state;
+    const ready = !loading && !videoError;
     return (
       <>
-        {loading && <LoadingWrapper><Loading size="300" /></LoadingWrapper> }
+        {loading && <Loading /> }
         {videoError && (
-          <Error>
+          <FlexContent>
             <ErrorIcon color={yellow} />
             <b>Ein Fehler ist aufgetreten</b>
-            <ErrorDescription>Bitte gebe dieser Website Zugriff auf die Kamera.</ErrorDescription>
-          </Error>
+            <ErrorDescription>
+              Bitte gebe dieser Website Zugriff auf die Kamera.
+            </ErrorDescription>
+          </FlexContent>
         )}
         {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
         <Camera id="camera" visible={ready}><video playsInline autoPlay /></Camera>

@@ -50,6 +50,7 @@ module.exports = {
             tracks: data
               .tracklist
               .filter(track => track.type_ === 'track') // eslint-disable-line no-underscore-dangle
+              .filter(track => !/video/i.test(track.position))
               .map((track, index) => ({
                 title: track.title,
                 trackNumber: index + 1,

@@ -14,10 +14,6 @@ function isNotLoggedIn(req, res, next) {
 }
 
 module.exports = function routes(server, app, passport) {
-  server.get('/', (req, res) => (
-    res.redirect(req.isAuthenticated() ? '/scan' : '/login')
-  ));
-
   server.get('/auth/lastfm', passport.authenticate('lastfm'));
 
   server.get(
@@ -93,10 +89,22 @@ module.exports = function routes(server, app, passport) {
   });
 
   server.get('/scan', isLoggedIn, (req, res) => {
-    app.render(req, res, '/scan', { user: req.user });
+    app.render(req, res, '/scan');
+  });
+
+  server.get('/detected/:barcode', isLoggedIn, (req, res) => {
+    app.render(req, res, '/detected', { barcode: req.params.barcode });
+  });
+
+  server.get('/scrobbled/:barcode', isLoggedIn, (req, res) => {
+    app.render(req, res, '/scrobbled', { barcode: req.params.barcode });
   });
 
   server.get('/login', isNotLoggedIn, (req, res) => {
     app.render(req, res, '/login');
   });
+
+  server.get('/', (req, res) => (
+    res.redirect(req.isAuthenticated() ? '/scan' : '/login')
+  ));
 };

@@ -29,6 +29,7 @@ export const RetryButton = styled.button`
   align-items: center;
   width: 100%;
   margin-top: 10%;
+  margin-bottom: -5%;
   padding: 5%;
   appearance: none;
   border: 0;
