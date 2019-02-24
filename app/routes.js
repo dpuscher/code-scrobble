@@ -1,4 +1,5 @@
 /* eslint-disable no-param-reassign */
+const path = require('path');
 const Discogs = require('./discogs');
 const LastFM = require('./lastfm');
 const Release = require('./models/release');
@@ -102,6 +103,10 @@ module.exports = function routes(server, app, passport) {
 
   server.get('/login', isNotLoggedIn, (req, res) => {
     app.render(req, res, '/login');
+  });
+
+  server.get('/service-worker.js', (req, res) => {
+    app.serveStatic(req, res, path.resolve('./static/service-worker.js'));
   });
 
   server.get('/', (req, res) => (

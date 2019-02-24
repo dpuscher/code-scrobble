@@ -13,8 +13,8 @@
             "type": "image/png"
         }
     ],
-    "theme_color": "#ffffff",
-    "background_color": "#ffffff",
-    "start_url": "https://code-scrobble.herokuapp.com",
-    "display": "standalone"
+    "background_color": "#1d1e22",
+    "start_url": "https://www.codescrobble.com",
+    "display": "standalone",
+    "theme_color": "#1d1e22"
 }

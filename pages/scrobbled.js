@@ -23,7 +23,6 @@ class Scrobbled extends React.Component {
           <Subscribe to={[ReleaseState]}>
             {(releaseState) => {
               const { image } = releaseState.get(barcode);
-              console.log(releaseState.get(barcode));
               return (
                 <>
                   {image && <CoverBackground image={image} />}

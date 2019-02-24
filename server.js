@@ -23,7 +23,7 @@ passportConfig(passport);
 app.prepare().then(() => {
   const server = express();
 
-  expressConfig(express, server, passport, dev);
+  expressConfig(server, passport, dev);
 
   routes(server, app, passport);
 

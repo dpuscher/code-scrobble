@@ -7,7 +7,7 @@ const session = require('express-session');
 const helmet = require('helmet');
 const RedisStore = require('connect-redis')(session);
 
-module.exports = function expressConfig(express, app, passport, dev = false) {
+module.exports = function expressConfig(app, passport, dev = false) {
   if (dev) app.use(morgan('dev'));
   app.use(cookieParser());
   app.use(bodyParser.json());
