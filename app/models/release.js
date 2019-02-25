@@ -42,6 +42,8 @@ releaseSchema.methods.updateFromDiscogs = async function updateFromDiscogs() {
   this.title = data.title;
   this.image = data.image;
   this.tracks = data.tracks;
+  this.url = data.url;
+  this.year = data.year;
   await this.save();
 
   return true;

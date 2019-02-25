@@ -18,12 +18,11 @@ class Scrobble extends React.Component {
     try {
       this.setState({ loadingError: false });
 
-      console.log('scrobble', { id, autoScrobble });
-      // await fetch('/scrobble', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ id, autoScrobble }),
-      // });
+      await fetch('/scrobble', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, autoScrobble }),
+      });
     } catch (error) {
       this.setState({ loadingError: true });
     }

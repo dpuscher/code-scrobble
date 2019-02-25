@@ -23,7 +23,6 @@ class SearchRelease extends React.Component {
       release, code, setRelease, onScrobble,
     } = this.props;
 
-    console.log(release);
     if (!release.id) {
       const response = await fetch(`/search/${code}`);
       const json = await response.json();
