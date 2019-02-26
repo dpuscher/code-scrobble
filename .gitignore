@@ -6,3 +6,4 @@ log/
 bundles/
 yarn-error.log
 coverage
+static/service-worker.js

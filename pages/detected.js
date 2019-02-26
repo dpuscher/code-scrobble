@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import Router from 'next/router';
 import { Subscribe } from 'unstated';
 import ReleaseState from '../app/states/ReleaseState';
+import ReleaseInfo from '../components/ReleaseInfo';
 import Scrobble from '../components/Scrobble';
 import SearchRelease from '../components/SearchRelease';
 import CircleLayout from '../components/layout/CircleLayout';
@@ -36,39 +37,43 @@ class Detected extends React.Component {
     const { scrobbling, autoScrobble } = this.state;
     const { barcode } = this.props;
     return (
-      <CircleLayout
-        footer={(
-          <FooterContent>
-            {!scrobbling && (
-            <Checkbox name="autoScrobble" checked={autoScrobble} onChange={this.handleAutoScrobble}>
-              Auto-scrobble on next scan
-            </Checkbox>
-            )}
-          </FooterContent>
-        )}
-      >
-        <Subscribe to={[ReleaseState]}>
-          {releaseState => (
-            scrobbling
-              ? (
-                <Scrobble
-                  release={releaseState.get(barcode)}
-                  autoScrobble={autoScrobble}
-                  onScrobbled={this.scrobbled}
-                />
-              )
-              : (
-                <SearchRelease
-                  code={barcode}
-                  onScrobble={this.scrobble}
-                  onCancel={this.reScan}
-                  setRelease={releaseState.set}
-                  release={releaseState.get(barcode)}
-                />
-              )
-          )}
-        </Subscribe>
-      </CircleLayout>
+      <Subscribe to={[ReleaseState]}>
+        {(releaseState) => {
+          const release = releaseState.get(barcode);
+          return (
+            <CircleLayout
+              footer={!scrobbling && (
+                <FooterContent>
+                  <Checkbox name="autoScrobble" checked={autoScrobble} onChange={this.handleAutoScrobble}>
+                    Auto-scrobble on next scan
+                  </Checkbox>
+                </FooterContent>
+              )}
+              header={!scrobbling && release.id && <ReleaseInfo release={release} />}
+            >
+              {
+              scrobbling
+                ? (
+                  <Scrobble
+                    release={release}
+                    autoScrobble={autoScrobble}
+                    onScrobbled={this.scrobbled}
+                  />
+                )
+                : (
+                  <SearchRelease
+                    code={barcode}
+                    onScrobble={this.scrobble}
+                    onCancel={this.reScan}
+                    setRelease={releaseState.set}
+                    release={releaseState.get(barcode)}
+                  />
+                )
+            }
+            </CircleLayout>
+          );
+        }}
+      </Subscribe>
     );
   }
 }
