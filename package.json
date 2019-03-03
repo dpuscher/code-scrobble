@@ -6,8 +6,10 @@
     "heroku-postbuild": "yarn build"
   },
   "dependencies": {
+    "@zeit/next-bundle-analyzer": "^0.1.2",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "body-parser": "^1.18.3",
+    "clean-webpack-plugin": "^1.0.1",
     "compression": "^1.7.3",
     "connect-flash": "^0.1.1",
     "connect-redis": "^3.4.0",
