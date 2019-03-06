@@ -1,7 +1,7 @@
 import styled, { keyframes } from 'styled-components';
 import { yellow, yellowRGB } from '../../lib/colors';
 
-const animation = keyframes`
+export const animation = keyframes`
   to {
     transform: rotate(360deg);
   }

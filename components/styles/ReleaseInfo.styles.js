@@ -43,6 +43,7 @@ export const Overlay = styled.div`
   overflow: auto;
   background: rgba(0,0,0,.7);
   backdrop-filter: blur(10px);
+  -webkit-overflow-scrolling: touch;
 `;
 
 export const Content = styled.div`
@@ -115,6 +116,7 @@ export const Gradient = styled.div`
 export const TrackListWrapper = styled.div`
   padding: 10px 0 0;
   overflow: auto;
+  -webkit-overflow-scrolling: touch;
 `;
 
 export const TrackNumber = styled.td`

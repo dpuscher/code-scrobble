@@ -6,7 +6,7 @@ const Release = require('./models/release');
 
 function isLoggedIn(req, res, next) {
   if (req.isAuthenticated()) { return next(); }
-  return res.redirect('/');
+  return res.redirect('/login');
 }
 
 function isNotLoggedIn(req, res, next) {
@@ -20,10 +20,15 @@ module.exports = function routes(server, app, passport) {
   server.get(
     '/auth/lastfm/callback',
     passport.authenticate('lastfm', {
-      successRedirect: '/scan',
+      successRedirect: '/',
       failureRedirect: '/login',
     }),
   );
+
+  server.get('/logout', (req, res) => {
+    req.logout();
+    res.redirect('/');
+  });
 
   server.get('/search/:id', async (req, res) => {
     res.setHeader('Content-Type', 'application/json');
@@ -60,6 +65,11 @@ module.exports = function routes(server, app, passport) {
     }
   });
 
+  server.get('/session', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    return res.send(JSON.stringify(req.user.toJSON() || {}));
+  });
+
   server.post('/scrobble', async (req, res) => {
     res.setHeader('Content-Type', 'application/json');
 
@@ -89,10 +99,6 @@ module.exports = function routes(server, app, passport) {
     }
   });
 
-  server.get('/scan', isLoggedIn, (req, res) => {
-    app.render(req, res, '/scan');
-  });
-
   server.get('/detected/:barcode', isLoggedIn, (req, res) => {
     app.render(req, res, '/detected', { barcode: req.params.barcode });
   });
@@ -117,7 +123,7 @@ module.exports = function routes(server, app, passport) {
     app.serveStatic(req, res, path.resolve('./static/service-worker.js'));
   });
 
-  server.get('/', (req, res) => (
-    res.redirect(req.isAuthenticated() ? '/scan' : '/login')
-  ));
+  server.get('/', isLoggedIn, (req, res) => {
+    app.render(req, res, '/');
+  });
 };

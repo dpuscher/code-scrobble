@@ -12,7 +12,7 @@ import { CoverBackground } from '../styles/scrobbled.styles';
 
 class Scrobbled extends React.Component {
   onRetry = () => {
-    Router.push('/scan');
+    Router.push('/');
   }
 
   render() {

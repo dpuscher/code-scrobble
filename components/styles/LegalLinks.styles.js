@@ -4,7 +4,6 @@ import { grey } from '../../lib/colors';
 export const Links = styled.div`
   display: flex;
   position: absolute;
-  z-index: 1;
   right: 15px;
   bottom: 5px;
   font-size: 12px;

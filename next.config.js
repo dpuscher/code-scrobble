@@ -22,17 +22,10 @@ module.exports = withBundleAnalyzer({
   },
 
   webpack: (config, { dev, isServer, buildId }) => {
-    if (!isServer) {
-      const oldEntry = config.entry;
-      config.entry = () => oldEntry().then((entry) => {
-        entry['main.js'].push(path.resolve('./lib/offline'));
-        return entry;
-      });
-
-      config.plugins.push(new CleanWebpackPlugin());
-
-      if (!dev) {
-        config.plugins.push(new SWPrecacheWebpackPlugin({
+    if (!dev) {
+      config.plugins.push(
+        new CleanWebpackPlugin(),
+        new SWPrecacheWebpackPlugin({
           cacheId: 'codescrobble',
           filepath: path.resolve('./static/service-worker.js'),
           minify: false,
@@ -56,7 +49,15 @@ module.exports = withBundleAnalyzer({
             { handler: 'networkFirst', urlPattern: '/' },
           ],
           verbose: true,
-        }));
+        }),
+      );
+
+      if (!isServer) {
+        const oldEntry = config.entry;
+        config.entry = () => oldEntry().then((entry) => {
+          entry['main.js'].push(path.resolve('./lib/offline'));
+          return entry;
+        });
       }
     }
     return config;

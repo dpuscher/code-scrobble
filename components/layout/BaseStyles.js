@@ -19,6 +19,7 @@ export default createGlobalStyle`
     margin: 0;
     background: ${dark};
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+    font-size: 15px;
     font-weight: 300;
   }
   body, a {

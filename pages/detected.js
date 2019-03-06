@@ -17,7 +17,7 @@ class Detected extends React.Component {
   }
 
   reScan = () => {
-    Router.push('/scan');
+    Router.push('/');
   };
 
   scrobble = (id) => {

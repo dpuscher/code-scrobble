@@ -6,7 +6,7 @@ export const Center = styled.div`
   align-items: center;
   justify-content: center;
   width: 100%;
-  ${props => (props.min ? 'min-height: 100%' : 'height: 100%')};
+  ${props => (props.useMinHeight ? 'min-height: 100%' : 'height: 100%')};
   padding: 15px 0;
 `;
 
@@ -65,4 +65,11 @@ export const FooterContent = styled.div`
   max-width: 80%;
   margin: 0 auto;
   padding-top: 20px;
+`;
+
+export const SessionWrapper = styled.div`
+  position: absolute;
+  z-index: 1;
+  top: 20px;
+  right: 20px;
 `;

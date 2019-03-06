@@ -9,7 +9,7 @@ import {
 } from '../styles/login.styles';
 
 const Index = () => (
-  <Center min>
+  <Center useMinHeight>
     <Wrapper>
       <header>
         <H1><Logo alt="CodeScrobble" /></H1>

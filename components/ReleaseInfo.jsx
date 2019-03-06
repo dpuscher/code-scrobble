@@ -4,7 +4,7 @@ import { MdClose } from 'react-icons/md';
 import durationFormat from '../lib/durationFormat';
 import {
   Artist, Button, CloseButton, Content, Cover, ExternalButton, Gradient, Head, HeadWrapper,
-  Icon, Meta, Overlay, Title, TrackDuration, Tracklist, TrackListWrapper, TrackNumber, TrackTitle,
+  Icon, Meta, Overlay, Title, TrackDuration, TrackListWrapper, TrackNumber, TrackTitle,
   Wrapper, Year,
 } from './styles/ReleaseInfo.styles';
 import { silver } from '../lib/colors';
