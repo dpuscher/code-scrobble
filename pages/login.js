@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 
+import LegalLinks from '../components/LegalLinks';
 import LoginButton from '../components/LoginButton';
 import { Center } from '../styles/layout.styles';
 import {
@@ -28,6 +29,7 @@ const Index = () => (
         </Link>
       </main>
     </Wrapper>
+    <LegalLinks />
   </Center>
 );
 

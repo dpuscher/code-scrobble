@@ -29,7 +29,7 @@ module.exports = withBundleAnalyzer({
         return entry;
       });
 
-      config.plugins.push(new CleanWebpackPlugin(['.next/*']));
+      config.plugins.push(new CleanWebpackPlugin());
 
       if (!dev) {
         config.plugins.push(new SWPrecacheWebpackPlugin({

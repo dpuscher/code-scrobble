@@ -105,6 +105,14 @@ module.exports = function routes(server, app, passport) {
     app.render(req, res, '/login');
   });
 
+  server.get('/legal', (req, res) => {
+    app.render(req, res, '/legal');
+  });
+
+  server.get('/privacy', (req, res) => {
+    app.render(req, res, '/privacy');
+  });
+
   server.get('/service-worker.js', (req, res) => {
     app.serveStatic(req, res, path.resolve('./static/service-worker.js'));
   });

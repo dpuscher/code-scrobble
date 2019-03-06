@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import {
   Center, Content, Footer, Header, HeightWrapper, Wrapper,
 } from '../../styles/layout.styles';
+import LegalLinks from '../LegalLinks';
 
 const CircleLayout = ({ children, header, footer }) => (
   <Center>
@@ -15,6 +16,7 @@ const CircleLayout = ({ children, header, footer }) => (
         </HeightWrapper>
       </Content>
       <Footer>
+        <LegalLinks />
         {footer}
       </Footer>
     </Wrapper>
