@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import { grey } from '../../lib/colors';
 
 export const Links = styled.div`
   display: flex;
@@ -11,5 +10,4 @@ export const Links = styled.div`
 
 export const Link = styled.a`
   padding: 10px;
-  color: ${grey};
 `;

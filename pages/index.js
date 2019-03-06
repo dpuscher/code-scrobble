@@ -1,4 +1,5 @@
 import React from 'react';
+import Head from 'next/head';
 import Router from 'next/router';
 import Scanner from '../components/Scanner';
 import CircleLayout from '../components/layout/CircleLayout';
@@ -9,9 +10,14 @@ const Scan = () => {
   };
 
   return (
-    <CircleLayout>
-      <Scanner onDetected={codeDetected} />
-    </CircleLayout>
+    <>
+      <Head>
+        <link rel="preconnect" href="https://lastfm-img2.akamaized.net" />
+      </Head>
+      <CircleLayout>
+        <Scanner onDetected={codeDetected} />
+      </CircleLayout>
+    </>
   );
 };
 
