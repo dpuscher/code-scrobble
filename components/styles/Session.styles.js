@@ -45,19 +45,15 @@ export const Menu = styled.div`
 
   &:before {
     content: '';
-
-    width: 0px;
-    height: 0px;
-    border-style: solid;
-    border-width: 0 6px 6px 6px;
-    border-color: transparent transparent #fff transparent;
-
-
-
     position: absolute;
     top: -6px;
     right: 4vw;
+    width: 0px;
+    height: 0px;
     transform: rotate(360deg) translateX(50%);
+    border-width: 0 6px 6px 6px;
+    border-style: solid;
+    border-color: transparent transparent #fff transparent;
   }
 `;
 

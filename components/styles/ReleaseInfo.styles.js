@@ -64,11 +64,12 @@ export const HeadWrapper = styled.div`
   flex: 0 0;
   margin: -20px -20px 0;
   overflow: hidden;
+  border-bottom: 1px solid ${dark};
 `;
 
 export const Head = styled.div`
   position: relative;
-  margin: -5px -5px 0;
+  margin: -5px;
   overflow: hidden;
 `;
 
@@ -104,15 +105,6 @@ export const Artist = styled.div`
   font-size: .8em;
 `;
 
-export const Gradient = styled.div`
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 25px;
-  background: linear-gradient(transparent, #fff);
-`;
-
 export const TrackListWrapper = styled.div`
   padding: 10px 0 0;
   overflow: auto;
@@ -135,13 +127,13 @@ export const TrackDuration = styled.td`
 
 export const ExternalButton = styled.a`
   width: 100%;
-  padding: 7px;
   margin-top: 10px;
+  padding: 7px;
   border: 2px solid ${dark};
   color: inherit;
-  cursor: pointer;
-  text-decoration: none;
   text-align: center;
+  text-decoration: none;
+  cursor: pointer;
 `;
 
 export const CloseButton = styled.button`

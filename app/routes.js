@@ -30,6 +30,7 @@ module.exports = function routes(server, app, passport) {
     res.redirect('/');
   });
 
+  // eslint-disable-next-line consistent-return
   server.get('/search/:id', async (req, res) => {
     res.setHeader('Content-Type', 'application/json');
 
@@ -70,6 +71,7 @@ module.exports = function routes(server, app, passport) {
     return res.send(JSON.stringify(req.user.toJSON() || {}));
   });
 
+  // eslint-disable-next-line consistent-return
   server.post('/scrobble', async (req, res) => {
     res.setHeader('Content-Type', 'application/json');
 

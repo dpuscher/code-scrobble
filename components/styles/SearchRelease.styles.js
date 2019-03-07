@@ -35,7 +35,3 @@ export const Button = styled.button`
   color: inherit;
   cursor: pointer;
 `;
-
-export const PosterFallback = styled.div`
-
-`;

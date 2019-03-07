@@ -4,9 +4,7 @@ import { FaLastfm } from 'react-icons/fa';
 import { MdClose } from 'react-icons/md';
 import Loading from './Loading';
 import SearchReleaseError from './SearchReleaseError';
-import {
-  Button, Poster, PosterContent, PosterFallback,
-} from './styles/SearchRelease.styles';
+import { Button, Poster, PosterContent } from './styles/SearchRelease.styles';
 
 class SearchRelease extends React.Component {
   state = {
@@ -62,10 +60,10 @@ class SearchRelease extends React.Component {
               </Button>
             </PosterContent>
             {!release.image && (
-              <PosterFallback>
+              <div>
                 <b>{release.artist}</b>
                 <div>{release.title}</div>
-              </PosterFallback>
+              </div>
             )}
           </Poster>
         )}

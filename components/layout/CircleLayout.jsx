@@ -1,3 +1,4 @@
+import { createGlobalStyle } from 'styled-components';
 import PropTypes from 'prop-types';
 import {
   Center, Content, Footer, Header, HeightWrapper, SessionWrapper, Wrapper,
@@ -6,8 +7,15 @@ import LegalLinks from '../LegalLinks';
 import Session from '../Session';
 import SessionQuery from '../SessionQuery';
 
+const ScrollLock = createGlobalStyle`
+  html {
+    overflow: hidden;
+  }
+`;
+
 const CircleLayout = ({ children, header, footer }) => (
   <Center>
+    <ScrollLock />
     <Wrapper>
       <Header>
         <SessionWrapper>

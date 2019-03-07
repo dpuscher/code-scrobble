@@ -3,9 +3,8 @@ import React from 'react';
 import { MdClose } from 'react-icons/md';
 import durationFormat from '../lib/durationFormat';
 import {
-  Artist, Button, CloseButton, Content, Cover, ExternalButton, Gradient, Head, HeadWrapper,
-  Icon, Meta, Overlay, Title, TrackDuration, TrackListWrapper, TrackNumber, TrackTitle,
-  Wrapper, Year,
+  Artist, Button, CloseButton, Content, Cover, ExternalButton, Head, HeadWrapper, Icon, Meta,
+  Overlay, Title, TrackDuration, TrackListWrapper, TrackNumber, TrackTitle, Wrapper, Year,
 } from './styles/ReleaseInfo.styles';
 import { silver } from '../lib/colors';
 
@@ -44,7 +43,6 @@ class ReleaseInfo extends React.Component {
                     <Artist>{artist}</Artist>
                     <Year>{year}</Year>
                   </Meta>
-                  <Gradient />
                 </Head>
               </HeadWrapper>
               <TrackListWrapper>

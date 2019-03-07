@@ -43,7 +43,7 @@ class Scanner extends React.Component {
         },
       }, (err) => {
         if (err) {
-          this.setState({ videoError: true });
+          this.setState({ videoError: true, loading: false });
           return;
         }
         this.onInitSuccess();
@@ -78,9 +78,9 @@ class Scanner extends React.Component {
         {videoError && (
           <FlexContent>
             <ErrorIcon color={yellow} />
-            <b>Ein Fehler ist aufgetreten</b>
+            <b>An error occurred</b>
             <ErrorDescription>
-              Bitte gebe dieser Website Zugriff auf die Kamera.
+              Please make sure this website is allowed to use the camera.
             </ErrorDescription>
           </FlexContent>
         )}

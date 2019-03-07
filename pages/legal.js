@@ -124,7 +124,11 @@ const Index = () => (
       Zeitpunkt der Verlinkung nicht
       erkennbar.
     </p>
-    <p>Eine permanente inhaltliche Kontrolle der verlinkten Seiten ist jedoch ohne konkrete Anhaltspunkte einer Rechtsverletzung nicht zumutbar. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Links umgehend entfernen.</p>
+    <p>
+      Eine permanente inhaltliche Kontrolle der verlinkten Seiten ist jedoch ohne konkrete
+      Anhaltspunkte einer Rechtsverletzung nicht zumutbar. Bei Bekanntwerden von
+      Rechtsverletzungen werden wir derartige Links umgehend entfernen.
+    </p>
 
     <h3>Urheberrecht</h3>
     <p>

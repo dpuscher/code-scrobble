@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import Router from 'next/router';
 import { FaCheckCircle } from 'react-icons/fa';
@@ -43,5 +44,13 @@ class Scrobbled extends React.Component {
 }
 
 Scrobbled.getInitialProps = ({ query: { barcode } }) => ({ barcode });
+
+Scrobbled.propTypes = {
+  barcode: PropTypes.string,
+};
+
+Scrobbled.defaultProps = {
+  barcode: null,
+};
 
 export default Scrobbled;

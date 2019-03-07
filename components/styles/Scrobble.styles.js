@@ -17,7 +17,6 @@ export const LoadingWrapper = styled.div`
   ${props => props.image && `background-image: url("${props.image}");`}
 `;
 
-
 export const LoadingContent = styled.div`
   position: absolute;
   bottom: 0;
@@ -28,8 +27,4 @@ export const LoadingContent = styled.div`
   text-align: center;
   backdrop-filter: blur(10px);
   text-shadow: 0 0 3px black, 0 0 3px black, 0 0 3px black;
-`;
-
-export const PosterFallback = styled.div`
-
 `;
