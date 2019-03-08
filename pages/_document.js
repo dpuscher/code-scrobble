@@ -1,6 +1,7 @@
 import Document, { Head, Main, NextScript } from 'next/document';
 import { ServerStyleSheet } from 'styled-components';
 import BaseStyles from '../components/layout/BaseStyles';
+import { ANALYTICS_ID } from '../lib/analytics';
 
 export default class MyDocument extends Document {
   static async getInitialProps(ctx) {
@@ -27,6 +28,19 @@ export default class MyDocument extends Document {
       <html lang="en">
         <Head>
           <meta charSet="utf-8" />
+
+          <script async src={`https://www.googletagmanager.com/gtag/js?id=${ANALYTICS_ID}`} />
+          {/* eslint-disable-next-line react/no-danger */}
+          <script dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+
+              gtag('config', '${ANALYTICS_ID}');
+            `,
+          }}
+          />
 
           <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png" />
           <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png" />
@@ -55,7 +69,7 @@ export default class MyDocument extends Document {
           <link href="/static/ipadpro3_splash.png" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
           <link href="/static/ipadpro2_splash.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
         </Head>
-        <body ontouchstart="" style={{ overflow: 'hidden' }}>
+        <body ontouchstart="">
           <BaseStyles />
           <Main />
           <NextScript />

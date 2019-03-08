@@ -1,10 +1,12 @@
 import React from 'react';
 
+import BackButton from '../components/BackButton';
 import targetBlank from '../lib/targetBlank';
-import { Wrapper } from '../styles/privacy.styles';
+import { Wrapper, Anchor } from '../styles/legal.styles';
 
 const Index = () => (
   <Wrapper>
+    <BackButton />
     <p>
       <span role="img" aria-label="Deutsch">🇩🇪</span>
       {' '}
@@ -265,7 +267,8 @@ const Index = () => (
 
     <hr />
 
-    <h1 id="de">Datenschutzerklärung</h1>
+    <Anchor id="de" />
+    <h1>Datenschutzerklärung</h1>
     <p>
       Personenbezogene Daten (nachfolgend zumeist nur „Daten“ genannt) werden von
       uns nur im Rahmen der Erforderlichkeit sowie zum Zwecke der Bereitstellung

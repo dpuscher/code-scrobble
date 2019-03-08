@@ -1,9 +1,14 @@
+import NextLink from 'next/link';
 import { Link, Links } from './styles/LegalLinks.styles';
 
 const LegalLinks = () => (
   <Links>
-    <Link href="/privacy" target="_blank">Privacy</Link>
-    <Link href="/legal" target="_blank">Legal</Link>
+    <NextLink href="/privacy" passHref>
+      <Link>Privacy</Link>
+    </NextLink>
+    <NextLink href="/legal" passHref>
+      <Link>Legal</Link>
+    </NextLink>
   </Links>
 );
 

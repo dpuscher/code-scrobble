@@ -1,7 +1,8 @@
 import React from 'react';
 
+import BackButton from '../components/BackButton';
 import targetBlank from '../lib/targetBlank';
-import { Wrapper } from '../styles/legal.styles';
+import { Anchor, Wrapper } from '../styles/legal.styles';
 
 const images = (
   <p>
@@ -12,6 +13,7 @@ const images = (
 
 const Index = () => (
   <Wrapper>
+    <BackButton />
     <p>
       <span role="img" aria-label="Deutsch">🇩🇪</span>
       {' '}
@@ -90,7 +92,8 @@ const Index = () => (
 
     <hr />
 
-    <h1 id="de">Impressum</h1>
+    <Anchor id="de" />
+    <h1>Impressum</h1>
 
     <h2>Angaben gemäß &sect; 5 TMG</h2>
     <p>
