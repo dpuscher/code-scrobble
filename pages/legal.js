@@ -1,6 +1,14 @@
 import React from 'react';
 
+import targetBlank from '../lib/targetBlank';
 import { Wrapper } from '../styles/legal.styles';
+
+const images = (
+  <p>
+    <i>Favicon:</i> Icon made by <a href="https://www.flaticon.com/authors/roundicons" title="Roundicons" {...targetBlank}>Roundicons</a> from <a href="https://www.flaticon.com/" title="Flaticon" {...targetBlank}>www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" {...targetBlank}>CC 3.0 BY</a>
+  </p>
+);
+
 
 const Index = () => (
   <Wrapper>
@@ -25,6 +33,11 @@ const Index = () => (
       Phone: +49 (0) 30 81455966<br />
       Fax: +49 (0) 30 81455966<br />
       E-Mail: daniel {'{ät}'} codescrobble.com
+    </p>
+
+    <h3>Indication of source for images and graphics</h3>
+    <p>
+      {images}
     </p>
 
     <h3>Liability for contents</h3>
@@ -72,7 +85,7 @@ const Index = () => (
       content immediately.
     </p>
     <p>
-      <i>Source: <a href="https://www.e-recht24.de/impressum-generator.html" target="_blank" rel="noopener noreferrer">https://www.e-recht24.de/impressum-generator.html</a></i>
+      <i>Source: <a href="https://www.e-recht24.de/impressum-generator.html" {...targetBlank}>https://www.e-recht24.de/impressum-generator.html</a></i>
     </p>
 
     <hr />
@@ -95,6 +108,11 @@ const Index = () => (
       Telefax: +49 (0) 30 81455966
       <br />
       E-Mail: daniel {'{ät}'} codescrobble.com
+    </p>
+
+    <h3>Bildnachweise</h3>
+    <p>
+      {images}
     </p>
 
     <h3>Haftung f&uuml;r Inhalte</h3>
@@ -148,7 +166,7 @@ const Index = () => (
     </p>
 
     <p>
-      <i>Quelle: <a href="https://www.e-recht24.de/impressum-generator.html" target="_blank" rel="noopener noreferrer">https://www.e-recht24.de/impressum-generator.html</a></i>
+      <i>Quelle: <a href="https://www.e-recht24.de/impressum-generator.html" {...targetBlank}>https://www.e-recht24.de/impressum-generator.html</a></i>
     </p>
   </Wrapper>
 );

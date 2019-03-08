@@ -8,7 +8,9 @@ import Session from '../Session';
 import SessionQuery from '../SessionQuery';
 
 const ScrollLock = createGlobalStyle`
-  html {
+  body {
+    position: fixed;
+    width: 100%;
     overflow: hidden;
   }
 `;

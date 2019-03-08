@@ -1,5 +1,6 @@
 import React from 'react';
 
+import targetBlank from '../lib/targetBlank';
 import { Wrapper } from '../styles/privacy.styles';
 
 const Index = () => (
@@ -199,7 +200,7 @@ const Index = () => (
     </p>
     <p>Through certification according to the EU-US Privacy Shield</p>
     <p>
-      <a href="https://www.privacyshield.gov/participant?id=a2zt000000001L5AAI&amp;status=Active" target="_blank" rel="noopener noreferrer">
+      <a href="https://www.privacyshield.gov/participant?id=a2zt000000001L5AAI&amp;status=Active" {...targetBlank}>
         https://www.privacyshield.gov/participant?id=a2zt000000001L5AAI&amp;status=Active
       </a>
     </p>
@@ -231,14 +232,14 @@ const Index = () => (
       protection practices at
     </p>
     <p>
-      <a href="https://www.google.com/intl/de/policies/privacy/partners" target="_blank" rel="noopener noreferrer">
+      <a href="https://www.google.com/intl/de/policies/privacy/partners" {...targetBlank}>
         https://www.google.com/intl/de/policies/privacy/partners
       </a>,
     </p>
     <p>including options you can exercise to prevent such use of your data.</p>
     <p>In addition, Google offers an opt-out add-on at</p>
     <p>
-      <a href="https://tools.google.com/dlpage/gaoptout?hl=de" target="_blank" rel="noopener noreferrer">
+      <a href="https://tools.google.com/dlpage/gaoptout?hl=de" {...targetBlank}>
         https://tools.google.com/dlpage/gaoptout?hl=en
       </a>
     </p>
@@ -253,11 +254,11 @@ const Index = () => (
     </p>
 
     <p>
-      <a href="https://www.ratgeberrecht.eu/leistungen/muster-datenschutzerklaerung.html" target="_blank" rel="noopener noreferrer">
+      <a href="https://www.ratgeberrecht.eu/leistungen/muster-datenschutzerklaerung.html" {...targetBlank}>
         Model Data Protection Statement
       </a>
       {' for '}
-      <a href="https://www.ratgeberrecht.eu/" target="_blank" rel="noopener noreferrer">
+      <a href="https://www.ratgeberrecht.eu/" {...targetBlank}>
         Anwaltskanzlei Weiß &amp; Partner
       </a>
     </p>
@@ -475,7 +476,7 @@ const Index = () => (
       Shield“)
     </p>
     <p>
-      <a target="_blank" rel="noopener noreferrer" href="https://www.privacyshield.gov/participant?id=a2zt000000001L5AAI&amp;status=Active">
+      <a {...targetBlank} href="https://www.privacyshield.gov/participant?id=a2zt000000001L5AAI&amp;status=Active">
         https://www.privacyshield.gov/participant?id=a2zt000000001L5AAI&amp;status=Active
       </a>
     </p>
@@ -508,7 +509,7 @@ const Index = () => (
       hält Google unter
     </p>
     <p>
-      <a target="_blank" rel="noopener noreferrer" href="https://www.google.com/intl/de/policies/privacy/partners">
+      <a {...targetBlank} href="https://www.google.com/intl/de/policies/privacy/partners">
         https://www.google.com/intl/de/policies/privacy/partners
       </a>
     </p>
@@ -518,7 +519,7 @@ const Index = () => (
     </p>
     <p>Zudem bietet Google unter</p>
     <p>
-      <a target="_blank" rel="noopener noreferrer" href="https://tools.google.com/dlpage/gaoptout?hl=de">
+      <a {...targetBlank} href="https://tools.google.com/dlpage/gaoptout?hl=de">
         https://tools.google.com/dlpage/gaoptout?hl=de
       </a>
     </p>
@@ -537,11 +538,11 @@ const Index = () => (
 
     <p>
       <i>
-        <a target="_blank" rel="noopener noreferrer" href="https://www.ratgeberrecht.eu/leistungen/muster-datenschutzerklaerung.html">
+        <a {...targetBlank} href="https://www.ratgeberrecht.eu/leistungen/muster-datenschutzerklaerung.html">
           Muster-Datenschutzerklärung
         </a>
         {' der '}
-        <a target="_blank" rel="noopener noreferrer" href="https://www.ratgeberrecht.eu/">
+        <a {...targetBlank} href="https://www.ratgeberrecht.eu/">
           Anwaltskanzlei Weiß &amp; Partner
         </a>
       </i>

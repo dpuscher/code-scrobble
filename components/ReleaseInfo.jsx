@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { MdClose } from 'react-icons/md';
 import durationFormat from '../lib/durationFormat';
+import targetBlank from '../lib/targetBlank';
 import {
   Artist, Button, CloseButton, Content, Cover, ExternalButton, Head, HeadWrapper, Icon, Meta,
   Overlay, Title, TrackDuration, TrackListWrapper, TrackNumber, TrackTitle, Wrapper, Year,
@@ -58,7 +59,7 @@ class ReleaseInfo extends React.Component {
                   </tbody>
                 </table>
               </TrackListWrapper>
-              <ExternalButton href={url} target="_blank" rel="noopener noreferrer">
+              <ExternalButton href={url} {...targetBlank}>
                 Show on Discogs
               </ExternalButton>
             </Content>
