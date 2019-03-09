@@ -29,16 +29,9 @@ export default class MyDocument extends Document {
         <Head>
           <meta charSet="utf-8" />
 
-          <script async src={`https://www.googletagmanager.com/gtag/js?id=${ANALYTICS_ID}`} />
           {/* eslint-disable-next-line react/no-danger */}
           <script dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-
-              gtag('config', '${ANALYTICS_ID}');
-            `,
+            __html: `window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;ga("create","${ANALYTICS_ID}","auto");ga("send","pageview");ga("require","urlChangeTracker");ga("require","eventTracker",{attributePrefix:"data-"});`,
           }}
           />
 
@@ -73,6 +66,8 @@ export default class MyDocument extends Document {
           <BaseStyles />
           <Main />
           <NextScript />
+          <script async src="https://www.google-analytics.com/analytics.js" />
+          <script async src="/static/autotrack.js" />
         </body>
       </html>
     );

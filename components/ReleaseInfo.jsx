@@ -8,6 +8,7 @@ import {
   Overlay, Title, TrackDuration, TrackListWrapper, TrackNumber, TrackTitle, Wrapper, Year,
 } from './styles/ReleaseInfo.styles';
 import { silver } from '../lib/colors';
+import { trackEvent, autotrackParams } from '../lib/analytics';
 
 class ReleaseInfo extends React.Component {
   state = {
@@ -15,6 +16,8 @@ class ReleaseInfo extends React.Component {
   }
 
   handleButton = () => {
+    const { open } = this.state;
+    if (!open) trackEvent('Detected', 'Show Release Info');
     this.setState(state => ({ open: !state.open }));
   }
 
@@ -59,7 +62,7 @@ class ReleaseInfo extends React.Component {
                   </tbody>
                 </table>
               </TrackListWrapper>
-              <ExternalButton href={url} {...targetBlank}>
+              <ExternalButton href={url} {...autotrackParams('Detected', 'Exit to Discogs')} {...targetBlank}>
                 Show on Discogs
               </ExternalButton>
             </Content>

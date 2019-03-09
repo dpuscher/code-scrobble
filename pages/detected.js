@@ -7,6 +7,7 @@ import ReleaseInfo from '../components/ReleaseInfo';
 import Scrobble from '../components/Scrobble';
 import SearchRelease from '../components/SearchRelease';
 import CircleLayout from '../components/layout/CircleLayout';
+import { trackEvent } from '../lib/analytics';
 import { FooterContent } from '../styles/layout.styles';
 import Checkbox from '../components/Checkbox';
 
@@ -30,6 +31,7 @@ class Detected extends React.Component {
   };
 
   handleAutoScrobble = (autoScrobble) => {
+    if (autoScrobble) trackEvent('Detected', 'AutoScrobble');
     this.setState({ autoScrobble });
   }
 

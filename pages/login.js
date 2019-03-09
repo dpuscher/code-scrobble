@@ -1,5 +1,4 @@
 import React from 'react';
-import Link from 'next/link';
 
 import LegalLinks from '../components/LegalLinks';
 import LoginButton from '../components/LoginButton';
@@ -7,6 +6,7 @@ import { Center } from '../styles/layout.styles';
 import {
   Description, H1, Logo, P, Wrapper,
 } from '../styles/login.styles';
+import { autotrackParams } from '../lib/analytics';
 
 const Index = () => (
   <Center useMinHeight>
@@ -24,9 +24,7 @@ const Index = () => (
             are done. We also have an auto-scrobble mode, that makes scrobbling even faster.
           </P>
         </Description>
-        <Link href="/auth/lastfm" passHref>
-          <LoginButton />
-        </Link>
+        <LoginButton href="/auth/lastfm" {...autotrackParams('Session', 'Login')} />
       </main>
     </Wrapper>
     <LegalLinks />

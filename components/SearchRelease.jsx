@@ -5,6 +5,7 @@ import { MdClose } from 'react-icons/md';
 import Loading from './Loading';
 import SearchReleaseError from './SearchReleaseError';
 import { Button, Poster, PosterContent } from './styles/SearchRelease.styles';
+import { autotrackParams } from '../lib/analytics';
 
 class SearchRelease extends React.Component {
   state = {
@@ -45,16 +46,16 @@ class SearchRelease extends React.Component {
       <>
         {loading && <Loading />}
         {!loading && loadingError && (
-          <SearchReleaseError code={code} onRetry={onCancel} />
+          <SearchReleaseError code={code} onRetry={onCancel} {...autotrackParams('Search', 'Retry')} />
         )}
         {!loading && !loadingError && (
           <Poster image={release.image}>
             <PosterContent>
-              <Button onClick={onCancel}>
+              <Button onClick={onCancel} {...autotrackParams('Detected', 'Cancel')}>
                 <MdClose size="40px" css="margin-bottom: 10px" />
                 Cancel
               </Button>
-              <Button onClick={onScrobble}>
+              <Button onClick={onScrobble} {...autotrackParams('Detected', 'Scrobble')}>
                 <FaLastfm size="40px" css="margin-bottom: 10px" />
                 Scrobble
               </Button>

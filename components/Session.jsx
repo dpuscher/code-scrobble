@@ -4,6 +4,7 @@ import Link from 'next/link';
 import {
   Image, ImageAndUser, Loader, Menu, MenuItem, Username,
 } from './styles/Session.styles';
+import { autotrackParams } from '../lib/analytics';
 
 class Session extends React.Component {
   state = {
@@ -32,7 +33,7 @@ class Session extends React.Component {
         </ImageAndUser>
         <Menu open={open}>
           <Link href="/logout" passHref>
-            <MenuItem>Logout</MenuItem>
+            <MenuItem {...autotrackParams('Session', 'Logout')}>Logout</MenuItem>
           </Link>
         </Menu>
       </>

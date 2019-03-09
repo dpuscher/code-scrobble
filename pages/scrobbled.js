@@ -7,12 +7,14 @@ import { Subscribe } from 'unstated';
 import ReleaseState from '../app/states/ReleaseState';
 import CircleLayout from '../components/layout/CircleLayout';
 import { RetryButton } from '../components/styles/Error.styles';
+import { trackEvent } from '../lib/analytics';
 import { yellow } from '../lib/colors';
 import { FlexContent } from '../styles/layout.styles';
 import { CoverBackground } from '../styles/scrobbled.styles';
 
 class Scrobbled extends React.Component {
   onRetry = () => {
+    trackEvent('Scrobbled', 'Rescan');
     Router.push('/');
   }
 
