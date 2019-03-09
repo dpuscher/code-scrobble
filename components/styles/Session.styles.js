@@ -1,6 +1,7 @@
 import styled, { css } from 'styled-components';
 import { yellow, yellowRGB, dark } from '../../lib/colors';
 import { animation } from '../layout/Spinner';
+import { buttonReset } from '../../styles/mixins';
 
 const fadeInOnOpen = css`
   transition: opacity .3s;
@@ -34,6 +35,28 @@ export const Loader = styled.div`
   border-top-color: ${yellow};
 `;
 
+export const Arrow = styled.div`
+  ${fadeInOnOpen}
+  position: absolute;
+  right: 0;
+  width: 8vw;
+  max-width: 50px;
+  height: 8px;
+
+  &:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 0px;
+    height: 0px;
+    transform: rotate(360deg) translate(-50%, 2px);
+    border-width: 0 6px 6px 6px;
+    border-style: solid;
+    border-color: transparent transparent #fff transparent;
+  }
+`;
+
 export const Menu = styled.div`
   ${fadeInOnOpen}
   position: absolute;
@@ -42,26 +65,13 @@ export const Menu = styled.div`
   border-radius: 3px;
   background: white;
   color: ${dark};
-
-  &:before {
-    content: '';
-    position: absolute;
-    top: -6px;
-    right: 4vw;
-    width: 0px;
-    height: 0px;
-    transform: rotate(360deg) translateX(50%);
-    border-width: 0 6px 6px 6px;
-    border-style: solid;
-    border-color: transparent transparent #fff transparent;
-  }
 `;
 
-export const MenuItem = styled.a`
+export const MenuItem = styled.button`
+  ${buttonReset}
   display: block;
   padding: 10px 20px;
   color: ${dark};
-  text-decoration: none;
   cursor: pointer;
 `;
 
