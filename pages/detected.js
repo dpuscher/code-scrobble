@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Router from 'next/router';
+import Head from 'next/head';
 import { Subscribe } from 'unstated';
 import ReleaseState from '../app/states/ReleaseState';
 import ReleaseInfo from '../components/ReleaseInfo';
@@ -39,21 +40,25 @@ class Detected extends React.Component {
     const { scrobbling, autoScrobble } = this.state;
     const { barcode } = this.props;
     return (
-      <Subscribe to={[ReleaseState]}>
-        {(releaseState) => {
-          const release = releaseState.get(barcode);
-          return (
-            <CircleLayout
-              footer={!scrobbling && (
+      <>
+        <Head>
+          <link rel="preconnect" href="https://img.discogs.com" />
+        </Head>
+        <Subscribe to={[ReleaseState]}>
+          {(releaseState) => {
+            const release = releaseState.get(barcode);
+            return (
+              <CircleLayout
+                footer={!scrobbling && (
                 <FooterContent>
                   <Checkbox name="autoScrobble" checked={autoScrobble} onChange={this.handleAutoScrobble}>
                     Auto-scrobble on next scan
                   </Checkbox>
                 </FooterContent>
-              )}
-              header={!scrobbling && release.id && <ReleaseInfo release={release} />}
-            >
-              {
+                )}
+                header={!scrobbling && release.id && <ReleaseInfo release={release} />}
+              >
+                {
               scrobbling
                 ? (
                   <Scrobble
@@ -72,10 +77,11 @@ class Detected extends React.Component {
                   />
                 )
             }
-            </CircleLayout>
-          );
-        }}
-      </Subscribe>
+              </CircleLayout>
+            );
+          }}
+        </Subscribe>
+      </>
     );
   }
 }
