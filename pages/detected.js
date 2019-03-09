@@ -22,7 +22,7 @@ class Detected extends React.Component {
     Router.push('/');
   };
 
-  scrobble = (id) => {
+  scrobble = () => {
     this.setState({ scrobbling: true });
   };
 
@@ -47,16 +47,17 @@ class Detected extends React.Component {
         <Subscribe to={[ReleaseState]}>
           {(releaseState) => {
             const release = releaseState.get(barcode);
+            const showRelease = !scrobbling && release.id;
             return (
               <CircleLayout
-                footer={!scrobbling && release.id && (
+                footer={showRelease && (
                   <FooterContent>
                     <Checkbox name="autoScrobble" checked={autoScrobble} onChange={this.handleAutoScrobble}>
                       Auto-scrobble on next scan
                     </Checkbox>
                   </FooterContent>
                 )}
-                header={!scrobbling && release.id && <ReleaseInfo release={release} />}
+                header={showRelease && <ReleaseInfo release={release} />}
               >
                 {scrobbling
                   ? (

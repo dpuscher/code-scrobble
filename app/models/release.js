@@ -34,7 +34,7 @@ releaseSchema.methods.toJSON = function toJSON() {
 };
 
 releaseSchema.methods.updateFromDiscogs = async function updateFromDiscogs() {
-  const data = await Discogs.getMaster(this.id);
+  const data = await Discogs.getRelease(this.id);
 
   if (!data) return false;
 

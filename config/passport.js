@@ -5,7 +5,7 @@ const LastFM = require('../app/lastfm');
 const User = require('../app/models/user');
 
 // expose this function to our app using module.exports
-module.exports = function passortConfig(passport) {
+module.exports = function passportConfig(passport) {
   passport.serializeUser((user, done) => {
     done(null, user.id);
   });

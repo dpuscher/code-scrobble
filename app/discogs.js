@@ -17,6 +17,24 @@ const convertTimecode = timecode => (
     .reduce((pv, cv) => pv + cv)
 );
 
+const normalizeTracklist = (tracks) => {
+  const vinylPositionRegex = /^[A-Z]-?[0-9]+$/;
+  let tracklist = tracks
+    // eslint-disable-next-line no-underscore-dangle
+    .filter(track => track.type_ === 'track')
+    .filter(track => !/video/i.test(track.position));
+
+  // Remove Bonus CDs from vinyl releases:
+  if (tracklist.length && vinylPositionRegex.test(tracklist[0].position)) {
+    const filteredTracks = tracklist.filter(track => vinylPositionRegex.test(track.position));
+    if (filteredTracks.length !== tracklist.length) {
+      tracklist = filteredTracks;
+    }
+  }
+
+  return tracklist;
+};
+
 module.exports = {
   search: barcode => (
     new Promise((resolve) => {
@@ -29,14 +47,14 @@ module.exports = {
           ['community.have', 'community.want'],
           ['desc', 'desc'],
         );
-        return resolve(results[0].master_id);
+        return resolve(results[0].id);
       });
     })
   ),
 
-  getMaster: id => (
+  getRelease: id => (
     new Promise((resolve, reject) => {
-      Database.getMaster(id, (err, data) => {
+      Database.getRelease(id, (err, data) => {
         if (err || !data) {
           reject();
         } else {
@@ -47,10 +65,7 @@ module.exports = {
             image: dig(data, 'images', 0, 'uri'),
             url: data.uri,
             year: data.year,
-            tracks: data
-              .tracklist
-              .filter(track => track.type_ === 'track') // eslint-disable-line no-underscore-dangle
-              .filter(track => !/video/i.test(track.position))
+            tracks: normalizeTracklist(data.tracklist)
               .map((track, index) => ({
                 title: track.title,
                 trackNumber: index + 1,
