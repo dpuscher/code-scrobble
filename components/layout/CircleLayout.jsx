@@ -1,7 +1,7 @@
 import { createGlobalStyle } from 'styled-components';
 import PropTypes from 'prop-types';
 import {
-  Center, Content, Footer, Header, HeightWrapper, SessionWrapper, Wrapper,
+  Center, Content, Footer, Header, HeightWrapper, Logo, LogoWrapper, SessionWrapper, Wrapper,
 } from '../../styles/layout.styles';
 import LegalLinks from '../LegalLinks';
 import Session from '../Session';
@@ -23,6 +23,9 @@ const CircleLayout = ({ children, header, footer }) => (
         <SessionWrapper>
           <SessionQuery>{props => <Session {...props} />}</SessionQuery>
         </SessionWrapper>
+        <LogoWrapper>
+          <Logo />
+        </LogoWrapper>
         {header}
       </Header>
       <Content>

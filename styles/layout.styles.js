@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import LogoSmall from '../components/LogoSmall';
 import { grey } from '../lib/colors';
 
 export const Center = styled.div`
@@ -72,4 +73,18 @@ export const SessionWrapper = styled.div`
   z-index: 1;
   top: 20px;
   right: 20px;
+`;
+
+export const LogoWrapper = styled.div`
+  position: absolute;
+  z-index: 1;
+  top: 20px;
+  left: 20px;
+  height: 8vw;
+  max-height: 50px;
+`;
+
+export const Logo = styled(LogoSmall)`
+  width: auto;
+  height: 100%;
 `;

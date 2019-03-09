@@ -49,34 +49,33 @@ class Detected extends React.Component {
             const release = releaseState.get(barcode);
             return (
               <CircleLayout
-                footer={!scrobbling && (
-                <FooterContent>
-                  <Checkbox name="autoScrobble" checked={autoScrobble} onChange={this.handleAutoScrobble}>
-                    Auto-scrobble on next scan
-                  </Checkbox>
-                </FooterContent>
+                footer={!scrobbling && release.id && (
+                  <FooterContent>
+                    <Checkbox name="autoScrobble" checked={autoScrobble} onChange={this.handleAutoScrobble}>
+                      Auto-scrobble on next scan
+                    </Checkbox>
+                  </FooterContent>
                 )}
                 header={!scrobbling && release.id && <ReleaseInfo release={release} />}
               >
-                {
-              scrobbling
-                ? (
-                  <Scrobble
-                    release={release}
-                    autoScrobble={autoScrobble}
-                    onScrobbled={this.scrobbled}
-                  />
-                )
-                : (
-                  <SearchRelease
-                    code={barcode}
-                    onScrobble={this.scrobble}
-                    onCancel={this.reScan}
-                    setRelease={releaseState.set}
-                    release={releaseState.get(barcode)}
-                  />
-                )
-            }
+                {scrobbling
+                  ? (
+                    <Scrobble
+                      release={release}
+                      autoScrobble={autoScrobble}
+                      onScrobbled={this.scrobbled}
+                    />
+                  )
+                  : (
+                    <SearchRelease
+                      code={barcode}
+                      onScrobble={this.scrobble}
+                      onCancel={this.reScan}
+                      setRelease={releaseState.set}
+                      release={releaseState.get(barcode)}
+                    />
+                  )
+                }
               </CircleLayout>
             );
           }}
