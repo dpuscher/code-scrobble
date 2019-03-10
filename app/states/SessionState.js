@@ -10,7 +10,7 @@ export default class SessionState extends Container {
   fetch = async () => {
     await this.setState({ loading: true });
     try {
-      const data = await fetch('/session', { credentials: 'include' }).then(r => r.json());
+      const data = await fetch('/api/session', { credentials: 'include' }).then(r => r.json());
       await this.setState({ data, loading: false });
     } catch (error) {
       await this.setState({ error, loading: false });

@@ -18,7 +18,7 @@ class Scrobble extends React.Component {
     try {
       this.setState({ loadingError: false });
 
-      await fetch('/scrobble', {
+      await fetch('/api/scrobble', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id, autoScrobble }),

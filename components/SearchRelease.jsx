@@ -23,7 +23,7 @@ class SearchRelease extends React.Component {
     } = this.props;
 
     if (!release.id) {
-      const response = await fetch(`/search/${code}`);
+      const response = await fetch(`/api/search/${code}`);
       const json = await response.json();
       if (!json.id) {
         this.setState({ loadingError: true });

@@ -25,7 +25,7 @@ app.prepare().then(() => {
 
   expressConfig(server, passport, dev);
 
-  routes(server, app, passport);
+  routes(server, app);
 
   server.get('*', (req, res) => handle(req, res));
 
