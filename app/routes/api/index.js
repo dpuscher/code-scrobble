@@ -8,6 +8,7 @@ Router.use(require('../../middlewares/loggedInApi'));
 
 Router.get('/session', require('./session'));
 Router.get('/search/:id', require('./search'));
+Router.post('/scrobble', require('./scrobble'));
 Router.use('/user', require('./user'));
 
 Router.use((req, res) => {
