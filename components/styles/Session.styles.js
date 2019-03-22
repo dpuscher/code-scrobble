@@ -65,11 +65,13 @@ export const Menu = styled.div`
   border-radius: 3px;
   background: white;
   color: ${dark};
+  text-align: right;
 `;
 
 export const MenuItem = styled.button`
   ${buttonReset}
   display: block;
+  width: 100%;
   padding: 10px 20px;
   color: ${dark};
   cursor: pointer;

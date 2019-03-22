@@ -1,5 +1,6 @@
 const Router = require('express').Router();
 
-Router.get('/autoscrobbles', require('./autoscrobbles'));
+Router.use('/autoscrobbles', require('./autoscrobbles'));
+Router.get('/history', require('./history'));
 
 module.exports = Router;

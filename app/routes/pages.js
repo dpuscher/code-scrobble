@@ -25,6 +25,10 @@ module.exports = function pages(app) {
     app.render(req, res, '/privacy');
   });
 
+  Router.get('/profile', (req, res) => {
+    app.render(req, res, '/profile');
+  });
+
   Router.get('/service-worker.js', (req, res) => {
     app.serveStatic(req, res, path.resolve('./static/service-worker.js'));
   });

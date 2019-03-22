@@ -20,3 +20,13 @@ export const buttonReset = css`
     border: 0;
   }
 `;
+
+export const ulReset = css`
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+`;
+
+export const liReset = css`
+  display: block;
+`;

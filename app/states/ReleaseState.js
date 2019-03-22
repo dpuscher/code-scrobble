@@ -1,23 +1,70 @@
-import { Container } from 'unstated';
+import { namespaceConfig, dynamicPropertyConfig } from 'fast-redux';
 
-export default class ReleaseState extends Container {
-  state = {
-    releases: {},
-  };
+const DEFAULT_STATE = {};
+const { action } = namespaceConfig('release', DEFAULT_STATE);
 
-  set = (id, release) => {
-    this.setState(state => (
-      { releases: Object.assign({}, state.releases, { [id]: release }) }
-    ));
+const DEFAULT_RELEASE_STATE = {
+  data: {},
+  loading: true,
+  error: null,
+};
+
+const {
+  propertyAction: releaseAction,
+  getPropertyState: getReleaseState,
+} = dynamicPropertyConfig(action, DEFAULT_RELEASE_STATE);
+
+export { getReleaseState };
+
+
+// Reducers
+const setLoadingState = releaseAction('setLoadingState',
+  (state, loading) => ({
+    ...state,
+    loading,
+  }));
+
+const setErrorState = releaseAction('setErrorState',
+  (state, error) => ({
+    ...state,
+    error,
+  }));
+
+const receivedRelease = releaseAction('receivedRelease',
+  (state, data) => ({
+    ...state,
+    data,
+  }));
+
+
+const shouldFetchRelease = release => !release.data.id;
+
+// Actions
+export const fetchRelease = code => (
+  async (dispatch) => {
+    try {
+      dispatch(setErrorState(null));
+      dispatch(setLoadingState(code, true));
+
+      const data = await fetch(`/api/search/${code}`, { credentials: 'include' }).then(r => r.json());
+
+      if (data.id) {
+        dispatch(receivedRelease(code, data));
+      } else {
+        dispatch(setErrorState(code, 'No release found'));
+      }
+    } catch (error) {
+      dispatch(setErrorState(code, error));
+    }
+    dispatch(setLoadingState(code, false));
   }
+);
 
-  get = id => (
-    this.state.releases[id] || {}
-  )
-
-  reset = () => {
-    this.setState({ releases: {} });
+export const fetchReleaseIfNeeded = code => (
+  (dispatch, getState) => {
+    const state = getReleaseState(getState());
+    if (shouldFetchRelease(state)) {
+      dispatch(fetchRelease(code));
+    }
   }
-}
-
-export const releaseState = new ReleaseState();
+);

@@ -4,7 +4,10 @@ const Discogs = require('../discogs');
 
 const releaseSchema = mongoose.Schema(
   {
-    id: Number,
+    id: {
+      type: Number,
+      unique: true,
+    },
     artist: String,
     title: String,
     image: String,

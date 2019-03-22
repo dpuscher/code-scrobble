@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { MdClose } from 'react-icons/md';
+import { MdClose } from 'react-icons/md'; // TODO: replace
 import durationFormat from '../lib/durationFormat';
 import targetBlank from '../lib/targetBlank';
 import {

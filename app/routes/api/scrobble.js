@@ -11,7 +11,8 @@ module.exports = function scrobble(req, res) {
         return res.status(400).send(JSON.stringify({ error: 'Release not found' }));
       }
 
-      if (autoScrobble) user.instantScrobbles.addToSet(release.id);
+      user.history = [{ id: releaseId }].concat(user.history.slice(0, 19));
+      if (autoScrobble) user.instantScrobbles.addToSet(releaseId);
       await user.save();
 
       const response = await LastFM.scrobbleTracks(req.user.name, req.user.key, release);

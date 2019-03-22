@@ -1,21 +1,58 @@
-import { Container } from 'unstated';
+import { namespaceConfig } from 'fast-redux';
 
-export default class SessionState extends Container {
-  state = {
-    data: null,
-    error: null,
-    loading: false,
-  };
+const DEFAULT_STATE = {
+  data: null,
+  error: null,
+  loading: true,
+};
 
-  fetch = async () => {
-    await this.setState({ loading: true });
+const {
+  action: sessionAction,
+  getState: getSessionState,
+} = namespaceConfig('session', DEFAULT_STATE);
+
+export { getSessionState };
+
+// Reducers
+const setLoadingState = sessionAction('setLoadingState',
+  (state, loading) => ({
+    ...state,
+    loading,
+  }));
+
+const setErrorState = sessionAction('setErrorState',
+  (state, error) => ({
+    ...state,
+    error,
+  }));
+
+export const receivedSession = sessionAction('receivedSession',
+  (state, data) => ({
+    ...state,
+    data,
+  }));
+
+const shouldFetchSession = session => !session.data;
+
+// Actions
+export const fetchSession = () => (
+  async (dispatch) => {
     try {
+      dispatch(setLoadingState(true));
       const data = await fetch('/api/session', { credentials: 'include' }).then(r => r.json());
-      await this.setState({ data, loading: false });
+      dispatch(receivedSession(data));
     } catch (error) {
-      await this.setState({ error, loading: false });
+      dispatch(setErrorState(error));
+    }
+    dispatch(setLoadingState(false));
+  }
+);
+
+export const fetchSessionIfNeeded = () => (
+  (dispatch, getState) => {
+    const state = getSessionState(getState());
+    if (shouldFetchSession(state)) {
+      dispatch(fetchSession());
     }
   }
-}
-
-export const sessionState = new SessionState();
+);

@@ -5,7 +5,13 @@ const userSchema = mongoose.Schema({
   key: String,
   url: String,
   image: String,
-  instantScrobbles: [Number],
+  imageLarge: String,
+  imageXLarge: String,
+  instantScrobbles: [String],
+  history: [{
+    id: String,
+    time: { type: Date, default: Date.now },
+  }],
 });
 
 userSchema.methods.toJSON = function toJSON() {
@@ -15,7 +21,8 @@ userSchema.methods.toJSON = function toJSON() {
     name: this.name,
     url: this.url,
     image: this.image,
-    instantScrobbles: this.instantScrobbles,
+    imageLarge: this.imageLarge,
+    imageXLarge: this.imageXLarge,
   };
 };
 

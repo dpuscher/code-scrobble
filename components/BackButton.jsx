@@ -1,5 +1,5 @@
 import Router from 'next/router';
-import { IoIosArrowBack } from 'react-icons/io';
+import { ChevronLeft } from 'styled-icons/boxicons-regular';
 import { silver } from '../lib/colors';
 import { Button } from './styles/BackButton.styles';
 
@@ -20,10 +20,9 @@ const handleClick = () => {
   }
 };
 
-
 const BackButton = () => (
   <Button onClick={handleClick}>
-    <IoIosArrowBack css="margin-right: 7px" color={silver} size="25px" />
+    <ChevronLeft color={silver} size="40" />
     Back
   </Button>
 );

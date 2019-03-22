@@ -11,7 +11,7 @@ export const Button = styled.button`
   left: 0;
   align-items: center;
   width: 100%;
-  padding: 15px;
+  padding: 5px;
   overflow: hidden;
   border-bottom: 1px solid ${silver};
   background: rgba(0, 0, 0, .6);

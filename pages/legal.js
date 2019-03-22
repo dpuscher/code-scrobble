@@ -38,9 +38,7 @@ const Index = () => (
     </p>
 
     <h3>Indication of source for images and graphics</h3>
-    <p>
-      {images}
-    </p>
+    {images}
 
     <h3>Liability for contents</h3>
     <p>
@@ -114,9 +112,7 @@ const Index = () => (
     </p>
 
     <h3>Bildnachweise</h3>
-    <p>
-      {images}
-    </p>
+    {images}
 
     <h3>Haftung f&uuml;r Inhalte</h3>
     <p>

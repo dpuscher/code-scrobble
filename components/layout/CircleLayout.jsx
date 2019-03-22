@@ -5,7 +5,6 @@ import {
 } from '../../styles/layout.styles';
 import LegalLinks from '../LegalLinks';
 import Session from '../Session';
-import SessionQuery from '../SessionQuery';
 
 const ScrollLock = createGlobalStyle`
   body {
@@ -21,7 +20,7 @@ const CircleLayout = ({ children, header, footer }) => (
     <Wrapper>
       <Header>
         <SessionWrapper>
-          <SessionQuery>{props => <Session {...props} />}</SessionQuery>
+          <Session />
         </SessionWrapper>
         <LogoWrapper>
           <Logo />

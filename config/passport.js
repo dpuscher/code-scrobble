@@ -38,6 +38,8 @@ module.exports = function passportConfig(passport) {
           const userData = await LastFM.getUserData(name, key);
           currentUser.url = userData.url;
           currentUser.image = dig(userData, 'image', 1, '#text');
+          currentUser.imageLarge = dig(userData, 'image', 2, '#text');
+          currentUser.imageXLarge = dig(userData, 'image', 3, '#text');
 
           currentUser.save((saveErr) => {
             if (saveErr) throw saveErr;

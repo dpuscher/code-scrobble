@@ -1,9 +1,9 @@
+import { connect } from 'react-redux';
 import React from 'react';
 import PropTypes from 'prop-types';
 import Router from 'next/router';
 import Head from 'next/head';
-import { Subscribe } from 'unstated';
-import ReleaseState from '../app/states/ReleaseState';
+import { getReleaseState } from '../app/states/ReleaseState';
 import ReleaseInfo from '../components/ReleaseInfo';
 import Scrobble from '../components/Scrobble';
 import SearchRelease from '../components/SearchRelease';
@@ -38,49 +38,40 @@ class Detected extends React.Component {
 
   render() {
     const { scrobbling, autoScrobble } = this.state;
-    const { barcode } = this.props;
+    const { barcode, release } = this.props;
+    const showRelease = !scrobbling && release.data && release.data.id;
     return (
       <>
         <Head>
           <link rel="preconnect" href="https://img.discogs.com" />
         </Head>
-        <Subscribe to={[ReleaseState]}>
-          {(releaseState) => {
-            const release = releaseState.get(barcode);
-            const showRelease = !scrobbling && release.id;
-            return (
-              <CircleLayout
-                footer={showRelease && (
-                  <FooterContent>
-                    <Checkbox name="autoScrobble" checked={autoScrobble} onChange={this.handleAutoScrobble}>
-                      Auto-scrobble on next scan
-                    </Checkbox>
-                  </FooterContent>
-                )}
-                header={showRelease && <ReleaseInfo release={release} />}
-              >
-                {scrobbling
-                  ? (
-                    <Scrobble
-                      release={release}
-                      autoScrobble={autoScrobble}
-                      onScrobbled={this.scrobbled}
-                    />
-                  )
-                  : (
-                    <SearchRelease
-                      code={barcode}
-                      onScrobble={this.scrobble}
-                      onCancel={this.reScan}
-                      setRelease={releaseState.set}
-                      release={releaseState.get(barcode)}
-                    />
-                  )
+        <CircleLayout
+          footer={showRelease && (
+            <FooterContent>
+              <Checkbox name="autoScrobble" checked={autoScrobble} onChange={this.handleAutoScrobble}>
+                Auto-scrobble on next scan
+              </Checkbox>
+            </FooterContent>
+          )}
+          header={showRelease && <ReleaseInfo release={release.data} />}
+        >
+          {scrobbling
+            ? (
+              <Scrobble
+                release={release.data}
+                autoScrobble={autoScrobble}
+                onScrobbled={this.scrobbled}
+              />
+            )
+            : (
+              <SearchRelease
+                code={barcode}
+                onScrobble={this.scrobble}
+                onCancel={this.reScan}
+              />
+            )
                 }
-              </CircleLayout>
-            );
-          }}
-        </Subscribe>
+        </CircleLayout>
       </>
     );
   }
@@ -88,8 +79,22 @@ class Detected extends React.Component {
 
 Detected.propTypes = {
   barcode: PropTypes.string.isRequired,
+  release: PropTypes.object,
+};
+
+Detected.defaultProps = {
+  release: {},
 };
 
 Detected.getInitialProps = ({ query: { barcode } }) => ({ barcode });
 
-export default Detected;
+
+const mapStateToProps = (state, { barcode }) => {
+  const release = getReleaseState(state, barcode);
+
+  return { release };
+};
+
+export default connect(
+  mapStateToProps,
+)(Detected);

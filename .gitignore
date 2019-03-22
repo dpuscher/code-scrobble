@@ -1,9 +1,11 @@
-.next/
-node_modules/
-.env
 .DS_Store
-log/
+.env
+.next/
+.vscode
+assets
 bundles/
-yarn-error.log
 coverage
+log/
+node_modules/
 static/service-worker.js
+yarn-error.log

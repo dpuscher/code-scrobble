@@ -1,27 +1,29 @@
 import App, { Container } from 'next/app';
 import Head from 'next/head';
 import React from 'react';
-import { Provider } from 'unstated';
-import { releaseState } from '../app/states/ReleaseState';
-import { sessionState } from '../app/states/SessionState';
+import withRedux from 'next-redux-wrapper';
+import { Provider } from 'react-redux';
+import { createStore, applyMiddleware } from 'redux';
+import { composeWithDevTools } from 'redux-devtools-extension';
+import thunkMiddleware from 'redux-thunk';
+import { rootReducer } from 'fast-redux';
 
-export default class MyApp extends App {
+const makeStore = (initialState, options) => (
+  createStore(rootReducer, initialState, composeWithDevTools(applyMiddleware(thunkMiddleware)))
+);
+
+class MyApp extends App {
   static async getInitialProps({ Component, ctx }) {
-    let pageProps = {};
-
-    if (Component.getInitialProps) {
-      pageProps = await Component.getInitialProps(ctx);
-    }
-
+    const pageProps = Component.getInitialProps ? await Component.getInitialProps(ctx) : {};
     return { pageProps };
   }
 
   render() {
-    const { Component, pageProps } = this.props;
+    const { Component, pageProps, store } = this.props;
 
     return (
       <Container>
-        <Provider inject={[releaseState, sessionState]}>
+        <Provider store={store}>
           <Head>
             <title>CodeScrobble ► Easily scrobble VINYL and CD to Last.fm</title>
           </Head>
@@ -31,3 +33,5 @@ export default class MyApp extends App {
     );
   }
 }
+
+export default withRedux(makeStore)(MyApp);

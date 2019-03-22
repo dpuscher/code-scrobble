@@ -1,6 +1,9 @@
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
 import Link from 'next/link';
+import { fetchSessionIfNeeded, getSessionState } from '../app/states/SessionState';
 import {
   Arrow, Image, ImageAndUser, Loader, Menu, MenuItem, Username,
 } from './styles/Session.styles';
@@ -15,6 +18,7 @@ class Session extends React.Component {
   }
 
   componentDidMount() {
+    this.props.fetchSessionIfNeeded();
     document.addEventListener('click', this.handleClickOutside);
   }
 
@@ -37,22 +41,32 @@ class Session extends React.Component {
 
   render() {
     const {
-      data: {
-        id, image, name, url,
-      }, error,
+      session: {
+        data, error,
+      },
     } = this.props;
+
     const { open } = this.state;
     if (error) return null;
     return (
       <div ref={this.overlayRef}>
         <ImageAndUser>
-          <Username href={url} open={open} {...targetBlank}>{name}</Username>
-          <Image image={image} onClick={this.handleClick}>
-            {!id && <Loader />}
-          </Image>
+          {data ? (
+            <>
+              <Username href={data.url} open={open} {...targetBlank}>{data.name}</Username>
+              <Image image={data.image} onClick={this.handleClick} />
+            </>
+          ) : (
+            <Image>
+              <Loader />
+            </Image>
+          )}
         </ImageAndUser>
         <Arrow open={open} />
         <Menu open={open}>
+          <Link href="/profile" passHref>
+            <MenuItem {...autotrackParams('Session', 'Profile')}>Profile</MenuItem>
+          </Link>
           <Link href="/logout" passHref>
             <MenuItem {...autotrackParams('Session', 'Logout')}>Logout</MenuItem>
           </Link>
@@ -63,13 +77,28 @@ class Session extends React.Component {
 }
 
 Session.propTypes = {
-  data: PropTypes.object,
-  error: PropTypes.string,
+  session: PropTypes.object,
+  fetchSessionIfNeeded: PropTypes.func.isRequired,
 };
 
 Session.defaultProps = {
-  data: {},
-  error: null,
+  session: {},
 };
 
-export default Session;
+
+const mapStateToProps = (state) => {
+  const session = getSessionState(state);
+
+  return {
+    session,
+  };
+};
+
+const mapDispatchToProps = dispatch => (
+  bindActionCreators({ fetchSessionIfNeeded }, dispatch)
+);
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(Session);
