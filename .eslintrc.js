@@ -8,18 +8,19 @@ module.exports = {
   "plugins": ["react"],
   "parser": "babel-eslint",
   "rules": {
-    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
-    "no-unused-vars": ["error", { "args": "none" }],
-    "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
-    "jsx-a11y/anchor-is-valid": ["error", {
-        "components": ["Link"],
-        "specialLink": ["route"],
-        "aspects": ["invalidHref", "preferButton"],
-    }],
     "import/extensions": "off",
+    "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
     "import/no-unresolved": "off",
-    "react/react-in-jsx-scope": "off",
-    "react/jsx-one-expression-per-line": "off",
+    "jsx-a11y/anchor-is-valid": ["error", {
+      "components": ["Link"],
+      "specialLink": ["route"],
+      "aspects": ["invalidHref", "preferButton"],
+    }],
+    "no-unused-vars": ["error", { "args": "none" }],
+    "react/destructuring-assignment": "off",
     "react/forbid-prop-types": "off",
+    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+    "react/jsx-one-expression-per-line": "off",
+    "react/react-in-jsx-scope": "off",
   }
 };

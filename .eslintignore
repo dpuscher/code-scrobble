@@ -2,3 +2,5 @@ node_modules
 .next
 .storybook
 coverage
+lib/autotrack.js
+static
