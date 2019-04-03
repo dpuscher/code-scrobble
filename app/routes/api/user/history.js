@@ -22,6 +22,7 @@ module.exports = function userHistory(req, res) {
         title: release.title,
         year: release.year,
         barcode: release.barcode,
+        discogsId: release.id,
       });
     });
 

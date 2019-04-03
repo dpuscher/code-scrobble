@@ -1,6 +1,7 @@
 import Document, { Head, Main, NextScript } from 'next/document';
 import { ServerStyleSheet } from 'styled-components';
 import BaseStyles from '../components/layout/BaseStyles';
+import NProgressStyles from '../styles/nprogress.styles';
 import { ANALYTICS_ID } from '../lib/analytics';
 
 export default class MyDocument extends Document {
@@ -64,6 +65,7 @@ export default class MyDocument extends Document {
         </Head>
         <body onTouchStart="">
           <BaseStyles />
+          <NProgressStyles />
           <Main />
           <NextScript />
           <script async src="https://www.google-analytics.com/analytics.js" />

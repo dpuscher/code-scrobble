@@ -34,7 +34,7 @@ export const H2 = styled.h2`
 `;
 
 export const H3 = styled.h3`
-  margin: 25px 0 15px;
+  margin: 30px 0 15px;
 `;
 
 export const List = styled.ul`
@@ -85,8 +85,7 @@ export const Fallback = styled.div`
 `;
 
 export const Meta = styled.div`
-  margin: 15px 0;
-  font-size: .8em;
+  margin: 15px 0 30px;
 `;
 
 export const Time = styled(TimeAgo)`

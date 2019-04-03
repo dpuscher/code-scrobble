@@ -2,6 +2,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
+import Head from 'next/head';
 import Link from 'next/link';
 import { fetchSessionIfNeeded, getSessionState } from '../app/states/SessionState';
 import {
@@ -50,6 +51,9 @@ class Session extends React.Component {
     if (error) return null;
     return (
       <div ref={this.overlayRef}>
+        <Head>
+          <link rel="preconnect" href="https://lastfm-img2.akamaized.net" />
+        </Head>
         <ImageAndUser>
           {data ? (
             <>

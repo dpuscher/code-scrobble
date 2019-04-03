@@ -46,7 +46,7 @@ export const fetchRelease = code => (
       dispatch(setErrorState(null));
       dispatch(setLoadingState(code, true));
 
-      const data = await fetch(`/api/search/${code}`, { credentials: 'include' }).then(r => r.json());
+      const data = await fetch(`/api/barcode/${code}`, { credentials: 'include' }).then(r => r.json());
 
       if (data.id) {
         dispatch(receivedRelease(code, data));

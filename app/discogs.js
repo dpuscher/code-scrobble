@@ -1,6 +1,9 @@
 const Discogs = require('disconnect').Client;
 const dig = require('object-dig');
 const orderBy = require('lodash/orderBy');
+const pick = require('lodash/pick');
+const find = require('lodash/find');
+const Cache = require('./cache');
 
 const Database = new Discogs({
   consumerKey: process.env.DISCOGS_KEY,
@@ -35,20 +38,62 @@ const normalizeTracklist = (tracks) => {
   return tracklist;
 };
 
+const getBarcode = (data = []) => (
+  (find(data, { type: 'Barcode' }) || {}).value
+);
+
 module.exports = {
-  search: barcode => (
+  barcode: barcode => (
     new Promise((resolve) => {
-      Database.search(undefined, { barcode, type: 'release' }, (err, data) => {
-        if (err || !data || !data.results || !data.results.length) {
-          return resolve();
-        }
-        const results = orderBy(
-          data.results,
-          ['community.have', 'community.want'],
-          ['desc', 'desc'],
-        );
-        return resolve(results[0].id);
-      });
+      const cacheKey = `barcode--${barcode}`;
+
+      Cache.get(cacheKey)
+        .then((results) => {
+          resolve(results);
+        })
+        .catch(() => {
+          Database.search(undefined, { barcode, type: 'release' }, (err, data) => {
+            if (err || !data || !data.results || !data.results.length) {
+              return resolve();
+            }
+            const results = orderBy(
+              data.results,
+              ['community.have', 'community.want'],
+              ['desc', 'desc'],
+            );
+
+            Cache.set(cacheKey, results);
+
+            return resolve(results[0].id);
+          });
+        });
+    })
+  ),
+
+  search: query => (
+    new Promise((resolve) => {
+      const cacheKey = `search--${query}`;
+
+      Cache.get(cacheKey)
+        .then((results) => {
+          resolve(results);
+        })
+        .catch(() => {
+          // eslint-disable-next-line consistent-return
+          Database.search(query, { type: 'release' }, (err, data) => {
+            if (err || !data || !data.results || !data.results.length) {
+              return resolve();
+            }
+
+            const results = data.results.map(result => (
+              pick(result, ['id', 'title', 'thumb', 'country', 'year', 'format', 'uri'])
+            ));
+
+            Cache.set(cacheKey, results);
+
+            resolve(results);
+          });
+        });
     })
   ),
 
@@ -71,6 +116,7 @@ module.exports = {
                 trackNumber: index + 1,
                 duration: convertTimecode(track.duration),
               })),
+            barcode: getBarcode(data.identifiers),
           });
         }
       });

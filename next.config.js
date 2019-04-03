@@ -53,11 +53,13 @@ module.exports = withBundleAnalyzer({
       );
 
       if (!isServer) {
-        const oldEntry = config.entry;
-        config.entry = () => oldEntry().then((entry) => {
-          entry['main.js'].push(path.resolve('./lib/offline'));
-          return entry;
-        });
+        const originalEntry = config.entry;
+        config.entry = async () => {
+          const entries = await originalEntry();
+          entries['main.js'].push(path.resolve('./lib/offline'));
+          entries['main.js'].unshift(path.resolve('./lib/polyfills.js'));
+          return entries;
+        };
       }
     }
     return config;

@@ -2,7 +2,7 @@ const Release = require('../../models/release');
 const LastFM = require('../../lastfm');
 
 // eslint-disable-next-line consistent-return
-module.exports = function scrobble(req, res) {
+module.exports = function apiScrobble(req, res) {
   try {
     const { body: { id: releaseId, autoScrobble }, user } = req;
 
@@ -15,8 +15,19 @@ module.exports = function scrobble(req, res) {
       if (autoScrobble) user.instantScrobbles.addToSet(releaseId);
       await user.save();
 
-      const response = await LastFM.scrobbleTracks(req.user.name, req.user.key, release);
+      // Dont scrobble to Last.fm when in development mode
+      if (process.env.NODE_ENV !== 'production') {
+        // eslint-disable-next-line no-console
+        console.log([
+          'Scrobble:',
+          '-------------------------------',
+          `User: ${user.name}`,
+          `Release: ${JSON.stringify(release.toJSON(), ['id', 'artist', 'title'], 2)}`,
+        ].join('\n'));
+        return res.send('{}');
+      }
 
+      const response = await LastFM.scrobbleTracks(req.user.name, req.user.key, release);
       return res.send(JSON.stringify(response));
     });
   } catch (error) {

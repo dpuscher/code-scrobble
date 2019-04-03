@@ -7,10 +7,9 @@ import { createStore, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import thunkMiddleware from 'redux-thunk';
 import { rootReducer } from 'fast-redux';
+import initNProgress from '../lib/initNProgress';
 
-const makeStore = (initialState, options) => (
-  createStore(rootReducer, initialState, composeWithDevTools(applyMiddleware(thunkMiddleware)))
-);
+initNProgress();
 
 class MyApp extends App {
   static async getInitialProps({ Component, ctx }) {
@@ -33,5 +32,9 @@ class MyApp extends App {
     );
   }
 }
+
+const makeStore = (initialState, options) => (
+  createStore(rootReducer, initialState, composeWithDevTools(applyMiddleware(thunkMiddleware)))
+);
 
 export default withRedux(makeStore)(MyApp);

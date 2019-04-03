@@ -26,4 +26,8 @@ userSchema.methods.toJSON = function toJSON() {
   };
 };
 
+userSchema.methods.isInstantScrobble = function isInstantScrobble(id) {
+  return (this.instantScrobbles || []).includes(String(id));
+};
+
 module.exports = mongoose.model('User', userSchema);

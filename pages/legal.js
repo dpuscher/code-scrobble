@@ -5,9 +5,14 @@ import targetBlank from '../lib/targetBlank';
 import { Anchor, Wrapper } from '../styles/legal.styles';
 
 const images = (
-  <p>
-    <i>Favicon:</i> Icon made by <a href="https://www.flaticon.com/authors/roundicons" title="Roundicons" {...targetBlank}>Roundicons</a> from <a href="https://www.flaticon.com/" title="Flaticon" {...targetBlank}>www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" {...targetBlank}>CC 3.0 BY</a>
-  </p>
+  <>
+    <p>
+      <i>Favicon:</i> Icon made by <a href="https://www.flaticon.com/authors/roundicons" title="Roundicons" {...targetBlank}>Roundicons</a> from <a href="https://www.flaticon.com/" title="Flaticon" {...targetBlank}>www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" {...targetBlank}>CC 3.0 BY</a>
+    </p>
+    <p>
+      <i>No Results:</i> Icons made by <a href="https://www.flaticon.com/authors/darius-dan" title="Darius Dan" {...targetBlank}>Darius Dan</a> from <a href="https://www.flaticon.com/" title="Flaticon" {...targetBlank}>www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" {...targetBlank}>CC 3.0 BY</a>
+    </p>
+  </>
 );
 
 
