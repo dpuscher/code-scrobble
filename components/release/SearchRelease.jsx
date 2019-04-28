@@ -4,11 +4,11 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { FaLastfm } from 'react-icons/fa';
 import { MdClose } from 'react-icons/md';
-import { fetchRelease, getReleaseState } from '../app/states/ReleaseState';
-import Loading from './Loading';
+import { fetchRelease } from './actions/releaseActions';
+import Loading from '../Loading';
 import SearchReleaseError from './SearchReleaseError';
 import { Button, Poster, PosterContent } from './styles/SearchRelease.styles';
-import { autotrackParams } from '../lib/analytics';
+import { autotrackParams } from '../../lib/analytics';
 
 class SearchRelease extends React.Component {
   componentDidMount() {
@@ -16,17 +16,16 @@ class SearchRelease extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { release } = this.props;
-    if (prevProps.release !== release && release.data && release.data.instantScrobble) {
+    const { data } = this.props;
+    if (prevProps.data !== data && data.instantScrobble) {
       this.props.onScrobble();
     }
   }
 
   render() {
     const {
-      code, onCancel, release, onScrobble,
+      code, error, loading, data, onCancel, onScrobble,
     } = this.props;
-    const { error, loading, data } = release;
     return (
       <>
         {loading && <Loading />}
@@ -63,20 +62,20 @@ SearchRelease.propTypes = {
   onScrobble: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,
   fetchRelease: PropTypes.func.isRequired,
-  release: PropTypes.object,
+  error: PropTypes.any,
+  loading: PropTypes.bool,
+  data: PropTypes.object,
 };
 
 SearchRelease.defaultProps = {
-  release: {},
+  error: null,
+  loading: true,
+  data: {},
 };
 
-const mapStateToProps = (state, { code }) => {
-  const release = getReleaseState(state, code);
-
-  return {
-    release,
-  };
-};
+const mapStateToProps = (state, { code }) => ({
+  ...state.release[code],
+});
 
 const mapDispatchToProps = dispatch => (
   bindActionCreators({ fetchRelease }, dispatch)

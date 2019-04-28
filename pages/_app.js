@@ -3,11 +3,8 @@ import Head from 'next/head';
 import React from 'react';
 import withRedux from 'next-redux-wrapper';
 import { Provider } from 'react-redux';
-import { createStore, applyMiddleware } from 'redux';
-import { composeWithDevTools } from 'redux-devtools-extension';
-import thunkMiddleware from 'redux-thunk';
-import { rootReducer } from 'fast-redux';
 import initNProgress from '../lib/initNProgress';
+import initializeStore from '../client/reduxStore';
 
 initNProgress();
 
@@ -33,8 +30,4 @@ class MyApp extends App {
   }
 }
 
-const makeStore = (initialState, options) => (
-  createStore(rootReducer, initialState, composeWithDevTools(applyMiddleware(thunkMiddleware)))
-);
-
-export default withRedux(makeStore)(MyApp);
+export default withRedux(initializeStore)(MyApp);

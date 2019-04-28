@@ -5,7 +5,7 @@ import React from 'react';
 import Router from 'next/router';
 import { FaCheckCircle } from 'react-icons/fa';
 import { IoMdQrScanner } from 'react-icons/io';
-import { fetchReleaseIfNeeded, getReleaseState } from '../app/states/ReleaseState';
+import { fetchReleaseIfNeeded } from '../components/release/actions/releaseActions';
 import CircleLayout from '../components/layout/CircleLayout';
 import { RetryButton } from '../components/styles/Error.styles';
 import { trackEvent } from '../lib/analytics';
@@ -24,7 +24,7 @@ class Scrobbled extends React.Component {
   }
 
   render() {
-    const { release: { data: { image } } } = this.props;
+    const { data: { image } } = this.props;
     return (
       <CircleLayout>
         <FlexContent>
@@ -45,19 +45,17 @@ Scrobbled.getInitialProps = ({ query: { barcode } }) => ({ barcode });
 
 Scrobbled.propTypes = {
   barcode: PropTypes.string.isRequired,
-  release: PropTypes.object,
   fetchReleaseIfNeeded: PropTypes.func.isRequired,
+  data: PropTypes.object,
 };
 
 Scrobbled.defaultProps = {
-  release: {},
+  data: {},
 };
 
-const mapStateToProps = (state, { barcode }) => {
-  const release = getReleaseState(state, barcode);
-
-  return { release };
-};
+const mapStateToProps = (state, { barcode }) => ({
+  ...state.release[barcode],
+});
 
 const mapDispatchToProps = dispatch => (
   bindActionCreators({ fetchReleaseIfNeeded }, dispatch)

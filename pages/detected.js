@@ -3,10 +3,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Router from 'next/router';
 import Head from 'next/head';
-import { getReleaseState } from '../app/states/ReleaseState';
 import ReleaseInfo from '../components/ReleaseInfo';
 import Scrobble from '../components/Scrobble';
-import SearchRelease from '../components/SearchRelease';
+import SearchRelease from '../components/release/SearchRelease';
 import CircleLayout from '../components/layout/CircleLayout';
 import { trackEvent } from '../lib/analytics';
 import { FooterContent } from '../styles/layout.styles';
@@ -38,8 +37,8 @@ class Detected extends React.Component {
 
   render() {
     const { scrobbling, autoScrobble } = this.state;
-    const { barcode, release } = this.props;
-    const showRelease = !scrobbling && release.data && release.data.id;
+    const { barcode, data } = this.props;
+    const showRelease = !scrobbling && data && data.id;
     return (
       <>
         <Head>
@@ -53,12 +52,12 @@ class Detected extends React.Component {
               </Checkbox>
             </FooterContent>
           )}
-          header={showRelease && <ReleaseInfo release={release.data} />}
+          header={showRelease && <ReleaseInfo release={data} />}
         >
           {scrobbling
             ? (
               <Scrobble
-                release={release.data}
+                release={data}
                 autoScrobble={autoScrobble}
                 onScrobbled={this.scrobbled}
               />
@@ -79,21 +78,18 @@ class Detected extends React.Component {
 
 Detected.propTypes = {
   barcode: PropTypes.string.isRequired,
-  release: PropTypes.object,
+  data: PropTypes.object,
 };
 
 Detected.defaultProps = {
-  release: {},
+  data: null,
 };
 
 Detected.getInitialProps = ({ query: { barcode } }) => ({ barcode });
 
-
-const mapStateToProps = (state, { barcode }) => {
-  const release = getReleaseState(state, barcode);
-
-  return { release };
-};
+const mapStateToProps = (state, { barcode }) => ({
+  ...state.release[barcode],
+});
 
 export default connect(
   mapStateToProps,

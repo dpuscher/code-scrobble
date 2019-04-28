@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { fetchSessionIfNeeded, getSessionState, receivedSession } from '../app/states/SessionState';
+import { fetchSessionIfNeeded } from '../components/session/actions/sessionActions';
+import { receivedSession } from '../components/session/actions/sessionActionCreators';
 import BackButton from '../components/BackButton';
 import ProfileAutoScrobbles from '../components/profile/ProfileAutoScrobbles';
 import ProfileHistory from '../components/profile/ProfileHistory';
@@ -25,8 +26,7 @@ class Profile extends React.Component {
   }
 
   render() {
-    const { session: { data } } = this.props;
-    const { imageLarge, name } = data || {};
+    const { imageLarge, name } = this.props.session;
     return (
       <Wrapper>
         <BackButton />
@@ -52,7 +52,7 @@ Profile.defaultProps = {
 };
 
 const mapStateToProps = state => ({
-  session: getSessionState(state),
+  session: state.session.data,
 });
 
 const mapDispatchToProps = dispatch => (

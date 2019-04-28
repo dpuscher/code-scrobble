@@ -7,18 +7,16 @@ import Link from 'next/link';
 import { IoIosSearch } from 'react-icons/io';
 import { MdClose } from 'react-icons/md';
 import compact from 'lodash/compact';
-import {
-  getQueryState, queryRelease, resetResults, setQuery,
-} from '../app/states/QueryState';
+import { queryRelease, resetResults, setQuery } from './actions/queryActions';
 import {
   Button, CloseButton, Content, FallbackIcon, FallbackWrapper, HeadWrapper, Icon, Input,
   LoadingWrapper, Meta, Overlay, Result, ResultInfo, ResultWrapper, Submit, Thumbnail,
   ThumbnailWrapper, Title, Wrapper,
 } from './styles/QueryRelease.styles';
-import Loading from './Loading';
-import NoResultsIcon from './icons/NoResultsIcon';
-import { silver } from '../lib/colors';
-import { trackEvent } from '../lib/analytics';
+import Loading from '../Loading';
+import NoResultsIcon from '../icons/NoResultsIcon';
+import { silver } from '../../lib/colors';
+import { trackEvent } from '../../lib/analytics';
 
 class QueryRelease extends React.Component {
   inputRef = React.createRef();
@@ -142,15 +140,9 @@ QueryRelease.defaultProps = {
   query: '',
 };
 
-const mapStateToProps = (state) => {
-  const { results, query, loading } = getQueryState(state);
-
-  return {
-    results,
-    query,
-    loading,
-  };
-};
+const mapStateToProps = state => ({
+  ...state.query,
+});
 
 const mapDispatchToProps = dispatch => (
   bindActionCreators({ queryRelease, resetResults, setQuery }, dispatch)
