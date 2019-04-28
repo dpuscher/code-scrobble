@@ -23,6 +23,9 @@ passportConfig(passport);
 app.prepare().then(() => {
   const server = express();
 
+  // Serve static files without any middlewares
+  server.get(/^\/(static|_next)\/.+$/, (req, res) => handle(req, res));
+
   expressConfig(server, passport, dev);
 
   routes(server, app);
