@@ -4,12 +4,12 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import { fetchSessionIfNeeded, getSessionState } from '../app/states/SessionState';
+import { fetchSessionIfNeeded } from './actions/sessionActions';
 import {
   Arrow, Image, ImageAndUser, Loader, Menu, MenuItem, Username,
-} from './styles/Session.styles';
-import targetBlank from '../lib/targetBlank';
-import { autotrackParams } from '../lib/analytics';
+} from '../styles/Session.styles';
+import targetBlank from '../../lib/targetBlank';
+import { autotrackParams } from '../../lib/analytics';
 
 class Session extends React.Component {
   overlayRef = React.createRef();
@@ -41,11 +41,7 @@ class Session extends React.Component {
   }
 
   render() {
-    const {
-      session: {
-        data, error,
-      },
-    } = this.props;
+    const { session, error } = this.props;
 
     const { open } = this.state;
     if (error) return null;
@@ -55,10 +51,10 @@ class Session extends React.Component {
           <link rel="preconnect" href="https://lastfm-img2.akamaized.net" />
         </Head>
         <ImageAndUser>
-          {data ? (
+          {session && session.name ? (
             <>
-              <Username href={data.url} open={open} {...targetBlank}>{data.name}</Username>
-              <Image image={data.image} onClick={this.handleClick} />
+              <Username href={session.url} open={open} {...targetBlank}>{session.name}</Username>
+              <Image image={session.image} onClick={this.handleClick} />
             </>
           ) : (
             <Image>
@@ -82,21 +78,20 @@ class Session extends React.Component {
 
 Session.propTypes = {
   session: PropTypes.object,
+  error: PropTypes.any,
   fetchSessionIfNeeded: PropTypes.func.isRequired,
 };
 
 Session.defaultProps = {
   session: {},
+  error: null,
 };
 
 
-const mapStateToProps = (state) => {
-  const session = getSessionState(state);
-
-  return {
-    session,
-  };
-};
+const mapStateToProps = state => ({
+  session: state.session.data,
+  error: state.session.error,
+});
 
 const mapDispatchToProps = dispatch => (
   bindActionCreators({ fetchSessionIfNeeded }, dispatch)

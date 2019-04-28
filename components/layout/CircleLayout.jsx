@@ -5,7 +5,7 @@ import {
   Center, Content, Footer, Header, HeightWrapper, Logo, LogoWrapper, SessionWrapper, Wrapper,
 } from '../../styles/layout.styles';
 import LegalLinks from '../LegalLinks';
-import Session from '../Session';
+import Session from '../session/Session';
 
 const ScrollLock = createGlobalStyle`
   body {

@@ -2,7 +2,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { getHistoryState, fetchHistory } from '../../app/states/HistoryState';
+import { fetchHistory } from './actions/historyActions';
 import {
   Fallback, H3, List, Meta,
 } from '../../styles/profile.styles';
@@ -16,7 +16,7 @@ class ProfileHistorys extends React.PureComponent {
 
   render() {
     const {
-      data, loading, deleting,
+      history, loading,
     } = this.props;
     return (
       <>
@@ -26,15 +26,14 @@ class ProfileHistorys extends React.PureComponent {
           ? <Spinner size={30} css="margin:30px auto;display:block;" />
           : (
             <List>
-              {!data.length && (
+              {!history.length && (
                 <Fallback>
                   No entries found.
                 </Fallback>
               )}
-              {data.map(item => (
+              {history.map(item => (
                 <ProfileHistoryItem
                   key={item.id}
-                  isDeleting={deleting.includes(item.id)}
                   {...item}
                 />
               ))}
@@ -47,27 +46,20 @@ class ProfileHistorys extends React.PureComponent {
 }
 
 ProfileHistorys.propTypes = {
-  data: PropTypes.array,
+  history: PropTypes.array,
   loading: PropTypes.bool,
-  error: PropTypes.any,
-  deleting: PropTypes.array,
   fetchHistory: PropTypes.func.isRequired,
 };
 
 ProfileHistorys.defaultProps = {
-  data: [],
+  history: [],
   loading: false,
-  error: null,
-  deleting: [],
 };
 
-const mapStateToProps = (state) => {
-  const Historys = getHistoryState(state);
-
-  return {
-    ...Historys,
-  };
-};
+const mapStateToProps = state => ({
+  history: state.history.data,
+  loading: state.history.loading,
+});
 
 const mapDispatchToProps = dispatch => (
   bindActionCreators({ fetchHistory }, dispatch)
