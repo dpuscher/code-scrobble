@@ -1,9 +1,9 @@
 import { IoIosSearch } from 'react-icons/io';
 import styled from 'styled-components';
 import { Lazy } from 'react-lazy';
-import LogoIcon from '../icons/LogoIcon';
-import { dark } from '../../lib/colors';
-import { buttonReset } from '../../styles/mixins';
+import LogoIcon from '../../icons/LogoIcon';
+import { dark } from '../../../lib/colors';
+import { buttonReset } from '../../../styles/mixins';
 
 export const Wrapper = styled.div`
   position: relative;

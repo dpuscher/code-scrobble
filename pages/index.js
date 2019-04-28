@@ -1,6 +1,6 @@
 import React from 'react';
 import Router from 'next/router';
-import QueryRelease from '../components/QueryRelease';
+import QueryRelease from '../components/query/QueryRelease';
 import Scanner from '../components/Scanner';
 import CircleLayout from '../components/layout/CircleLayout';
 

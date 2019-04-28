@@ -2,7 +2,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { getAutoScrobbleState, fetchAutoScrobbles } from '../../app/states/AutoScrobbleState';
+import { fetchAutoScrobbles } from './actions/autoScrobbleActions';
 import {
   Fallback, H3, List, Meta,
 } from '../../styles/profile.styles';
@@ -50,25 +50,21 @@ class ProfileAutoScrobbles extends React.PureComponent {
 ProfileAutoScrobbles.propTypes = {
   data: PropTypes.array,
   loading: PropTypes.bool,
-  error: PropTypes.any,
   deleting: PropTypes.array,
   fetchAutoScrobbles: PropTypes.func.isRequired,
 };
 
 ProfileAutoScrobbles.defaultProps = {
   data: [],
-  loading: false,
-  error: null,
+  loading: true,
   deleting: [],
 };
 
-const mapStateToProps = (state) => {
-  const autoScrobbles = getAutoScrobbleState(state);
-
-  return {
-    ...autoScrobbles,
-  };
-};
+const mapStateToProps = state => ({
+  data: state.autoScrobbles.data,
+  loading: state.autoScrobbles.loading,
+  deleting: state.autoScrobbles.deleting,
+});
 
 const mapDispatchToProps = dispatch => (
   bindActionCreators({ fetchAutoScrobbles }, dispatch)
