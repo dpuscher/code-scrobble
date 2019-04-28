@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { TrashAlt as DeleteIcon } from 'styled-icons/fa-regular';
-import { deleteAutoScrobble } from '../../app/states/AutoScrobbleState';
+import { deleteAutoScrobble } from './actions/autoScrobbleActions';
 import { DeleteButton, ListCaption, ListItem } from '../../styles/profile.styles';
 
 class ProfileAutoScrobbleItem extends React.PureComponent {

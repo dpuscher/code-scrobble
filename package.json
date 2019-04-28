@@ -4,7 +4,8 @@
     "build": "next build",
     "start": "NODE_ENV=production node server.js",
     "lint": "eslint './**/*.{js,jsx}'",
-    "lint:css": "stylelint './**/*.{js,jsx}'"
+    "lint:css": "stylelint './**/*.{js,jsx}'",
+    "analyze": "BUNDLE_ANALYZE=browser yarn build"
   },
   "dependencies": {
     "@zeit/next-bundle-analyzer": "^0.1.2",
@@ -50,13 +51,20 @@
     "sw-precache-webpack-plugin": "^0.11.5"
   },
   "devDependencies": {
+    "@babel/core": "^7.4.4",
     "babel-eslint": "^10.0.1",
-    "eslint": "5.15.1",
+    "babel-jest": "^24.7.1",
+    "enzyme": "^3.9.0",
+    "enzyme-adapter-react-16": "^1.12.1",
+    "eslint": "5.16.0",
     "eslint-config-airbnb": "17.1.0",
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-jsx-a11y": "^6.1.1",
     "eslint-plugin-react": "^7.11.0",
-    "stylelint": "^9.10.1",
+    "jest": "^24.7.1",
+    "react-addons-test-utils": "^15.6.2",
+    "react-test-renderer": "^16.8.6",
+    "stylelint": "^10.0.1",
     "stylelint-config-property-sort-order-smacss": "^4.0.2",
     "stylelint-config-recommended": "^2.1.0",
     "stylelint-config-styled-components": "^0.1.1",

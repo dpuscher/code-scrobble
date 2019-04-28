@@ -15,9 +15,7 @@ class ProfileHistorys extends React.PureComponent {
   }
 
   render() {
-    const {
-      history, loading,
-    } = this.props;
+    const { history, loading } = this.props;
     return (
       <>
         <H3>History</H3>
@@ -53,7 +51,7 @@ ProfileHistorys.propTypes = {
 
 ProfileHistorys.defaultProps = {
   history: [],
-  loading: false,
+  loading: true,
 };
 
 const mapStateToProps = state => ({
