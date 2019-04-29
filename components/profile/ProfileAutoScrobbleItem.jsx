@@ -2,7 +2,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { TrashAlt as DeleteIcon } from 'styled-icons/fa-regular';
+import { TrashAlt as DeleteIcon } from 'styled-icons/fa-regular/TrashAlt';
 import { deleteAutoScrobble } from '../../app/states/AutoScrobbleState';
 import { DeleteButton, ListCaption, ListItem } from '../../styles/profile.styles';
 
