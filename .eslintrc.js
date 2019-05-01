@@ -3,9 +3,10 @@ module.exports = {
     "browser": true,
     "es6": true,
     "node": true,
+    "jest/globals": true,
   },
-  "extends": ["eslint:recommended", "plugin:react/recommended", "airbnb"],
-  "plugins": ["react"],
+  "extends": ["eslint:recommended", "plugin:react/recommended", "plugin:jest/recommended", "airbnb"],
+  "plugins": ["react", "jest"],
   "parser": "babel-eslint",
   "rules": {
     "import/extensions": "off",
