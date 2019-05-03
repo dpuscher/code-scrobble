@@ -5,7 +5,7 @@ import React from 'react';
 import { FaLastfm } from 'react-icons/fa';
 import { MdClose } from 'react-icons/md';
 import { fetchRelease } from './actions/releaseActions';
-import Loading from '../Loading';
+import Loading from '../layout/Loading';
 import SearchReleaseError from './SearchReleaseError';
 import { Button, Poster, PosterContent } from './styles/SearchRelease.styles';
 import { autotrackParams } from '../../lib/analytics';

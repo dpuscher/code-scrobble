@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import ErrorIconSVG from '../icons/ErrorIcon';
+import ErrorIconSVG from '../../icons/ErrorIcon';
 
 export const Error = styled.div`
   display: flex;

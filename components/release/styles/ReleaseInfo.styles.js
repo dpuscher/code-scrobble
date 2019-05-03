@@ -1,6 +1,6 @@
 import { IoIosInformationCircleOutline } from 'react-icons/io';
 import styled from 'styled-components';
-import { dark } from '../../lib/colors';
+import { dark } from '../../../lib/colors';
 
 export const Wrapper = styled.div`
   position: relative;

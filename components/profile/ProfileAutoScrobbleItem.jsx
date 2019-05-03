@@ -31,7 +31,7 @@ class ProfileAutoScrobbleItem extends React.PureComponent {
 }
 
 ProfileAutoScrobbleItem.propTypes = {
-  id: PropTypes.number.isRequired,
+  id: PropTypes.string.isRequired,
   artist: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
   year: PropTypes.string,

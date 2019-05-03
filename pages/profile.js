@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { fetchSessionIfNeeded } from '../components/session/actions/sessionActions';
 import { receivedSession } from '../components/session/actions/sessionActionCreators';
-import BackButton from '../components/BackButton';
+import BackButton from '../components/ui/BackButton';
 import ProfileAutoScrobbles from '../components/profile/ProfileAutoScrobbles';
 import ProfileHistory from '../components/profile/ProfileHistory';
 import {

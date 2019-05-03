@@ -1,8 +1,8 @@
 import React from 'react';
 
-import BackButton from '../components/BackButton';
+import BackButton from '../components/ui/BackButton';
 import targetBlank from '../lib/targetBlank';
-import { Wrapper, Anchor } from '../styles/legal.styles';
+import { Anchor, Wrapper } from '../styles/legal.styles';
 
 const Index = () => (
   <Wrapper>

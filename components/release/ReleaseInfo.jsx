@@ -1,14 +1,14 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { MdClose } from 'react-icons/md'; // TODO: replace
-import durationFormat from '../lib/durationFormat';
-import targetBlank from '../lib/targetBlank';
+import durationFormat from '../../lib/durationFormat';
+import targetBlank from '../../lib/targetBlank';
 import {
   Artist, Button, CloseButton, Content, Cover, ExternalButton, Head, HeadWrapper, Icon, Meta,
   Overlay, Title, TrackDuration, TrackListWrapper, TrackNumber, TrackTitle, Wrapper, Year,
 } from './styles/ReleaseInfo.styles';
-import { silver } from '../lib/colors';
-import { trackEvent, autotrackParams } from '../lib/analytics';
+import { silver } from '../../lib/colors';
+import { autotrackParams, trackEvent } from '../../lib/analytics';
 
 class ReleaseInfo extends React.Component {
   state = {

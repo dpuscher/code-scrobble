@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { fetchSessionIfNeeded } from './actions/sessionActions';
 import {
   Arrow, Image, ImageAndUser, Loader, Menu, MenuItem, Username,
-} from '../styles/Session.styles';
+} from './styles/Session.styles';
 import targetBlank from '../../lib/targetBlank';
 import { autotrackParams } from '../../lib/analytics';
 

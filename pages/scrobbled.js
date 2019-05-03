@@ -7,7 +7,7 @@ import { FaCheckCircle } from 'react-icons/fa';
 import { IoMdQrScanner } from 'react-icons/io';
 import { fetchReleaseIfNeeded } from '../components/release/actions/releaseActions';
 import CircleLayout from '../components/layout/CircleLayout';
-import { RetryButton } from '../components/styles/Error.styles';
+import { RetryButton } from '../components/layout/styles/Error.styles';
 import { trackEvent } from '../lib/analytics';
 import { yellow } from '../lib/colors';
 import { FlexContent } from '../styles/layout.styles';

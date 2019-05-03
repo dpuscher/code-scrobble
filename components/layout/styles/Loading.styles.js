@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import Spinner from '../layout/Spinner';
+import Spinner from '../Spinner';
 
 export const LoadingWrapper = styled.div`
   display: flex;

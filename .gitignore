@@ -2,7 +2,6 @@
 .env
 .next/
 .vscode
-assets
 bundles/
 coverage
 log/

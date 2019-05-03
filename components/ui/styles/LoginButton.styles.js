@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { lastFm, lastFmDark } from '../../lib/colors';
+import { lastFm, lastFmDark } from '../../../lib/colors';
 
 export const Wrapper = styled.a`
   display: inline-flex;

@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import LogoSmall from '../components/LogoSmall';
+import LogoSmall from '../components/assets/LogoSmall';
 import { grey } from '../lib/colors';
 
 export const Center = styled.div`

@@ -1,6 +1,6 @@
 // Source: https://github.com/iceteabottle/css-checkbox
 import styled, { keyframes } from 'styled-components';
-import { silver, yellow, dark } from '../../lib/colors';
+import { dark, silver, yellow } from '../../../lib/colors';
 
 // custom checkbox/radios
 const inputHeight = 30;

@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components';
-import { yellow, yellowRGB, dark } from '../../lib/colors';
-import { animation } from '../layout/Spinner';
-import { buttonReset } from '../../styles/mixins';
+import { dark, yellow, yellowRGB } from '../../../lib/colors';
+import { animation } from '../../layout/Spinner';
+import { buttonReset } from '../../../styles/mixins';
 
 const fadeInOnOpen = css`
   transition: opacity .3s;

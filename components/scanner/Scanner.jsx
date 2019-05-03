@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import Quagga from 'quagga';
-import { yellow } from '../lib/colors';
-import { FlexContent } from '../styles/layout.styles';
-import { ErrorDescription, ErrorIcon } from './styles/Error.styles';
+import { yellow } from '../../lib/colors';
+import { FlexContent } from '../../styles/layout.styles';
+import { ErrorDescription, ErrorIcon } from '../layout/styles/Error.styles';
 import { Camera } from './styles/Scanner.styles';
-import Loading from './Loading';
+import Loading from '../layout/Loading';
 
 class Scanner extends React.Component {
   constructor(props) {

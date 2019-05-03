@@ -1,7 +1,7 @@
 import React from 'react';
 
-import LegalLinks from '../components/LegalLinks';
-import LoginButton from '../components/LoginButton';
+import LegalLinks from '../components/ui/LegalLinks';
+import LoginButton from '../components/ui/LoginButton';
 import { Center } from '../styles/layout.styles';
 import {
   Description, H1, Logo, P, Wrapper,

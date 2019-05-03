@@ -1,7 +1,7 @@
 import React from 'react';
 import Router from 'next/router';
 import QueryRelease from '../components/query/QueryRelease';
-import Scanner from '../components/Scanner';
+import Scanner from '../components/scanner/Scanner';
 import CircleLayout from '../components/layout/CircleLayout';
 
 const codeDetected = ({ codeResult: { code: barcode } }) => {

@@ -1,6 +1,6 @@
 import Router from 'next/router';
 import { ChevronLeft } from 'styled-icons/boxicons-regular/ChevronLeft';
-import { silver } from '../lib/colors';
+import { silver } from '../../lib/colors';
 import { Button } from './styles/BackButton.styles';
 
 const getHostFromUrl = url => (

@@ -1,4 +1,4 @@
-import LastfmIcon from './icons/LastfmIcon';
+import LastfmIcon from '../icons/LastfmIcon';
 import { Caption, Wrapper } from './styles/LoginButton.styles';
 
 const LoginButton = props => (

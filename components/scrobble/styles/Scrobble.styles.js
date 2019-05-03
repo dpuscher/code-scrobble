@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import Spinner from '../layout/Spinner';
+import Spinner from '../../layout/Spinner';
 
 export const Loading = styled(Spinner)`
   width: 100%;

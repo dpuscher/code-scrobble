@@ -1,6 +1,6 @@
 import React from 'react';
 
-import BackButton from '../components/BackButton';
+import BackButton from '../components/ui/BackButton';
 import targetBlank from '../lib/targetBlank';
 import { Anchor, Wrapper } from '../styles/legal.styles';
 

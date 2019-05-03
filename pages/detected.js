@@ -3,13 +3,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Router from 'next/router';
 import Head from 'next/head';
-import ReleaseInfo from '../components/ReleaseInfo';
-import Scrobble from '../components/Scrobble';
+import ReleaseInfo from '../components/release/ReleaseInfo';
+import Scrobble from '../components/scrobble/Scrobble';
 import SearchRelease from '../components/release/SearchRelease';
 import CircleLayout from '../components/layout/CircleLayout';
 import { trackEvent } from '../lib/analytics';
 import { FooterContent } from '../styles/layout.styles';
-import Checkbox from '../components/Checkbox';
+import Checkbox from '../components/ui/Checkbox';
 
 class Detected extends React.Component {
   state = {

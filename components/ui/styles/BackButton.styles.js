@@ -1,6 +1,6 @@
 import styled from 'styled-components';
-import { silver } from '../../lib/colors';
-import { buttonReset } from '../../styles/mixins';
+import { silver } from '../../../lib/colors';
+import { buttonReset } from '../../../styles/mixins';
 
 // eslint-disable-next-line import/prefer-default-export
 export const Button = styled.button`
