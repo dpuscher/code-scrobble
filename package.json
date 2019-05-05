@@ -1,4 +1,17 @@
 {
+  "name": "code-scrobble",
+  "version": "1.0.0",
+  "description": "CodeScrobble is a web application that makes it easy to scrobble your CD or vinyl records to Last.fm by scanning the barcode with your smartphone camera.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dpuscher/code-scrobble.git"
+  },
+  "author": "Daniel Puscher",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dpuscher/code-scrobble/issues"
+  },
+  "homepage": "https://www.codescrobble.com/",
   "scripts": {
     "dev": "node server.js",
     "build": "next build",
