@@ -24,9 +24,9 @@ class Scrobble extends React.Component {
         body: JSON.stringify({ id, autoScrobble }),
       });
     } catch (error) {
-      this.setState({ loadingError: true });
+      return this.setState({ loadingError: true });
     }
-    onScrobbled();
+    return onScrobbled();
   }
 
   render() {

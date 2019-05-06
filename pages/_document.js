@@ -5,7 +5,7 @@ import NProgressStyles from '../styles/nprogress.styles';
 import { ANALYTICS_ID } from '../lib/analytics';
 
 const isSafari = userAgent => (
-  /Version\/([0-9\._]+).*Safari/.test(userAgent)
+  /Version\/([0-9._]+).*Safari/.test(userAgent)
 );
 
 export default class MyDocument extends Document {
