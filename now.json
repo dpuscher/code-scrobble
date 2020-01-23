@@ -1,0 +1,12 @@
+{
+  "env": {
+    "DISCOGS_KEY": "@discogs_key",
+    "DISCOGS_SECRET": "@discogs_secret",
+    "LASTFM_KEY": "@lastfm_key",
+    "LASTFM_SECRET": "@lastfm_secret",
+    "SERVER_URL": "@server_url",
+    "SESSION_SECRET": "@session_secret",
+    "MONGODB_URI": "@mongodb_uri",
+    "REDISCLOUD_URL": "@rediscloud_url"
+  }
+}

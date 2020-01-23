@@ -25,9 +25,9 @@ module.exports = withBundleAnalyzer({
       config.plugins.push(
         new SWPrecacheWebpackPlugin({
           cacheId: 'codescrobble',
-          filepath: path.resolve('./static/service-worker.js'),
+          filepath: path.resolve('./public/static/service-worker.js'),
           minify: false,
-          navigateFallback: process.env.SERVER_URL,
+          navigateFallback: "/",
           mergeStaticsConfig: false,
           staticFileGlobs: [
             '.next/bundles/**/*.js',

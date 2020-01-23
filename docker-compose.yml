@@ -1,4 +1,4 @@
-version: "3"
+version: "3.7"
 services:
   app:
     container_name: app
@@ -8,11 +8,14 @@ services:
       - REDISCLOUD_URL=redis://cache:6379
       - NODE_ENV=development
     restart: always
-    build: .
+    build:
+      context: .
+      target: base
     ports:
-      - "3000:3000"
+      - 3000:3000
     volumes:
-      - '.:/usr/src/app/'
+      - .:/app
+      - /app/node_modules
     depends_on:
       - mongodb
       - redis
