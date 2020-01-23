@@ -1,7 +1,5 @@
-import Document, { Head, Main, NextScript } from 'next/document';
+import Document, { Html, Head, Main, NextScript } from 'next/document';
 import { ServerStyleSheet } from 'styled-components';
-import BaseStyles from '../components/layout/BaseStyles';
-import NProgressStyles from '../styles/nprogress.styles';
 import { ANALYTICS_ID } from '../lib/analytics';
 
 const isSafari = userAgent => (
@@ -31,7 +29,7 @@ export default class MyDocument extends Document {
 
   render() {
     return (
-      <html lang="en">
+      <Html lang="en">
         <Head>
           <meta charSet="utf-8" />
 
@@ -68,14 +66,12 @@ export default class MyDocument extends Document {
           <link href="/static/ipadpro2_splash.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
         </Head>
         <body onTouchStart="">
-          <BaseStyles />
-          <NProgressStyles />
           <Main />
           <NextScript />
           <script async src="https://www.google-analytics.com/analytics.js" />
           <script async src="/static/autotrack.js" />
         </body>
-      </html>
+      </Html>
     );
   }
 }
