@@ -6,5 +6,5 @@ bundles/
 coverage
 log/
 node_modules/
-static/service-worker.js
+public/static/service-worker.js
 yarn-error.log

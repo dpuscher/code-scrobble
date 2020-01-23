@@ -1,7 +1,6 @@
 /* eslint-disable no-param-reassign */
 const path = require('path');
 const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
 const withBundleAnalyzer = require('@zeit/next-bundle-analyzer');
 
 module.exports = withBundleAnalyzer({
@@ -24,7 +23,6 @@ module.exports = withBundleAnalyzer({
   webpack: (config, { dev, isServer, buildId }) => {
     if (!dev) {
       config.plugins.push(
-        new CleanWebpackPlugin(),
         new SWPrecacheWebpackPlugin({
           cacheId: 'codescrobble',
           filepath: path.resolve('./static/service-worker.js'),
