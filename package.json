@@ -45,7 +45,7 @@
     "nprogress": "^0.2.0",
     "object-dig": "^0.1.3",
     "passport": "^0.4.1",
-    "passport-lastfm": "^1.0.1",
+    "passport-lastfm": "dpuscher/passport-lastfm",
     "prop-types": "^15.6.2",
     "quagga": "^0.12.1",
     "react": "^16.12.0",
