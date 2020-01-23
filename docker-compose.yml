@@ -1,0 +1,33 @@
+version: "3"
+services:
+  app:
+    container_name: app
+    env_file: .env
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/codescrobble
+      - REDISCLOUD_URL=redis://cache:6379
+      - NODE_ENV=development
+    restart: always
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - '.:/usr/src/app/'
+    depends_on:
+      - mongodb
+      - redis
+    command: ["./docker/wait-for.sh", "mongodb:27017", "--", "yarn", "dev"]
+  mongodb:
+    container_name: mongodb
+    image: mongo
+    volumes:
+      - ./data:/data/db/
+    ports:
+      - "27017:27017"
+  redis:
+    container_name: cache
+    image: redis
+    volumes:
+      - ./data:/data/db/
+    ports:
+      - "6379:6379"
