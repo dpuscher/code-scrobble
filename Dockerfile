@@ -1,16 +1,18 @@
-FROM node:current-alpine
+FROM node:current-alpine as base
 
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
+RUN mkdir /app
+WORKDIR /app
 
-ENV NEXT_TELEMETRY_DISABLED=1
+ENV NEXT_TELEMETRY_DISABLED 1
+ENV NODE_ENV production
 
 COPY package.json yarn.lock ./
 RUN yarn install
 
-COPY . .
-
+ENV PORT 3000
 EXPOSE 3000
+
+COPY . .
 
 RUN yarn build
 
