@@ -7551,10 +7551,9 @@ pascalcase@^0.1.1:
   resolved "https://registry.yarnpkg.com/pascalcase/-/pascalcase-0.1.1.tgz#b363e55e8006ca6fe21784d2db22bd15d7917f14"
   integrity sha1-s2PlXoAGym/iF4TS2yK9FdeRfxQ=
 
-passport-lastfm@^1.0.1:
+passport-lastfm@dpuscher/passport-lastfm:
   version "1.0.1"
-  resolved "https://registry.yarnpkg.com/passport-lastfm/-/passport-lastfm-1.0.1.tgz#4902c319fb1961c68581669a44998cc11eecf07f"
-  integrity sha1-SQLDGfsZYcaFgWaaRJmMwR7s8H8=
+  resolved "https://codeload.github.com/dpuscher/passport-lastfm/tar.gz/92934fe99a546c7dcedc7062727ecafcfb93e762"
   dependencies:
     lastfm "^0.9.2"
     passport-strategy "^1.0.0"
