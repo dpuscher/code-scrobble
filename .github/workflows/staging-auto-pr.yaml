@@ -1,0 +1,22 @@
+name: Staging Auto-PR
+on:
+  push:
+    branches: ["staging"]
+
+jobs:
+  pull-request:
+    name: Open PR to main
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        name: checkout
+
+      - uses: repo-sync/pull-request@v2
+        name: pull-request
+        with:
+          destination_branch: "production"
+          pr_title: "Staging to Production"
+          pr_body: "This PR was auto-generated via a workflow action."
+          pr_reviewer: ${{ github.actor }}
+          source_branch: "staging"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
