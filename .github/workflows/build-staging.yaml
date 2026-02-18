@@ -1,0 +1,36 @@
+name: Build and Deploy (Staging)
+
+on:
+  push:
+    branches:
+      - staging
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/dpuscher/code-scrobble:staging
+
+      - name: Trigger Dokploy redeploy
+        run: |
+          curl -s -o /dev/null -w "%{http_code}" \
+            -X POST "${{ secrets.DOKPLOY_STAGING_DEPLOY_WEBHOOK }}"
