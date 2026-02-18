@@ -8,3 +8,12 @@ log/
 node_modules/
 public/static/service-worker.js
 yarn-error.log
+
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+data

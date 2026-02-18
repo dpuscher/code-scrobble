@@ -3,3 +3,7 @@
 *docker-compose*
 node_modules
 .next
+.env
+.env.*
+data
+coverage
