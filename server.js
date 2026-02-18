@@ -15,7 +15,11 @@ const app = next({ dev });
 const handle = app.getRequestHandler();
 
 // Connect to mongo db
-mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true });
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+mongoose.set('useCreateIndex', true);
 
 // configure passport instance
 passportConfig(passport);

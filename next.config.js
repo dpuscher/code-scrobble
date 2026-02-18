@@ -1,35 +1,22 @@
 /* eslint-disable no-param-reassign */
 const path = require('path');
 const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
-const withBundleAnalyzer = require('@zeit/next-bundle-analyzer');
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.BUNDLE_ANALYZE === 'true',
+});
 
 module.exports = withBundleAnalyzer({
   useFileSystemPublicRoutes: false,
   poweredByHeader: false,
 
-  analyzeServer: ['server', 'both'].includes(process.env.BUNDLE_ANALYZE),
-  analyzeBrowser: ['browser', 'both'].includes(process.env.BUNDLE_ANALYZE),
-  bundleAnalyzerConfig: {
-    server: {
-      analyzerMode: 'static',
-      reportFilename: '../bundles/server.html',
-    },
-    browser: {
-      analyzerMode: 'static',
-      reportFilename: '../bundles/client.html',
-    },
-  },
-
   webpack: (config, { dev, isServer, buildId }) => {
     if (!dev) {
       config.plugins.push(
-        new CleanWebpackPlugin(),
         new SWPrecacheWebpackPlugin({
           cacheId: 'codescrobble',
-          filepath: path.resolve('./static/service-worker.js'),
+          filepath: path.resolve('./public/static/service-worker.js'),
           minify: false,
-          navigateFallback: process.env.SERVER_URL,
+          navigateFallback: "/",
           mergeStaticsConfig: false,
           staticFileGlobs: [
             '.next/bundles/**/*.js',
