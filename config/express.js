@@ -3,9 +3,9 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const compression = require('compression');
 const session = require('express-session');
-const redis = require('redis');
+const { createClient } = require('redis');
 const helmet = require('helmet');
-const RedisStore = require('connect-redis')(session);
+const { RedisStore } = require('connect-redis');
 
 module.exports = function expressConfig(app, passport, dev = false) {
   if (dev) app.use(morgan('dev'));
@@ -14,9 +14,9 @@ module.exports = function expressConfig(app, passport, dev = false) {
   app.use(compression());
   app.use(helmet());
 
-  const redisClient = redis.createClient(process.env.REDISCLOUD_URL);
-  redisClient.unref();
-  redisClient.on('error', console.log);
+  const redisClient = createClient({ url: process.env.REDISCLOUD_URL });
+  redisClient.connect().catch(console.error);
+  redisClient.on('error', console.error);
 
   app.use(session({
     store: new RedisStore({ client: redisClient }),
