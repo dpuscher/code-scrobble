@@ -74,7 +74,7 @@ class QueryRelease extends React.Component<QueryReleaseProps, { open: boolean; s
           {results.map(({
             id, title, thumb, country, year, format = [],
           }) => (
-            <Link key={id} href={`/detected?barcode=id:${id}`} as={`/detected/id:${id}`} passHref legacyBehavior>
+            <Link key={id} href={`/detected/id:${id}`} passHref legacyBehavior>
               <Result>
                 <ThumbnailWrapper>
                   <Thumbnail src={thumb} alt={title} width={60} height={60} />
