@@ -9,10 +9,13 @@ module.exports = function passportConfig(passport) {
     done(null, user.id);
   });
 
-  passport.deserializeUser((id, done) => {
-    User.findById(id, (err, user) => {
-      done(err, user);
-    });
+  passport.deserializeUser(async (id, done) => {
+    try {
+      const user = await User.findById(id);
+      done(null, user);
+    } catch (err) {
+      done(err);
+    }
   });
 
   passport.use(
@@ -22,12 +25,9 @@ module.exports = function passportConfig(passport) {
         secret: process.env.LASTFM_SECRET,
       },
 
-      ((req, { name, key }, done) => {
-        // eslint-disable-next-line consistent-return
-        User.findOne({ name }, async (userErr, user) => {
-          if (userErr) return done(userErr);
-
-          let currentUser = user;
+      (async (req, { name, key }, done) => {
+        try {
+          let currentUser = await User.findOne({ name });
           if (!currentUser) currentUser = new User();
 
           currentUser.name = name;
@@ -39,11 +39,11 @@ module.exports = function passportConfig(passport) {
           currentUser.imageLarge = userData?.image?.[2]?.['#text'];
           currentUser.imageXLarge = userData?.image?.[3]?.['#text'];
 
-          currentUser.save((saveErr) => {
-            if (saveErr) throw saveErr;
-            return done(null, currentUser);
-          });
-        });
+          await currentUser.save();
+          return done(null, currentUser);
+        } catch (err) {
+          return done(err);
+        }
       }),
     ),
   );

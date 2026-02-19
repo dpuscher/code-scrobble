@@ -14,12 +14,9 @@ const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
-// Connect to mongo db
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-mongoose.set('useCreateIndex', true);
+// Connect to mongo db (useNewUrlParser/useUnifiedTopology/useCreateIndex are
+// all defaults in Mongoose 6+ and the options have been removed in Mongoose 8)
+mongoose.connect(process.env.MONGODB_URI);
 
 // configure passport instance
 passportConfig(passport);

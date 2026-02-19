@@ -37,7 +37,7 @@
     "helmet": "^3.21.2",
     "lastfmapi": "^0.1.1",
     "lodash": "^4.17.21",
-    "mongoose": "^5.8.9",
+    "mongoose": "^8.0.0",
     "morgan": "^1.10.0",
     "next": "^9.2.0",
     "next-redux-wrapper": "^4.0.1",

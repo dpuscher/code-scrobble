@@ -3,12 +3,10 @@ const sortBy = require('lodash/sortBy');
 const compact = require('lodash/compact');
 const Release = require('../../../models/release');
 
-module.exports = function userHistory(req, res) {
-  const { user: { history } } = req;
-  Release.find({ _id: { $in: history.map(h => h.id) } }, (err, releases = []) => {
-    if (err) {
-      return res.status(400).send({ err });
-    }
+module.exports = async function userHistory(req, res) {
+  try {
+    const { user: { history } } = req;
+    const releases = await Release.find({ _id: { $in: history.map(h => h.id) } });
 
     const data = history.map((item) => {
       // eslint-disable-next-line no-underscore-dangle
@@ -27,5 +25,7 @@ module.exports = function userHistory(req, res) {
     });
 
     return res.send(sortBy(compact(data), ['time']).reverse());
-  });
+  } catch (err) {
+    return res.status(400).send({ err });
+  }
 };
