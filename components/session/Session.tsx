@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
+import Router from 'next/router';
 import { fetchSessionIfNeeded } from './actions/sessionActions';
 import {
   Arrow, Image, ImageAndUser, Loader, Menu, MenuItem, Username,
@@ -21,6 +22,12 @@ class Session extends React.Component<any, any> {
   componentDidMount() {
     this.props.fetchSessionIfNeeded();
     document.addEventListener('click', this.handleClickOutside);
+  }
+
+  componentDidUpdate(prevProps) {
+    if (!prevProps.error && this.props.error) {
+      Router.push('/login');
+    }
   }
 
   componentWillUnmount() {
