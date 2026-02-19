@@ -7,7 +7,9 @@ export const fetchAutoScrobbles = () => (
   async (dispatch) => {
     try {
       dispatch(setLoadingState(true));
-      const data = await fetch('/api/user/autoscrobbles', { credentials: 'include' }).then(r => r.json());
+      const response = await fetch('/api/user/autoscrobbles', { credentials: 'include' });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const data = await response.json();
       dispatch(receivedAutoScrobbles(data));
     } catch (error) {
       dispatch(setErrorState(error));

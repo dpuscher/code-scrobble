@@ -5,7 +5,9 @@ export const fetchHistory = () => (
   async (dispatch) => {
     try {
       dispatch(setLoadingState(true));
-      const data = await fetch('/api/user/history', { credentials: 'include' }).then(r => r.json());
+      const response = await fetch('/api/user/history', { credentials: 'include' });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const data = await response.json();
       dispatch(receivedHistory(data));
     } catch (error) {
       dispatch(setErrorState(error));
