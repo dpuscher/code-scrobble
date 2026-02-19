@@ -19,7 +19,7 @@ export default class MyDocument extends Document {
       const initialProps = await Document.getInitialProps(ctx);
       return {
         ...initialProps,
-        showManifest: !isSafari(ctx.req.headers['user-agent']),
+        showManifest: ctx.req ? !isSafari(ctx.req.headers['user-agent']) : true,
         styles: <>{initialProps.styles}{sheet.getStyleElement()}</>,
       };
     } finally {

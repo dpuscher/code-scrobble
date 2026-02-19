@@ -64,10 +64,10 @@ class Session extends React.Component {
         </ImageAndUser>
         <Arrow open={open} />
         <Menu open={open}>
-          <Link href="/profile" passHref>
+          <Link href="/profile" passHref legacyBehavior>
             <MenuItem {...autotrackParams('Session', 'Profile')}>Profile</MenuItem>
           </Link>
-          <Link href="/logout" passHref>
+          <Link href="/logout" passHref legacyBehavior>
             <MenuItem {...autotrackParams('Session', 'Logout')}>Logout</MenuItem>
           </Link>
         </Menu>

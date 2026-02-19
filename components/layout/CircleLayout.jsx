@@ -25,7 +25,7 @@ const CircleLayout = ({ children, header, footer }) => (
         </SessionWrapper>
         <LogoWrapper>
           <Link href="/">
-            <a><Logo /></a>
+            <Logo />
           </Link>
         </LogoWrapper>
         {header}
