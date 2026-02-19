@@ -1,6 +1,6 @@
 import { setLoadingState, receivedRelease, setErrorState } from './releaseActionCreators';
 
-const shouldFetchRelease = release => (!release || !release.data.id);
+const shouldFetchRelease = release => (!release || !release.data?.id);
 
 export const fetchRelease = code => (
   async (dispatch) => {
