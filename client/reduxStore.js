@@ -1,6 +1,6 @@
 import thunkMiddleware from 'redux-thunk';
 import { combineReducers, createStore, applyMiddleware } from 'redux';
-import { composeWithDevTools } from 'redux-devtools-extension/logOnlyInProduction';
+import { composeWithDevToolsLogOnlyInProduction as composeWithDevTools } from '@redux-devtools/extension';
 
 import sessionReducer from '../components/session/reducers/sessionReducer';
 import historyReducer from '../components/profile/reducers/historyReducer';

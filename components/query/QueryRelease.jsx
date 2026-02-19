@@ -68,7 +68,7 @@ class QueryRelease extends React.Component {
           }) => (
             <Link key={id} href={`/detected?barcode=id:${id}`} as={`/detected/id:${id}`} passHref>
               <Result>
-                <ThumbnailWrapper clientOnly>
+                <ThumbnailWrapper>
                   <Thumbnail src={thumb} alt={title} width={60} height={60} effect="opacity" />
                 </ThumbnailWrapper>
                 <ResultInfo>

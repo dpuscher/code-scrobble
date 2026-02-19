@@ -1,5 +1,4 @@
 const Discogs = require('disconnect').Client;
-const dig = require('object-dig');
 const orderBy = require('lodash/orderBy');
 const pick = require('lodash/pick');
 const find = require('lodash/find');
@@ -107,7 +106,7 @@ module.exports = {
             id,
             artist: data.artists.map(a => a.name).join(', '),
             title: data.title,
-            image: dig(data, 'images', 0, 'uri'),
+            image: data?.images?.[0]?.uri,
             url: data.uri,
             year: data.year,
             tracks: normalizeTracklist(data.tracklist)

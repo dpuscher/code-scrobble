@@ -1,5 +1,4 @@
 const LastFMStrategy = require('passport-lastfm');
-const dig = require('object-dig');
 
 const LastFM = require('../app/lastfm');
 const User = require('../app/models/user');
@@ -36,9 +35,9 @@ module.exports = function passportConfig(passport) {
 
           const userData = await LastFM.getUserData(name, key);
           currentUser.url = userData.url;
-          currentUser.image = dig(userData, 'image', 1, '#text');
-          currentUser.imageLarge = dig(userData, 'image', 2, '#text');
-          currentUser.imageXLarge = dig(userData, 'image', 3, '#text');
+          currentUser.image = userData?.image?.[1]?.['#text'];
+          currentUser.imageLarge = userData?.image?.[2]?.['#text'];
+          currentUser.imageXLarge = userData?.image?.[3]?.['#text'];
 
           currentUser.save((saveErr) => {
             if (saveErr) throw saveErr;
