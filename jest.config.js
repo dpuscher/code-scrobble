@@ -10,7 +10,7 @@ module.exports = {
   transformIgnorePatterns: [
     '<rootDir>/node_modules/',
   ],
-  setupFilesAfterEnv: ['<rootDir>/config/setupTests.js'],
+  setupFilesAfterEnv: ['<rootDir>/config/setupTests.ts'],
   collectCoverageFrom: [
     'app/**/*.{js,jsx,ts,tsx}',
     'components/**/*.{js,jsx,ts,tsx}',
