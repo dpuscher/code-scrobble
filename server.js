@@ -31,7 +31,7 @@ app.prepare().then(() => {
 
   routes(server, app);
 
-  server.get('*', (req, res) => handle(req, res));
+  server.get(/(.*)/, (req, res) => handle(req, res));
 
   server.listen(port, (err) => {
     if (err) throw err;

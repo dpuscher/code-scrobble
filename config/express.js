@@ -1,6 +1,6 @@
+const express = require('express');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');
 const compression = require('compression');
 const session = require('express-session');
 const { createClient } = require('redis');
@@ -10,9 +10,10 @@ const { RedisStore } = require('connect-redis');
 module.exports = function expressConfig(app, passport, dev = false) {
   if (dev) app.use(morgan('dev'));
   app.use(cookieParser());
-  app.use(bodyParser.json());
+  app.use(express.json());
   app.use(compression());
-  app.use(helmet());
+  // Disable CSP here — it will be configured at the Next.js layer in a later step
+  app.use(helmet({ contentSecurityPolicy: false }));
 
   const redisClient = createClient({ url: process.env.REDISCLOUD_URL });
   redisClient.connect().catch(console.error);
