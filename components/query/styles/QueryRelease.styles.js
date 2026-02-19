@@ -1,6 +1,5 @@
 import { IoIosSearch } from 'react-icons/io';
 import styled from 'styled-components';
-import { Lazy } from 'react-lazy';
 import LogoIcon from '../../icons/LogoIcon';
 import { dark } from '../../../lib/colors';
 import { buttonReset } from '../../../styles/mixins';
@@ -122,7 +121,7 @@ export const Result = styled.a`
   text-decoration: none;
 `;
 
-export const ThumbnailWrapper = styled(Lazy)`
+export const ThumbnailWrapper = styled.div`
   display: block;
   flex: 0 0 60px;
   width: 60px;
