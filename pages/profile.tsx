@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { fetchSessionIfNeeded } from '../components/session/actions/sessionActions';
 import { receivedSession } from '../components/session/actions/sessionActionCreators';
+import { getSession } from '../lib/session';
 import BackButton from '../components/ui/BackButton';
 import ProfileAutoScrobbles from '../components/profile/ProfileAutoScrobbles';
 import ProfileHistory from '../components/profile/ProfileHistory';
@@ -13,10 +14,12 @@ import {
 } from '../styles/profile.styles';
 
 class Profile extends React.Component<any, any> {
-  static async getInitialProps({ req, store }) {
-    if (req && req.user) {
-      const user = req.user.toJSON();
-      await store.dispatch(receivedSession(user));
+  static async getInitialProps({ req, res, store }: any) {
+    if (req && res) {
+      const session = await getSession(req, res);
+      if (session.user) {
+        await store.dispatch(receivedSession(session.user));
+      }
     }
     return {};
   }

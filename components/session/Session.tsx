@@ -67,7 +67,7 @@ class Session extends React.Component<any, any> {
           <Link href="/profile" passHref legacyBehavior>
             <MenuItem {...autotrackParams('Session', 'Profile')}>Profile</MenuItem>
           </Link>
-          <Link href="/logout" passHref legacyBehavior>
+          <Link href="/api/auth/logout" passHref legacyBehavior>
             <MenuItem {...autotrackParams('Session', 'Logout')}>Logout</MenuItem>
           </Link>
         </Menu>

@@ -24,7 +24,7 @@ const Index = () => (
             are done. We also have an auto-scrobble mode, that makes scrobbling even faster.
           </P>
         </Description>
-        <LoginButton href="/auth/lastfm" {...autotrackParams('Session', 'Login')} />
+        <LoginButton href="/api/auth/lastfm" {...autotrackParams('Session', 'Login')} />
       </main>
     </Wrapper>
     <LegalLinks />
