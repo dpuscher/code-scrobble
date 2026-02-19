@@ -77,4 +77,4 @@ releaseSchema.statics.firstOrCreate = async function firstOrCreate(param) {
   return release;
 };
 
-module.exports = mongoose.model('Release', releaseSchema);
+module.exports = mongoose.models.Release || mongoose.model('Release', releaseSchema);
