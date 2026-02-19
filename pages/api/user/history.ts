@@ -31,6 +31,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     res.json(sortBy(compact(data), ['time']).reverse());
   } catch (err) {
-    res.status(400).json({ err });
+    res.status(400).json({ error: err instanceof Error ? err.message : 'Unknown error' });
   }
 }
