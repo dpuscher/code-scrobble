@@ -6,8 +6,13 @@ export const fetchSession = () => (
   async (dispatch) => {
     try {
       dispatch(setLoadingState(true));
-      const data = await fetch('/api/session', { credentials: 'include' }).then(r => r.json());
-      dispatch(receivedSession(data));
+      const response = await fetch('/api/session', { credentials: 'include' });
+      if (!response.ok) {
+        dispatch(setErrorState(response.status));
+      } else {
+        const data = await response.json();
+        dispatch(receivedSession(data));
+      }
     } catch (error) {
       dispatch(setErrorState(error));
     }
