@@ -66,7 +66,14 @@ releaseSchema.statics.firstOrCreate = async function firstOrCreate(param) {
     const id = param.id || await Discogs.barcode(param.barcode);
     if (!id) return null;
 
-    return this.createFromDiscogs(id, param.barcode);
+    try {
+      return await this.createFromDiscogs(id, param.barcode);
+    } catch (err) {
+      if (err.code === 11000) {
+        return this.findOne(param).exec();
+      }
+      throw err;
+    }
   }
 
   // Data is older than one week
