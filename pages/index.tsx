@@ -5,7 +5,7 @@ import Scanner from '../components/scanner/Scanner';
 import CircleLayout from '../components/layout/CircleLayout';
 
 const codeDetected = ({ codeResult: { code: barcode } }) => {
-  Router.push(`/detected?barcode=${barcode}`, `/detected/${barcode}`);
+  Router.push(`/detected/${barcode}`);
 };
 
 const Scan = () => (

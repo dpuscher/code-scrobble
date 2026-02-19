@@ -5,13 +5,13 @@ import React from 'react';
 import Router from 'next/router';
 import { FaCheckCircle } from 'react-icons/fa';
 import { IoMdQrScanner } from 'react-icons/io';
-import { fetchReleaseIfNeeded } from '../components/release/actions/releaseActions';
-import CircleLayout from '../components/layout/CircleLayout';
-import { RetryButton } from '../components/layout/styles/Error.styles';
-import { trackEvent } from '../lib/analytics';
-import { yellow } from '../lib/colors';
-import { FlexContent } from '../styles/layout.styles';
-import { CoverBackground } from '../styles/scrobbled.styles';
+import { fetchReleaseIfNeeded } from '../../components/release/actions/releaseActions';
+import CircleLayout from '../../components/layout/CircleLayout';
+import { RetryButton } from '../../components/layout/styles/Error.styles';
+import { trackEvent } from '../../lib/analytics';
+import { yellow } from '../../lib/colors';
+import { FlexContent } from '../../styles/layout.styles';
+import { CoverBackground } from '../../styles/scrobbled.styles';
 
 class Scrobbled extends React.Component<any, any> {
   componentDidMount() {
