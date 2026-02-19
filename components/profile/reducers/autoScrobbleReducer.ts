@@ -45,7 +45,7 @@ const autoScrobbleReducer = (state = initialState, action: any = {}) => {
     case REMOVE_AUTO_SCROBBLE:
       return {
         ...state,
-        data: state.data.filter(item => item.id !== action.id),
+        data: state.data ? state.data.filter(item => item.id !== action.id) : null,
       };
 
     default:
