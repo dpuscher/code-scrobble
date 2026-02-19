@@ -1,13 +1,22 @@
-
-import PropTypes from 'prop-types';
 import React from 'react';
 import Link from 'next/link';
 import { ListCaption, ListItem, Time } from '../../styles/profile.styles';
 
-class ProfileHistoryItem extends React.PureComponent<any, any> {
+interface ProfileHistoryItemProps {
+  id: string;
+  artist: string;
+  title: string;
+  year?: string;
+  isDeleting?: boolean;
+  barcode?: string;
+  time: string;
+  discogsId: number;
+}
+
+class ProfileHistoryItem extends React.PureComponent<ProfileHistoryItemProps, {}> {
   render() {
     const {
-      id, artist, title, year, barcode, discogsId, time, isDeleting,
+      id, artist, title, year, barcode, discogsId, time, isDeleting = false,
     } = this.props;
 
     const barcodeParam = barcode || `id:${discogsId}`;
@@ -27,22 +36,5 @@ class ProfileHistoryItem extends React.PureComponent<any, any> {
     );
   }
 }
-
-(ProfileHistoryItem as any).propTypes = {
-  id: PropTypes.string.isRequired,
-  artist: PropTypes.string.isRequired,
-  title: PropTypes.string.isRequired,
-  year: PropTypes.string,
-  isDeleting: PropTypes.bool,
-  barcode: PropTypes.string,
-  time: PropTypes.string.isRequired,
-  discogsId: PropTypes.number.isRequired,
-};
-
-(ProfileHistoryItem as any).defaultProps = {
-  isDeleting: false,
-  year: undefined,
-  barcode: undefined,
-};
 
 export default ProfileHistoryItem;

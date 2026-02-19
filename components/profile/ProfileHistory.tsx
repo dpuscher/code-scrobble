@@ -1,6 +1,5 @@
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import React from 'react';
 import { fetchHistory } from './actions/historyActions';
 import {
@@ -9,13 +8,19 @@ import {
 import ProfileHistoryItem from './ProfileHistoryItem';
 import Spinner from '../layout/Spinner';
 
-class ProfileHistorys extends React.PureComponent<any, any> {
+interface ProfileHistoryProps {
+  history?: any[];
+  loading?: boolean;
+  fetchHistory: () => void;
+}
+
+class ProfileHistorys extends React.PureComponent<ProfileHistoryProps, {}> {
   componentDidMount() {
     this.props.fetchHistory();
   }
 
   render() {
-    const { history, loading } = this.props;
+    const { history = [], loading = true } = this.props;
     return (
       <>
         <H3>History</H3>
@@ -42,17 +47,6 @@ class ProfileHistorys extends React.PureComponent<any, any> {
     );
   }
 }
-
-(ProfileHistorys as any).propTypes = {
-  history: PropTypes.array,
-  loading: PropTypes.bool,
-  fetchHistory: PropTypes.func.isRequired,
-};
-
-(ProfileHistorys as any).defaultProps = {
-  history: [],
-  loading: true,
-};
 
 const mapStateToProps = state => ({
   history: state.history.data,

@@ -1,6 +1,5 @@
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import React from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
@@ -12,7 +11,13 @@ import {
 import targetBlank from '../../lib/targetBlank';
 import { autotrackParams } from '../../lib/analytics';
 
-class Session extends React.Component<any, any> {
+interface SessionProps {
+  session?: any;
+  error?: any;
+  fetchSessionIfNeeded: () => void;
+}
+
+class Session extends React.Component<SessionProps, { open: boolean }> {
   overlayRef = React.createRef<HTMLDivElement>();
 
   state = {
@@ -24,7 +29,7 @@ class Session extends React.Component<any, any> {
     document.addEventListener('click', this.handleClickOutside);
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: SessionProps) {
     if (!prevProps.error && this.props.error) {
       Router.push('/login');
     }
@@ -48,7 +53,7 @@ class Session extends React.Component<any, any> {
   }
 
   render() {
-    const { session, error } = this.props;
+    const { session = {}, error = null } = this.props;
 
     const { open } = this.state;
     if (error) return null;
@@ -82,18 +87,6 @@ class Session extends React.Component<any, any> {
     );
   }
 }
-
-(Session as any).propTypes = {
-  session: PropTypes.object,
-  error: PropTypes.any,
-  fetchSessionIfNeeded: PropTypes.func.isRequired,
-};
-
-(Session as any).defaultProps = {
-  session: {},
-  error: null,
-};
-
 
 const mapStateToProps = state => ({
   session: state.session.data,

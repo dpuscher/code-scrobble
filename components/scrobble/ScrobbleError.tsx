@@ -1,11 +1,14 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import { IoIosRefresh } from 'react-icons/io';
 import { yellow } from '../../lib/colors';
 import { FlexContent } from '../../styles/layout.styles';
 import { ErrorIcon, RetryButton } from '../layout/styles/Error.styles';
 
-const ScrobbleError = ({ onRetry }) => (
+interface ScrobbleErrorProps {
+  onRetry: () => void;
+}
+
+const ScrobbleError = ({ onRetry }: ScrobbleErrorProps) => (
   <FlexContent>
     <ErrorIcon color={yellow} />
     <b>An error occured while sending data to Last.fm</b>
@@ -15,9 +18,5 @@ const ScrobbleError = ({ onRetry }) => (
     </RetryButton>
   </FlexContent>
 );
-
-ScrobbleError.propTypes = {
-  onRetry: PropTypes.func.isRequired,
-};
 
 export default ScrobbleError;

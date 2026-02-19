@@ -1,9 +1,14 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import { Loading, LoadingContent, LoadingWrapper } from './styles/Scrobble.styles';
 import ScrobbleError from './ScrobbleError';
 
-class Scrobble extends React.Component<any, any> {
+interface ScrobbleProps {
+  release: { id: string; image?: string; [key: string]: any };
+  autoScrobble: boolean;
+  onScrobbled: () => void;
+}
+
+class Scrobble extends React.Component<ScrobbleProps, { loadingError: boolean }> {
   state = {
     loadingError: false,
   };
@@ -44,11 +49,5 @@ class Scrobble extends React.Component<any, any> {
     );
   }
 }
-
-(Scrobble as any).propTypes = {
-  release: PropTypes.object.isRequired,
-  autoScrobble: PropTypes.bool.isRequired,
-  onScrobbled: PropTypes.func.isRequired,
-};
 
 export default Scrobble;

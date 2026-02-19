@@ -1,6 +1,5 @@
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import React from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
@@ -18,7 +17,16 @@ import {
   ThumbnailWrapper, Title, Wrapper,
 } from './styles/QueryRelease.styles';
 
-class QueryRelease extends React.Component<any, any> {
+interface QueryReleaseProps {
+  results?: any[];
+  query?: string;
+  loading?: boolean;
+  queryRelease: () => void;
+  resetResults: () => void;
+  setQuery: (query?: string) => void;
+}
+
+class QueryRelease extends React.Component<QueryReleaseProps, { open: boolean; searched: boolean }> {
   inputRef = React.createRef<HTMLInputElement>();
 
   state = {
@@ -55,7 +63,7 @@ class QueryRelease extends React.Component<any, any> {
 
   render() {
     const { open, searched } = this.state;
-    const { loading, results, query } = this.props;
+    const { loading = false, results = [], query = '' } = this.props;
 
     let content = <FallbackWrapper><FallbackIcon color="#F4F4F4" /></FallbackWrapper>;
     if (loading) {
@@ -124,21 +132,6 @@ class QueryRelease extends React.Component<any, any> {
     );
   }
 }
-
-(QueryRelease as any).propTypes = {
-  results: PropTypes.array,
-  query: PropTypes.string,
-  loading: PropTypes.bool,
-  queryRelease: PropTypes.func.isRequired,
-  resetResults: PropTypes.func.isRequired,
-  setQuery: PropTypes.func.isRequired,
-};
-
-(QueryRelease as any).defaultProps = {
-  results: [],
-  loading: false,
-  query: '',
-};
 
 const mapStateToProps = state => ({
   ...state.query,

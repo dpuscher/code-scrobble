@@ -1,6 +1,5 @@
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import React from 'react';
 import { FaLastfm } from 'react-icons/fa';
 import { MdClose } from 'react-icons/md';
@@ -10,12 +9,22 @@ import SearchReleaseError from './SearchReleaseError';
 import { Button, Poster, PosterContent } from './styles/SearchRelease.styles';
 import { autotrackParams } from '../../lib/analytics';
 
-class SearchRelease extends React.Component<any, any> {
+interface SearchReleaseProps {
+  code: string;
+  onScrobble: () => void;
+  onCancel: () => void;
+  fetchRelease: (code: string) => void;
+  error?: any;
+  loading?: boolean;
+  data?: any;
+}
+
+class SearchRelease extends React.Component<SearchReleaseProps, {}> {
   componentDidMount() {
     this.props.fetchRelease(this.props.code);
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: SearchReleaseProps) {
     const { data } = this.props;
     if (prevProps.data !== data && data.instantScrobble) {
       this.props.onScrobble();
@@ -24,7 +33,7 @@ class SearchRelease extends React.Component<any, any> {
 
   render() {
     const {
-      code, error, loading, data, onCancel, onScrobble,
+      code, error = null, loading = true, data = {}, onCancel, onScrobble,
     } = this.props;
     return (
       <>
@@ -56,22 +65,6 @@ class SearchRelease extends React.Component<any, any> {
     );
   }
 }
-
-(SearchRelease as any).propTypes = {
-  code: PropTypes.string.isRequired,
-  onScrobble: PropTypes.func.isRequired,
-  onCancel: PropTypes.func.isRequired,
-  fetchRelease: PropTypes.func.isRequired,
-  error: PropTypes.any,
-  loading: PropTypes.bool,
-  data: PropTypes.object,
-};
-
-(SearchRelease as any).defaultProps = {
-  error: null,
-  loading: true,
-  data: {},
-};
 
 const mapStateToProps = (state, { code }) => ({
   ...state.release[code],

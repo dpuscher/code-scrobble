@@ -3160,7 +3160,6 @@ __metadata:
     next: "npm:^14.2.0"
     next-redux-wrapper: "npm:^8.1.0"
     nprogress: "npm:^0.2.0"
-    prop-types: "npm:^15.8.1"
     quagga: "npm:^0.12.1"
     react: "npm:^18.0.0"
     react-dom: "npm:^18.0.0"

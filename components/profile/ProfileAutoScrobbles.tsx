@@ -1,6 +1,5 @@
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import React from 'react';
 import { fetchAutoScrobbles } from './actions/autoScrobbleActions';
 import {
@@ -9,14 +8,21 @@ import {
 import ProfileAutoScrobbleItem from './ProfileAutoScrobbleItem';
 import Spinner from '../layout/Spinner';
 
-class ProfileAutoScrobbles extends React.PureComponent<any, any> {
+interface ProfileAutoScrobblesProps {
+  data?: any[];
+  loading?: boolean;
+  deleting?: any[];
+  fetchAutoScrobbles: () => void;
+}
+
+class ProfileAutoScrobbles extends React.PureComponent<ProfileAutoScrobblesProps, {}> {
   componentDidMount() {
     this.props.fetchAutoScrobbles();
   }
 
   render() {
     const {
-      data, loading, deleting,
+      data = [], loading = true, deleting = [],
     } = this.props;
     return (
       <>
@@ -46,19 +52,6 @@ class ProfileAutoScrobbles extends React.PureComponent<any, any> {
     );
   }
 }
-
-(ProfileAutoScrobbles as any).propTypes = {
-  data: PropTypes.array,
-  loading: PropTypes.bool,
-  deleting: PropTypes.array,
-  fetchAutoScrobbles: PropTypes.func.isRequired,
-};
-
-(ProfileAutoScrobbles as any).defaultProps = {
-  data: [],
-  loading: true,
-  deleting: [],
-};
 
 const mapStateToProps = state => ({
   data: state.autoScrobbles.data,
