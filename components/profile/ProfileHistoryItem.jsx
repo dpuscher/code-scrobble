@@ -14,7 +14,7 @@ class ProfileHistoryItem extends React.PureComponent {
 
     return (
       <ListItem key={id}>
-        <Link href={`/detected?barcode=${barcodeParam}`} as={`/detected/${barcodeParam}`} passHref>
+        <Link href={`/detected?barcode=${barcodeParam}`} as={`/detected/${barcodeParam}`} passHref legacyBehavior>
           <ListCaption disabled={isDeleting} as="a">
             <span css="margin-right:1em">
               {`${artist} - ${title}`}
