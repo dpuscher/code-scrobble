@@ -49,7 +49,6 @@ export default class MyDocument extends Document {
           <meta name="msapplication-config" content="/static/browserconfig.xml" />
           <meta name="msapplication-TileColor" content="#ffc40d" />
           <meta name="theme-color" content="#1d1e22" />
-          <meta name="viewport" content="width=device-width,initial-scale=1" />
           {(this.props as any).showManifest && (
             <link rel="manifest" href="/static/site.webmanifest" />
           )}

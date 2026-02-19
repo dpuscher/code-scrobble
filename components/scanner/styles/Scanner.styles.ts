@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 
 // eslint-disable-next-line import/prefer-default-export
-export const Camera = styled.div<{ visible?: boolean }>`
-  visibility: ${props => (props.visible ? 'visible' : 'hidden')};
+export const Camera = styled.div<{ $visible?: boolean }>`
+  visibility: ${props => (props.$visible ? 'visible' : 'hidden')};
   position: absolute;
   width: 100%;
   height: 100%;

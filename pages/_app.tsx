@@ -17,6 +17,7 @@ function MyApp({ Component, pageProps }) {
       <NProgressStyles />
       <Head>
         <title>CodeScrobble ► Easily scrobble VINYL and CD to Last.fm</title>
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
       </Head>
       <Component {...props.pageProps} />
     </Provider>

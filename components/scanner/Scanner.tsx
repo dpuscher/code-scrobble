@@ -85,7 +85,7 @@ class Scanner extends React.Component<any, any> {
           </FlexContent>
         )}
         {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-        <Camera id="camera" visible={ready}><video playsInline autoPlay /></Camera>
+        <Camera id="camera" $visible={ready}><video playsInline autoPlay /></Camera>
       </>
     );
   }
