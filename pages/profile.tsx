@@ -7,6 +7,7 @@ import { getSession } from '../lib/session';
 import BackButton from '../components/ui/BackButton';
 import ProfileAutoScrobbles from '../components/profile/ProfileAutoScrobbles';
 import ProfileHistory from '../components/profile/ProfileHistory';
+import { wrapper } from '../client/reduxStore';
 import {
   H1, H2, Header, ProfileImg, Wrapper,
 } from '../styles/profile.styles';
@@ -17,16 +18,6 @@ interface ProfileProps {
 }
 
 class Profile extends React.Component<ProfileProps, {}> {
-  static async getInitialProps({ req, res, store }: any) {
-    if (req && res) {
-      const session = await getSession(req, res);
-      if (session.user) {
-        await store.dispatch(receivedSession(session.user));
-      }
-    }
-    return {};
-  }
-
   componentDidMount() {
     this.props.fetchSessionIfNeeded();
   }
@@ -53,8 +44,16 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => (
-  bindActionCreators({ fetchSessionIfNeeded, receivedSession }, dispatch)
+  bindActionCreators({ fetchSessionIfNeeded }, dispatch)
 );
+
+export const getServerSideProps = wrapper.getServerSideProps(store => async ({ req, res }) => {
+  const session = await getSession(req, res);
+  if (session.user) {
+    await store.dispatch(receivedSession(session.user));
+  }
+  return { props: {} };
+});
 
 export default connect(
   mapStateToProps,
