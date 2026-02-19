@@ -8,8 +8,8 @@ import { wrapper } from '../client/reduxStore';
 
 initNProgress();
 
-function MyApp({ Component, pageProps }) {
-  const { store, props } = wrapper.useWrappedStore(pageProps);
+function MyApp({ Component, ...rest }) {
+  const { store, props } = wrapper.useWrappedStore(rest);
 
   return (
     <Provider store={store}>
