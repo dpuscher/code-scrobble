@@ -1,5 +1,5 @@
 import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
+import { thunk } from "redux-thunk";;
 
 import * as actionCreators from '../historyActionCreators';
 import { fetchHistory } from '../historyActions';

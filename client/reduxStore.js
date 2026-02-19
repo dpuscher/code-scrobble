@@ -1,6 +1,7 @@
-import thunkMiddleware from 'redux-thunk';
+import { thunk as thunkMiddleware } from 'redux-thunk';
 import { combineReducers, createStore, applyMiddleware } from 'redux';
 import { composeWithDevToolsLogOnlyInProduction as composeWithDevTools } from '@redux-devtools/extension';
+import { createWrapper } from 'next-redux-wrapper';
 
 import sessionReducer from '../components/session/reducers/sessionReducer';
 import historyReducer from '../components/profile/reducers/historyReducer';
@@ -16,10 +17,10 @@ const reducer = combineReducers({
   query: queryReducer,
 });
 
-export default function initializeStore(initialState = {}) {
-  return createStore(
-    reducer,
-    initialState,
-    composeWithDevTools(applyMiddleware(thunkMiddleware)),
-  );
-}
+const makeStore = () => createStore(
+  reducer,
+  composeWithDevTools(applyMiddleware(thunkMiddleware)),
+);
+
+export const wrapper = createWrapper(makeStore);
+export default makeStore;
