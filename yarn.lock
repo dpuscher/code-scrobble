@@ -2138,6 +2138,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mongodb-js/saslprep@npm:^1.3.0":
+  version: 1.4.6
+  resolution: "@mongodb-js/saslprep@npm:1.4.6"
+  dependencies:
+    sparse-bitfield: "npm:^3.0.3"
+  checksum: 10c0/bc429bad416b413ded91ef5b74da544b6ce819c5cba49bdad90fd318215e012c22b3c5eb8e2e12fd437d5efa6b8c00361b61dd147483b3c312962574a3831afd
+  languageName: node
+  linkType: hard
+
 "@next/bundle-analyzer@npm:^9.2.0":
   version: 9.5.5
   resolution: "@next/bundle-analyzer@npm:9.5.5"
@@ -3016,6 +3025,22 @@ __metadata:
   version: 4.0.5
   resolution: "@types/tough-cookie@npm:4.0.5"
   checksum: 10c0/68c6921721a3dcb40451543db2174a145ef915bc8bcbe7ad4e59194a0238e776e782b896c7a59f4b93ac6acefca9161fccb31d1ce3b3445cb6faa467297fb473
+  languageName: node
+  linkType: hard
+
+"@types/webidl-conversions@npm:*":
+  version: 7.0.3
+  resolution: "@types/webidl-conversions@npm:7.0.3"
+  checksum: 10c0/ac2ccff93b95ac7c8ca73dc6064403181691bba7ea144296f462dc9108a07be16cbad7b9c704b3df706dcc5a117e1f7bf7fb27aeb75b09c0f3148de8aee11aff
+  languageName: node
+  linkType: hard
+
+"@types/whatwg-url@npm:^11.0.2":
+  version: 11.0.5
+  resolution: "@types/whatwg-url@npm:11.0.5"
+  dependencies:
+    "@types/webidl-conversions": "npm:*"
+  checksum: 10c0/7a9b9252dee98df6db1ad62337daca7f59ae50d7a3406d14ac6b57168d406004359994f3371155e24f3cf12002c4cb8bbb0883bd4cefb9d7ee8e2b510bdd7f5e
   languageName: node
   linkType: hard
 
@@ -4383,13 +4408,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bluebird@npm:3.5.1":
-  version: 3.5.1
-  resolution: "bluebird@npm:3.5.1"
-  checksum: 10c0/6df1d4499612aecc146cf6f89a8e81f4f7fd0f7a896bf57742214861c97882d9a4e0d8deab1a4e0c5270ad722d4ff74f161cce81c2742b58fb72f113cafd9ad6
-  languageName: node
-  linkType: hard
-
 "bluebird@npm:^3.5.0, bluebird@npm:^3.5.5":
   version: 3.7.2
   resolution: "bluebird@npm:3.7.2"
@@ -4635,10 +4653,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bson@npm:^1.1.1, bson@npm:~1.1.1":
-  version: 1.1.3
-  resolution: "bson@npm:1.1.3"
-  checksum: 10c0/d983885b736053fc70626c3cf4454353144c2c30a421fe989d760c1cd6fa23157663c3ed473ca0652fdfc8e28fe903755ec55ac44181273527dc4b4a6b97913b
+"bson@npm:^6.10.4":
+  version: 6.10.4
+  resolution: "bson@npm:6.10.4"
+  checksum: 10c0/6c6819ce642516901349f42c5d9d131d5a4e84352a3859c814d4abf6b2b9249e3685b57fc4cf7b5737fb5c71252f65900a41826c1429815a93e43f0f5bb3c173
   languageName: node
   linkType: hard
 
@@ -5174,7 +5192,7 @@ __metadata:
     jest-fetch-mock: "npm:^3.0.1"
     lastfmapi: "npm:^0.1.1"
     lodash: "npm:^4.17.21"
-    mongoose: "npm:^5.8.9"
+    mongoose: "npm:^8.0.0"
     morgan: "npm:^1.10.0"
     next: "npm:^9.2.0"
     next-redux-wrapper: "npm:^4.0.1"
@@ -5972,16 +5990,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:3.1.0":
-  version: 3.1.0
-  resolution: "debug@npm:3.1.0"
-  dependencies:
-    ms: "npm:2.0.0"
-  checksum: 10c0/5bff34a352d7b2eaa31886eeaf2ee534b5461ec0548315b2f9f80bd1d2533cab7df1fa52e130ce27bc31c3945fbffb0fc72baacdceb274b95ce853db89254ea4
-  languageName: node
-  linkType: hard
-
-"debug@npm:4, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.4, debug@npm:^4.4.3":
+"debug@npm:4, debug@npm:4.x, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.4, debug@npm:^4.4.3":
   version: 4.4.3
   resolution: "debug@npm:4.4.3"
   dependencies:
@@ -10531,10 +10540,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"kareem@npm:2.3.1":
-  version: 2.3.1
-  resolution: "kareem@npm:2.3.1"
-  checksum: 10c0/401d9e25ca112f9894a930633833b088b90b7167c2be1c23c355a600434142ed460651df1585d8726cb5a45866d3b8a2adfb41f2032225ae979a8e05d1d4bc98
+"kareem@npm:2.6.3":
+  version: 2.6.3
+  resolution: "kareem@npm:2.6.3"
+  checksum: 10c0/a5a3e2932cf54a300bf1a9936a2d1695f409066ce213ec3cd26bf788ac20d150edde21877a18b073efa219cab56f0192f710d87d95dde0829ff44666d9b15f76
   languageName: node
   linkType: hard
 
@@ -11412,46 +11421,62 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongodb@npm:3.4.1":
-  version: 3.4.1
-  resolution: "mongodb@npm:3.4.1"
+"mongodb-connection-string-url@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "mongodb-connection-string-url@npm:3.0.2"
   dependencies:
-    bson: "npm:^1.1.1"
-    require_optional: "npm:^1.0.1"
-    safe-buffer: "npm:^5.1.2"
-    saslprep: "npm:^1.0.0"
-  dependenciesMeta:
-    saslprep:
-      optional: true
-  checksum: 10c0/c3e565a5b414c427337032170a3f1619e4cb2ea68689e95c397bb20b8db0d17fe0cec3cf1e0bdd97116fd8e0e50a63371d12dcb2e51d2c1d7416339776f686ae
+    "@types/whatwg-url": "npm:^11.0.2"
+    whatwg-url: "npm:^14.1.0 || ^13.0.0"
+  checksum: 10c0/8b7ac99634f167dbe690e90fa10528e3ffc029faf2feabf36efb84299a04831130b3dba114dbe132f05a8a38022976904b625976996a4534bca4368e8fa5ba33
   languageName: node
   linkType: hard
 
-"mongoose-legacy-pluralize@npm:1.0.2":
-  version: 1.0.2
-  resolution: "mongoose-legacy-pluralize@npm:1.0.2"
+"mongodb@npm:~6.20.0":
+  version: 6.20.0
+  resolution: "mongodb@npm:6.20.0"
+  dependencies:
+    "@mongodb-js/saslprep": "npm:^1.3.0"
+    bson: "npm:^6.10.4"
+    mongodb-connection-string-url: "npm:^3.0.2"
   peerDependencies:
-    mongoose: "*"
-  checksum: 10c0/d09f90f60ad83bb99c3d9974e6055433fd4f324de79688f811e4f23c878cdd266a44dd4387b644e5fef1ef7871c5a7038546ff3dc335ba5935e6060e7c60a6fb
+    "@aws-sdk/credential-providers": ^3.188.0
+    "@mongodb-js/zstd": ^1.1.0 || ^2.0.0
+    gcp-metadata: ^5.2.0
+    kerberos: ^2.0.1
+    mongodb-client-encryption: ">=6.0.0 <7"
+    snappy: ^7.3.2
+    socks: ^2.7.1
+  peerDependenciesMeta:
+    "@aws-sdk/credential-providers":
+      optional: true
+    "@mongodb-js/zstd":
+      optional: true
+    gcp-metadata:
+      optional: true
+    kerberos:
+      optional: true
+    mongodb-client-encryption:
+      optional: true
+    snappy:
+      optional: true
+    socks:
+      optional: true
+  checksum: 10c0/a42d5a04cd2dc195c80293cdc2deb8efd1887559f3a37ffa42bade0d7709a980b6655bf38dd3e774dd68ad063a2c0c577fca9d5bcae1cafa2582083cf39e1e6c
   languageName: node
   linkType: hard
 
-"mongoose@npm:^5.8.9":
-  version: 5.8.9
-  resolution: "mongoose@npm:5.8.9"
+"mongoose@npm:^8.0.0":
+  version: 8.23.0
+  resolution: "mongoose@npm:8.23.0"
   dependencies:
-    bson: "npm:~1.1.1"
-    kareem: "npm:2.3.1"
-    mongodb: "npm:3.4.1"
-    mongoose-legacy-pluralize: "npm:1.0.2"
-    mpath: "npm:0.6.0"
-    mquery: "npm:3.2.2"
-    ms: "npm:2.1.2"
-    regexp-clone: "npm:1.0.0"
-    safe-buffer: "npm:5.1.2"
-    sift: "npm:7.0.1"
-    sliced: "npm:1.0.1"
-  checksum: 10c0/4f922924dc209c299c3eb826ddcb09bda2a9eb7f71a233ff0dade1a6de82e9ff24d2fa266c239bc68a781dfd1718caa257f8dfa71071846c3d0e6c894f5624a1
+    bson: "npm:^6.10.4"
+    kareem: "npm:2.6.3"
+    mongodb: "npm:~6.20.0"
+    mpath: "npm:0.9.0"
+    mquery: "npm:5.0.0"
+    ms: "npm:2.1.3"
+    sift: "npm:17.1.3"
+  checksum: 10c0/adda51d8e9cc5e379976a90213b421a5bae77753fad869ea9305b186cd416237bfc8f8bf9998e1675ea26f2d45594976e1b86bff5ec6e56a87c1ee43d4bb7cbc
   languageName: node
   linkType: hard
 
@@ -11489,23 +11514,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mpath@npm:0.6.0":
-  version: 0.6.0
-  resolution: "mpath@npm:0.6.0"
-  checksum: 10c0/33148962df7ba226763417d7f0c78c16999fdf1fb07600b527e0ee5b2282675870e251cfa176bca12153d5917bff0c152e896d9791dd6a22ffc7a52c3d732a3a
+"mpath@npm:0.9.0":
+  version: 0.9.0
+  resolution: "mpath@npm:0.9.0"
+  checksum: 10c0/ac1a77ebbd44567f122fb3026c9647836215d5bb75b54064d1f3d998125644fe7a775b89441b94d4d60f43ad9638a12d830a9e29f36116e93b8cdfd111816e8f
   languageName: node
   linkType: hard
 
-"mquery@npm:3.2.2":
-  version: 3.2.2
-  resolution: "mquery@npm:3.2.2"
+"mquery@npm:5.0.0":
+  version: 5.0.0
+  resolution: "mquery@npm:5.0.0"
   dependencies:
-    bluebird: "npm:3.5.1"
-    debug: "npm:3.1.0"
-    regexp-clone: "npm:^1.0.0"
-    safe-buffer: "npm:5.1.2"
-    sliced: "npm:1.0.1"
-  checksum: 10c0/001765d8f2cc0d0a873de1ccf05635fb084e144e504aab2177c8c504bd9ac5ad3760a1c85a7a0293c7959349774b318d858963be5bf50a777ab7bc628f8612f6
+    debug: "npm:4.x"
+  checksum: 10c0/65b8a92d3b23d9bd1a3d149c3cbd09468e5e5b95d6cff73c1ed2d0a3dc8dce7daa538862ca2a477bf99bbb2197b049becb73d9664b0f7c3dd5472fcd5cb34bca
   languageName: node
   linkType: hard
 
@@ -11523,17 +11544,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ms@npm:2.1.2, ms@npm:^2.1.1":
-  version: 2.1.2
-  resolution: "ms@npm:2.1.2"
-  checksum: 10c0/a437714e2f90dbf881b5191d35a6db792efbca5badf112f87b9e1c712aace4b4b9b742dd6537f3edf90fd6f684de897cec230abde57e87883766712ddda297cc
-  languageName: node
-  linkType: hard
-
 "ms@npm:2.1.3, ms@npm:^2.1.3":
   version: 2.1.3
   resolution: "ms@npm:2.1.3"
   checksum: 10c0/d924b57e7312b3b63ad21fc5b3dc0af5e78d61a1fc7cfb5457edaf26326bf62be5307cc87ffb6862ef1c2b33b0233cdb5d4f01c4c958cc0d660948b65a287a48
+  languageName: node
+  linkType: hard
+
+"ms@npm:^2.1.1":
+  version: 2.1.2
+  resolution: "ms@npm:2.1.2"
+  checksum: 10c0/a437714e2f90dbf881b5191d35a6db792efbca5badf112f87b9e1c712aace4b4b9b742dd6537f3edf90fd6f684de897cec230abde57e87883766712ddda297cc
   languageName: node
   linkType: hard
 
@@ -14214,13 +14235,6 @@ passport-lastfm@dpuscher/passport-lastfm:
   languageName: node
   linkType: hard
 
-"regexp-clone@npm:1.0.0, regexp-clone@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "regexp-clone@npm:1.0.0"
-  checksum: 10c0/5fc477a6d99d37d3360e146d6cc8b8502d1c3b4a9f7a3752f2a2815858d2057611348180778ccb98e8a53569e05d8720046d238a1e6cfc63e10cae3b0eb42ad2
-  languageName: node
-  linkType: hard
-
 "regexp.prototype.flags@npm:^1.5.3, regexp.prototype.flags@npm:^1.5.4":
   version: 1.5.4
   resolution: "regexp.prototype.flags@npm:1.5.4"
@@ -14330,16 +14344,6 @@ passport-lastfm@dpuscher/passport-lastfm:
   languageName: node
   linkType: hard
 
-"require_optional@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "require_optional@npm:1.0.1"
-  dependencies:
-    resolve-from: "npm:^2.0.0"
-    semver: "npm:^5.1.0"
-  checksum: 10c0/41e91be2844453aca624feaa9bf5fce8ec90f9565fd29235ac080ebe4663a1b2e19f91a238f55cb7ca3f977075b7b8dfd1266fa0d767ba2bc7bb8b604d0b6661
-  languageName: node
-  linkType: hard
-
 "requires-port@npm:^1.0.0":
   version: 1.0.0
   resolution: "requires-port@npm:1.0.0"
@@ -14353,13 +14357,6 @@ passport-lastfm@dpuscher/passport-lastfm:
   dependencies:
     resolve-from: "npm:^5.0.0"
   checksum: 10c0/e608a3ebd15356264653c32d7ecbc8fd702f94c6703ea4ac2fb81d9c359180cba0ae2e6b71faa446631ed6145454d5a56b227efc33a2d40638ac13f8beb20ee4
-  languageName: node
-  linkType: hard
-
-"resolve-from@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "resolve-from@npm:2.0.0"
-  checksum: 10c0/e2b385b9ed3b283356f0ebff0f1fde15c5772c8110f75e27c9d698816b62d2b4d3afc27b02b06a9b713ed9f77df766e8eb42ff7bc1de2f5d60751b4016eded1d
   languageName: node
   linkType: hard
 
@@ -14645,15 +14642,6 @@ passport-lastfm@dpuscher/passport-lastfm:
   languageName: node
   linkType: hard
 
-"saslprep@npm:^1.0.0":
-  version: 1.0.3
-  resolution: "saslprep@npm:1.0.3"
-  dependencies:
-    sparse-bitfield: "npm:^3.0.3"
-  checksum: 10c0/7dea5b2c0cb507132d4a6e1a65082b1118b435f9bb5b13665e71e581875dc574d4fb26dd0246d72daa1d7a453b131043aa0f8c1a8813ca2d4b577335156f99ac
-  languageName: node
-  linkType: hard
-
 "sax@npm:^1.2.4":
   version: 1.2.4
   resolution: "sax@npm:1.2.4"
@@ -14701,7 +14689,7 @@ passport-lastfm@dpuscher/passport-lastfm:
   languageName: node
   linkType: hard
 
-"semver@npm:2 || 3 || 4 || 5, semver@npm:^5.1.0, semver@npm:^5.4.1, semver@npm:^5.5.0, semver@npm:^5.5.1, semver@npm:^5.6.0, semver@npm:^5.7.0, semver@npm:^5.7.1":
+"semver@npm:2 || 3 || 4 || 5, semver@npm:^5.4.1, semver@npm:^5.5.0, semver@npm:^5.5.1, semver@npm:^5.6.0, semver@npm:^5.7.0, semver@npm:^5.7.1":
   version: 5.7.1
   resolution: "semver@npm:5.7.1"
   bin:
@@ -14986,10 +14974,10 @@ passport-lastfm@dpuscher/passport-lastfm:
   languageName: node
   linkType: hard
 
-"sift@npm:7.0.1":
-  version: 7.0.1
-  resolution: "sift@npm:7.0.1"
-  checksum: 10c0/5680224835c101b822929661dca6eceeb4e16832677d1dbe6c2913dba4dd535c6e7796efd3f6ae6e1e0c10a655eb83c9ace90557f9ef2227573fd878447f6da3
+"sift@npm:17.1.3":
+  version: 17.1.3
+  resolution: "sift@npm:17.1.3"
+  checksum: 10c0/bb05d1d65cc9b549b402c1366ba1fcf685311808b6d5c2f4fa2f477d7b524218bbf6c99587562d5613d407820a6b5a7cad809f89c3f75c513ff5d8c0e0a0cead
   languageName: node
   linkType: hard
 
@@ -15036,13 +15024,6 @@ passport-lastfm@dpuscher/passport-lastfm:
     astral-regex: "npm:^2.0.0"
     is-fullwidth-code-point: "npm:^3.0.0"
   checksum: 10c0/6c25678db1270d4793e0327620f1e0f9f5bea4630123f51e9e399191bc52c87d6e6de53ed33538609e5eacbd1fab769fae00f3705d08d029f02102a540648918
-  languageName: node
-  linkType: hard
-
-"sliced@npm:1.0.1":
-  version: 1.0.1
-  resolution: "sliced@npm:1.0.1"
-  checksum: 10c0/42f93fdc87b79492704d6af45efaafe407384812467514f6763ec823fedb32f7cbe8addd85bfebc6eff094f79fab899225b82690ab57c62d1959c4f6bbc6f5b1
   languageName: node
   linkType: hard
 
@@ -16163,6 +16144,15 @@ passport-lastfm@dpuscher/passport-lastfm:
   languageName: node
   linkType: hard
 
+"tr46@npm:^5.1.0":
+  version: 5.1.1
+  resolution: "tr46@npm:5.1.1"
+  dependencies:
+    punycode: "npm:^2.3.1"
+  checksum: 10c0/ae270e194d52ec67ebd695c1a42876e0f19b96e4aca2ab464ab1d9d17dc3acd3e18764f5034c93897db73421563be27c70c98359c4501136a497e46deda5d5ec
+  languageName: node
+  linkType: hard
+
 "traverse@npm:0.6.6":
   version: 0.6.6
   resolution: "traverse@npm:0.6.6"
@@ -16897,6 +16887,16 @@ passport-lastfm@dpuscher/passport-lastfm:
     tr46: "npm:^3.0.0"
     webidl-conversions: "npm:^7.0.0"
   checksum: 10c0/f7ec264976d7c725e0696fcaf9ebe056e14422eacbf92fdbb4462034609cba7d0c85ffa1aab05e9309d42969bcf04632ba5ed3f3882c516d7b093053315bf4c1
+  languageName: node
+  linkType: hard
+
+"whatwg-url@npm:^14.1.0 || ^13.0.0":
+  version: 14.2.0
+  resolution: "whatwg-url@npm:14.2.0"
+  dependencies:
+    tr46: "npm:^5.1.0"
+    webidl-conversions: "npm:^7.0.0"
+  checksum: 10c0/f746fc2f4c906607d09537de1227b13f9494c171141e5427ed7d2c0dd0b6a48b43d8e71abaae57d368d0c06b673fd8ec63550b32ad5ed64990c7b0266c2b4272
   languageName: node
   linkType: hard
 

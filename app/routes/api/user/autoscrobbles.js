@@ -3,13 +3,10 @@ const sortBy = require('lodash/sortBy');
 const Release = require('../../../models/release');
 const User = require('../../../models/user');
 
-Router.get('/', (req, res) => {
-  const { user } = req;
-
-  Release.find({ _id: { $in: user.instantScrobbles } }, (err, releases = []) => {
-    if (err) {
-      return res.status(400).send({ err });
-    }
+Router.get('/', async (req, res) => {
+  try {
+    const { user } = req;
+    const releases = await Release.find({ _id: { $in: user.instantScrobbles } });
 
     const data = releases.map(release => ({
       // eslint-disable-next-line no-underscore-dangle
@@ -19,7 +16,9 @@ Router.get('/', (req, res) => {
       year: release.year,
     }));
     return res.send(sortBy(data, ['artist', 'title']));
-  });
+  } catch (err) {
+    return res.status(400).send({ err });
+  }
 });
 
 Router.delete('/', async (req, res) => {
@@ -27,7 +26,7 @@ Router.delete('/', async (req, res) => {
     const { body: { id }, user } = req;
 
     // eslint-disable-next-line no-underscore-dangle
-    await User.update({ _id: user._id }, { $pullAll: { instantScrobbles: [id] } });
+    await User.updateOne({ _id: user._id }, { $pullAll: { instantScrobbles: [id] } });
 
     return res.send();
   } catch (error) {
