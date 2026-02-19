@@ -18,6 +18,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const instantScrobble = user.isInstantScrobble(release._id);
     res.json({ instantScrobble, ...release.toJSON() });
   } catch (error) {
-    res.status(400).json({ error });
+    res.status(400).json({ error: error instanceof Error ? error.message : 'Unknown error' });
   }
 }
