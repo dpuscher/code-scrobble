@@ -1,15 +1,25 @@
 /* eslint-disable no-underscore-dangle */
 
-const redis = require('redis-mock');
+const store = new Map();
 
-const client = redis.createClient();
-client.get = jest.fn(client.get);
-client.set = jest.fn(client.set);
+const mockGet = jest.fn(async (key) => store.get(key) || null);
+const mockSet = jest.fn(async (key, value) => {
+  store.set(key, value);
+  return 'OK';
+});
+const mockConnect = jest.fn(async () => {});
+const mockOn = jest.fn();
 
-redis.createClient = () => client;
+const createClient = jest.fn(() => ({
+  get: mockGet,
+  set: mockSet,
+  connect: mockConnect,
+  on: mockOn,
+}));
 
-redis._get = client.get;
-redis._set = client.set;
-redis._reset = client.flushall;
-
-module.exports = redis;
+module.exports = {
+  createClient,
+  _get: mockGet,
+  _set: mockSet,
+  _reset: () => store.clear(),
+};

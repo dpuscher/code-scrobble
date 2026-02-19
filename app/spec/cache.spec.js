@@ -22,7 +22,7 @@ describe('cache', () => {
       expect(redis._set.mock.calls.length).toBe(1);
       expect(redis._set.mock.calls[0][0]).toBe(key);
       expect(redis._set.mock.calls[0][1]).toBe(JSON.stringify(value));
-      expect(redis._set.mock.calls[0][2]).toBe('EX');
+      expect(redis._set.mock.calls[0][2]).toEqual({ EX: 86400 });
     });
 
     it('passes given ttl to redis store', async () => {
@@ -32,7 +32,7 @@ describe('cache', () => {
 
       await Cache.set(key, value, ttl);
 
-      expect(redis._set.mock.calls[0][3]).toBe(ttl);
+      expect(redis._set.mock.calls[0][2]).toEqual({ EX: ttl });
     });
 
     it('uses 24 hours as default ttl', async () => {
@@ -41,7 +41,7 @@ describe('cache', () => {
 
       await Cache.set(key, value);
 
-      expect(redis._set.mock.calls[0][3]).toBe(24 * 60 * 60);
+      expect(redis._set.mock.calls[0][2]).toEqual({ EX: 24 * 60 * 60 });
     });
   });
 
