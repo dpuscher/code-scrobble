@@ -100,7 +100,7 @@ module.exports = {
     new Promise((resolve, reject) => {
       Database.getRelease(id, (err, data) => {
         if (err || !data) {
-          reject();
+          reject(err || new Error('No data returned from Discogs'));
         } else {
           resolve({
             id,

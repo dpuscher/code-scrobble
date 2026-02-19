@@ -8,7 +8,9 @@ export const fetchRelease = code => (
       dispatch(setErrorState(code, null));
       dispatch(setLoadingState(code, true));
 
-      const data = await fetch(`/api/barcode/${code}`, { credentials: 'include' }).then(r => r.json());
+      const response = await fetch(`/api/barcode/${code}`, { credentials: 'include' });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const data = await response.json();
 
       if (data.id) {
         dispatch(receivedRelease(code, data));
