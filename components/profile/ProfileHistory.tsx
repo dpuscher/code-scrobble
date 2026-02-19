@@ -14,7 +14,7 @@ interface ProfileHistoryProps {
   fetchHistory: () => void;
 }
 
-class ProfileHistorys extends React.PureComponent<ProfileHistoryProps, {}> {
+class ProfileHistory extends React.PureComponent<ProfileHistoryProps, {}> {
   componentDidMount() {
     this.props.fetchHistory();
   }
@@ -60,4 +60,4 @@ const mapDispatchToProps = dispatch => (
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(ProfileHistorys);
+)(ProfileHistory);
