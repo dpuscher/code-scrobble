@@ -30,4 +30,4 @@ userSchema.methods.isInstantScrobble = function isInstantScrobble(id) {
   return (this.instantScrobbles || []).includes(String(id));
 };
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.models.User || mongoose.model('User', userSchema);
