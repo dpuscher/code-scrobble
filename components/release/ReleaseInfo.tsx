@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import { MdClose } from 'react-icons/md'; // TODO: replace
 import durationFormat from '../../lib/durationFormat';
@@ -10,7 +9,26 @@ import {
 import { silver } from '../../lib/colors';
 import { autotrackParams, trackEvent } from '../../lib/analytics';
 
-class ReleaseInfo extends React.Component<any, any> {
+type Track = {
+  trackNumber: string;
+  title: string;
+  duration: number;
+};
+
+type Release = {
+  image?: string;
+  title: string;
+  year?: string;
+  artist: string;
+  tracks: Track[];
+  url: string;
+};
+
+interface ReleaseInfoProps {
+  release?: Release;
+}
+
+class ReleaseInfo extends React.Component<ReleaseInfoProps, { open: boolean }> {
   state = {
     open: false,
   }
@@ -26,7 +44,7 @@ class ReleaseInfo extends React.Component<any, any> {
     const {
       release: {
         image, title, year, artist, tracks, url,
-      },
+      } = {} as Release,
     } = this.props;
     return (
       <Wrapper>
@@ -72,13 +90,5 @@ class ReleaseInfo extends React.Component<any, any> {
     );
   }
 }
-
-(ReleaseInfo as any).propTypes = {
-  release: PropTypes.object,
-};
-
-(ReleaseInfo as any).defaultProps = {
-  release: {},
-};
 
 export default ReleaseInfo;

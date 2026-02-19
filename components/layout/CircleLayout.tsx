@@ -1,5 +1,5 @@
+import React from 'react';
 import { createGlobalStyle } from 'styled-components';
-import PropTypes from 'prop-types';
 import Link from 'next/link';
 import {
   Center, Content, Footer, Header, HeightWrapper, Logo, LogoWrapper, SessionWrapper, Wrapper,
@@ -15,7 +15,13 @@ const ScrollLock = createGlobalStyle`
   }
 `;
 
-const CircleLayout = ({ children, header, footer }) => (
+interface CircleLayoutProps {
+  children?: React.ReactNode;
+  header?: React.ReactNode;
+  footer?: React.ReactNode;
+}
+
+const CircleLayout = ({ children = null, header = null, footer = null }: CircleLayoutProps) => (
   <Center>
     <ScrollLock />
     <Wrapper>
@@ -42,17 +48,5 @@ const CircleLayout = ({ children, header, footer }) => (
     </Wrapper>
   </Center>
 );
-
-CircleLayout.propTypes = {
-  children: PropTypes.any,
-  header: PropTypes.any,
-  footer: PropTypes.any,
-};
-
-CircleLayout.defaultProps = {
-  children: null,
-  header: null,
-  footer: null,
-};
 
 export default CircleLayout;

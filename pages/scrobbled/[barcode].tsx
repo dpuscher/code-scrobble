@@ -1,6 +1,5 @@
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import React from 'react';
 import Router from 'next/router';
 import { FaCheckCircle } from 'react-icons/fa';
@@ -13,7 +12,13 @@ import { yellow } from '../../lib/colors';
 import { FlexContent } from '../../styles/layout.styles';
 import { CoverBackground } from '../../styles/scrobbled.styles';
 
-class Scrobbled extends React.Component<any, any> {
+interface ScrobbledProps {
+  barcode: string;
+  fetchReleaseIfNeeded: (barcode: string) => void;
+  data?: any;
+}
+
+class Scrobbled extends React.Component<ScrobbledProps, {}> {
   componentDidMount() {
     this.props.fetchReleaseIfNeeded(this.props.barcode);
   }
@@ -24,7 +29,8 @@ class Scrobbled extends React.Component<any, any> {
   }
 
   render() {
-    const { data: { image } } = this.props;
+    const { data = {} } = this.props;
+    const { image } = data;
     return (
       <CircleLayout>
         <FlexContent>
@@ -42,16 +48,6 @@ class Scrobbled extends React.Component<any, any> {
 }
 
 (Scrobbled as any).getInitialProps = ({ query: { barcode } }) => ({ barcode });
-
-(Scrobbled as any).propTypes = {
-  barcode: PropTypes.string.isRequired,
-  fetchReleaseIfNeeded: PropTypes.func.isRequired,
-  data: PropTypes.object,
-};
-
-(Scrobbled as any).defaultProps = {
-  data: {},
-};
 
 const mapStateToProps = (state, { barcode }) => ({
   ...state.release[barcode],

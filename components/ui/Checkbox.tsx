@@ -1,29 +1,37 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import { Input, Label, Wrapper } from './styles/Checkbox.styles';
 
-class Checkbox extends React.Component<any, any> {
+interface CheckboxProps {
+  checked?: boolean;
+  className?: string | null;
+  name: string;
+  children?: React.ReactNode;
+  onChange?: (checked: boolean) => void;
+  disabled?: boolean;
+}
+
+class Checkbox extends React.Component<CheckboxProps, {}> {
   label: any;
 
-  constructor(props) {
+  constructor(props: CheckboxProps) {
     super(props);
     this.handleCheck = this.handleCheck.bind(this);
   }
 
-  shouldComponentUpdate(nextProps) {
+  shouldComponentUpdate(nextProps: CheckboxProps) {
     // eslint-disable-next-line react/destructuring-assignment
     return ['checked', 'disabled'].some(prop => this.props[prop] !== nextProps[prop]);
   }
 
   handleCheck(event) {
-    const { onChange } = this.props;
+    const { onChange = () => {} } = this.props;
     onChange(event.target.checked);
   }
 
   render() {
     const {
-      name, className, checked, disabled, children,
+      name, className = null, checked = false, disabled = false, children = null,
     } = this.props;
     const id = `checkbox-${name}`;
 
@@ -49,22 +57,5 @@ class Checkbox extends React.Component<any, any> {
     );
   }
 }
-
-(Checkbox as any).propTypes = {
-  checked: PropTypes.bool,
-  className: PropTypes.string,
-  name: PropTypes.string.isRequired,
-  children: PropTypes.any,
-  onChange: PropTypes.func,
-  disabled: PropTypes.bool,
-};
-
-(Checkbox as any).defaultProps = {
-  checked: false,
-  className: null,
-  children: null,
-  onChange: () => {},
-  disabled: false,
-};
 
 export default Checkbox;

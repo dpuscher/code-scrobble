@@ -1,6 +1,10 @@
-import PropTypes from 'prop-types';
+interface ErrorIconProps {
+  color?: string;
+  size?: number;
+  className?: string;
+}
 
-const ErrorIcon = ({ color, size, className }) => (
+const ErrorIcon = ({ color = '#000', size = 100, className }: ErrorIconProps) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 367 367" width={size} height={size} className={className}>
     <title>Error</title>
     <g fill={color}>
@@ -9,17 +13,5 @@ const ErrorIcon = ({ color, size, className }) => (
     </g>
   </svg>
 );
-
-ErrorIcon.propTypes = {
-  color: PropTypes.string,
-  size: PropTypes.number,
-  className: PropTypes.string,
-};
-
-ErrorIcon.defaultProps = {
-  color: '#000',
-  size: 100,
-  className: undefined,
-};
 
 export default ErrorIcon;

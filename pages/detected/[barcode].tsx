@@ -1,6 +1,5 @@
 import { connect } from 'react-redux';
 import React from 'react';
-import PropTypes from 'prop-types';
 import Router from 'next/router';
 import Head from 'next/head';
 import ReleaseInfo from '../../components/release/ReleaseInfo';
@@ -11,7 +10,12 @@ import { trackEvent } from '../../lib/analytics';
 import { FooterContent } from '../../styles/layout.styles';
 import Checkbox from '../../components/ui/Checkbox';
 
-class Detected extends React.Component<any, any> {
+interface DetectedProps {
+  barcode: string;
+  data?: any;
+}
+
+class Detected extends React.Component<DetectedProps, { autoScrobble: boolean; scrobbling: boolean }> {
   state = {
     autoScrobble: false,
     scrobbling: false,
@@ -37,7 +41,7 @@ class Detected extends React.Component<any, any> {
 
   render() {
     const { scrobbling, autoScrobble } = this.state;
-    const { barcode, data } = this.props;
+    const { barcode, data = null } = this.props;
     const showRelease = !scrobbling && data && data.id;
     return (
       <>
@@ -75,15 +79,6 @@ class Detected extends React.Component<any, any> {
     );
   }
 }
-
-(Detected as any).propTypes = {
-  barcode: PropTypes.string.isRequired,
-  data: PropTypes.object,
-};
-
-(Detected as any).defaultProps = {
-  data: null,
-};
 
 (Detected as any).getInitialProps = ({ query: { barcode } }) => ({ barcode });
 

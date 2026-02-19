@@ -1,5 +1,3 @@
-
-import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -13,7 +11,12 @@ import {
   H1, H2, Header, ProfileImg, Wrapper,
 } from '../styles/profile.styles';
 
-class Profile extends React.Component<any, any> {
+interface ProfileProps {
+  session?: any;
+  fetchSessionIfNeeded: () => void;
+}
+
+class Profile extends React.Component<ProfileProps, {}> {
   static async getInitialProps({ req, res, store }: any) {
     if (req && res) {
       const session = await getSession(req, res);
@@ -29,7 +32,7 @@ class Profile extends React.Component<any, any> {
   }
 
   render() {
-    const { imageLarge, name } = this.props.session;
+    const { imageLarge, name } = this.props.session || {};
     return (
       <Wrapper>
         <BackButton />
@@ -44,15 +47,6 @@ class Profile extends React.Component<any, any> {
     );
   }
 }
-
-(Profile as any).propTypes = {
-  session: PropTypes.object,
-  fetchSessionIfNeeded: PropTypes.func.isRequired,
-};
-
-(Profile as any).defaultProps = {
-  session: {},
-};
 
 const mapStateToProps = state => ({
   session: state.session.data,

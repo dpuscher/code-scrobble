@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import Quagga from 'quagga';
 import { yellow } from '../../lib/colors';
@@ -7,8 +6,12 @@ import { ErrorDescription, ErrorIcon } from '../layout/styles/Error.styles';
 import { Camera } from './styles/Scanner.styles';
 import Loading from '../layout/Loading';
 
-class Scanner extends React.Component<any, any> {
-  constructor(props) {
+interface ScannerProps {
+  onDetected: (result: any) => void;
+}
+
+class Scanner extends React.Component<ScannerProps, { loading: boolean; videoError: boolean }> {
+  constructor(props: ScannerProps) {
     super(props);
     this.state = {
       loading: true,
@@ -90,9 +93,5 @@ class Scanner extends React.Component<any, any> {
     );
   }
 }
-
-(Scanner as any).propTypes = {
-  onDetected: PropTypes.func.isRequired,
-};
 
 export default Scanner;
