@@ -18,3 +18,6 @@ yarn-error.log
 !.yarn/versions
 data
 .mcp.json
+e2e/.auth/
+playwright-report/
+test-results/
