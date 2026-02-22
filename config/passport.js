@@ -21,7 +21,6 @@ module.exports = function passportConfig(passport) {
       {
         api_key: process.env.LASTFM_KEY,
         secret: process.env.LASTFM_SECRET,
-        callbackURL: `${process.env.SERVER_URL}/auth/lastfm/callback`,
       },
 
       ((req, { name, key }, done) => {
