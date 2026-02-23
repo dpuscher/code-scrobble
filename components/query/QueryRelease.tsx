@@ -1,5 +1,5 @@
 import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import { connect, ConnectedProps } from 'react-redux';
 import React from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
@@ -17,16 +17,18 @@ import {
   ThumbnailWrapper, Title, Wrapper,
 } from './styles/QueryRelease.styles';
 
-interface QueryReleaseProps {
-  results?: any[];
-  query?: string;
-  loading?: boolean;
-  queryRelease: () => void;
-  resetResults: () => void;
-  setQuery: (query?: string) => void;
-}
+const mapStateToProps = (state: any) => ({
+  ...(state.query as { results?: any[]; query?: string; loading?: boolean }),
+});
 
-class QueryRelease extends React.Component<QueryReleaseProps, { open: boolean; searched: boolean }> {
+const mapDispatchToProps = (dispatch: any) => (
+  bindActionCreators({ queryRelease, resetResults, setQuery }, dispatch)
+);
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+class QueryRelease extends React.Component<PropsFromRedux, { open: boolean; searched: boolean }> {
   inputRef = React.createRef<HTMLInputElement>();
 
   state = {
@@ -133,15 +135,4 @@ class QueryRelease extends React.Component<QueryReleaseProps, { open: boolean; s
   }
 }
 
-const mapStateToProps = state => ({
-  ...state.query,
-});
-
-const mapDispatchToProps = dispatch => (
-  bindActionCreators({ queryRelease, resetResults, setQuery }, dispatch)
-);
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(QueryRelease);
+export default connector(QueryRelease);
