@@ -1,7 +1,9 @@
 /* eslint-disable no-underscore-dangle */
 
+import * as Cache from '../cache';
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const redis = require('redis');
-const Cache = require('../cache');
 
 jest.mock('redis');
 

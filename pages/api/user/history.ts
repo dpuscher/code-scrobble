@@ -3,7 +3,7 @@ import sortBy from 'lodash/sortBy';
 import compact from 'lodash/compact';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { requireUser } from '../../../lib/withAuth';
-const Release = require('../../../app/models/release');
+import Release from '../../../app/models/release';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const user = await requireUser(req, res);

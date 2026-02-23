@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { requireUser } from '../../../lib/withAuth';
-const Discogs = require('../../../app/discogs');
+import * as Discogs from '../../../app/discogs';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const user = await requireUser(req, res);
