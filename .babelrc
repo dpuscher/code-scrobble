@@ -6,7 +6,6 @@
     ["styled-components", {
       "displayName": false,
       "ssr": true
-    }],
-    "transform-class-properties"
+    }]
   ]
 }
