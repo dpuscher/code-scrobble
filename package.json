@@ -19,8 +19,12 @@
     "test": "jest",
     "test:watch": "yarn test --watch",
     "test:coverage": "yarn test --coverage",
-    "lint": "eslint './**/*.{js,jsx,ts,tsx}'",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "lint:css": "stylelint './**/*.{js,jsx,ts,tsx}'",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
+    "prepare": "husky",
     "analyze": "BUNDLE_ANALYZE=true yarn build"
   },
   "dependencies": {
@@ -49,7 +53,6 @@
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
-    "@babel/eslint-parser": "^7.25.9",
     "@babel/runtime-corejs2": "^7.26.0",
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.18.0",
@@ -63,16 +66,17 @@
     "@types/react-dom": "^18.3.5",
     "babel-jest": "^29.7.0",
     "babel-plugin-styled-components": "^2.1.4",
-    "eslint": "^9.18.0",
-    "eslint-config-airbnb": "^19.0.4",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "^14.2.0",
+    "eslint-config-prettier": "10.1.8",
     "eslint-plugin-import": "^2.31.0",
-    "eslint-plugin-jest": "^28.11.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
-    "eslint-plugin-react": "^7.37.4",
-    "eslint-plugin-react-hooks": "^5.1.0",
+    "husky": "^9.0.0",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "jest-fetch-mock": "^3.0.1",
+    "lint-staged": "^16.2.4",
+    "prettier": "^3.8.1",
     "react-test-renderer": "^18.0.0",
     "redis-mock": "^0.47.0",
     "redux-mock-store": "^1.5.4",
@@ -88,5 +92,14 @@
       "jest-environment-jsdom>jest-util>jest-util>fsevents": false,
       "@babel/runtime-corejs2>core-js": false
     }
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "*.{json,md,yaml,yml,css,scss}": [
+      "prettier --write"
+    ]
   }
 }
