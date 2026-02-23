@@ -1,23 +1,23 @@
 /* eslint-disable no-underscore-dangle */
 
-import * as Cache from '../cache';
+import * as Cache from "../cache";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const redis = require('redis');
+const redis = require("redis");
 
-jest.mock('redis');
+jest.mock("redis");
 
-describe('cache', () => {
+describe("cache", () => {
   beforeEach(() => {
     redis._get.mockClear();
     redis._set.mockClear();
     redis._reset();
   });
 
-  describe('set', () => {
-    it('writes given data to redis store', async () => {
-      const key = 'foo';
-      const value = ['bar'];
+  describe("set", () => {
+    it("writes given data to redis store", async () => {
+      const key = "foo";
+      const value = ["bar"];
 
       await Cache.set(key, value);
 
@@ -27,9 +27,9 @@ describe('cache', () => {
       expect(redis._set.mock.calls[0][2]).toEqual({ EX: 86400 });
     });
 
-    it('passes given ttl to redis store', async () => {
-      const key = 'foo';
-      const value = ['bar'];
+    it("passes given ttl to redis store", async () => {
+      const key = "foo";
+      const value = ["bar"];
       const ttl = 1337;
 
       await Cache.set(key, value, ttl);
@@ -37,9 +37,9 @@ describe('cache', () => {
       expect(redis._set.mock.calls[0][2]).toEqual({ EX: ttl });
     });
 
-    it('uses 24 hours as default ttl', async () => {
-      const key = 'foo';
-      const value = ['bar'];
+    it("uses 24 hours as default ttl", async () => {
+      const key = "foo";
+      const value = ["bar"];
 
       await Cache.set(key, value);
 
@@ -47,9 +47,9 @@ describe('cache', () => {
     });
   });
 
-  describe('get', () => {
-    it('queries data from redis store', async () => {
-      const key = 'foo';
+  describe("get", () => {
+    it("queries data from redis store", async () => {
+      const key = "foo";
 
       try {
         await Cache.get(key);
@@ -61,9 +61,9 @@ describe('cache', () => {
       expect(redis._get.mock.calls[0][0]).toBe(key);
     });
 
-    it('returns correct data from redis store after it was saved', async () => {
-      const key = 'foo';
-      const value = ['bar'];
+    it("returns correct data from redis store after it was saved", async () => {
+      const key = "foo";
+      const value = ["bar"];
 
       await Cache.set(key, value);
       const cachedData = await Cache.get(key);
@@ -71,8 +71,8 @@ describe('cache', () => {
       expect(cachedData).toEqual(value);
     });
 
-    it('rejects the promise when no data is stored in redis', () => {
-      const key = 'foo';
+    it("rejects the promise when no data is stored in redis", () => {
+      const key = "foo";
 
       expect(Cache.get(key)).rejects.toBeUndefined();
     });

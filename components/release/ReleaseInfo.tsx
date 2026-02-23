@@ -1,13 +1,29 @@
-import React from 'react';
-import { MdClose } from 'react-icons/md'; // TODO: replace
-import durationFormat from '../../lib/durationFormat';
-import targetBlank from '../../lib/targetBlank';
+import React from "react";
+import { MdClose } from "react-icons/md"; // TODO: replace
+import durationFormat from "../../lib/durationFormat";
+import targetBlank from "../../lib/targetBlank";
 import {
-  Artist, Button, CloseButton, Content, Cover, ExternalButton, Head, HeadWrapper, Icon, Meta,
-  Overlay, Title, TrackDuration, TrackListWrapper, TrackNumber, TrackTitle, Wrapper, Year,
-} from './styles/ReleaseInfo.styles';
-import { silver } from '../../lib/colors';
-import { autotrackParams, trackEvent } from '../../lib/analytics';
+  Artist,
+  Button,
+  CloseButton,
+  Content,
+  Cover,
+  ExternalButton,
+  Head,
+  HeadWrapper,
+  Icon,
+  Meta,
+  Overlay,
+  Title,
+  TrackDuration,
+  TrackListWrapper,
+  TrackNumber,
+  TrackTitle,
+  Wrapper,
+  Year,
+} from "./styles/ReleaseInfo.styles";
+import { silver } from "../../lib/colors";
+import { autotrackParams, trackEvent } from "../../lib/analytics";
 
 type Track = {
   trackNumber: string;
@@ -31,21 +47,17 @@ interface ReleaseInfoProps {
 class ReleaseInfo extends React.Component<ReleaseInfoProps, { open: boolean }> {
   state = {
     open: false,
-  }
+  };
 
   handleButton = () => {
     const { open } = this.state;
-    if (!open) trackEvent('Detected', 'Show Release Info');
+    if (!open) trackEvent("Detected", "Show Release Info");
     this.setState(state => ({ open: !state.open }));
-  }
+  };
 
   render() {
     const { open } = this.state;
-    const {
-      release: {
-        image, title, year, artist, tracks, url,
-      } = {} as Release,
-    } = this.props;
+    const { release: { image, title, year, artist, tracks, url } = {} as Release } = this.props;
     return (
       <Wrapper>
         <Button onClick={this.handleButton}>
@@ -80,7 +92,7 @@ class ReleaseInfo extends React.Component<ReleaseInfoProps, { open: boolean }> {
                   </tbody>
                 </table>
               </TrackListWrapper>
-              <ExternalButton href={url} {...autotrackParams('Detected', 'Exit to Discogs')} {...targetBlank}>
+              <ExternalButton href={url} {...autotrackParams("Detected", "Exit to Discogs")} {...targetBlank}>
                 Show on Discogs
               </ExternalButton>
             </Content>

@@ -2,10 +2,10 @@
 
 const store = new Map();
 
-const mockGet = jest.fn(async (key) => store.get(key) || null);
+const mockGet = jest.fn(async key => store.get(key) || null);
 const mockSet = jest.fn(async (key, value) => {
   store.set(key, value);
-  return 'OK';
+  return "OK";
 });
 const mockConnect = jest.fn(async () => {});
 const mockOn = jest.fn();

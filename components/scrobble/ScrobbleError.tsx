@@ -1,8 +1,8 @@
-import React from 'react';
-import { IoIosRefresh } from 'react-icons/io';
-import { yellow } from '../../lib/colors';
-import { FlexContent } from '../../styles/layout.styles';
-import { ErrorIcon, RetryButton } from '../layout/styles/Error.styles';
+import React from "react";
+import { IoIosRefresh } from "react-icons/io";
+import { yellow } from "../../lib/colors";
+import { FlexContent } from "../../styles/layout.styles";
+import { ErrorIcon, RetryButton } from "../layout/styles/Error.styles";
 
 interface ScrobbleErrorProps {
   onRetry: () => void;

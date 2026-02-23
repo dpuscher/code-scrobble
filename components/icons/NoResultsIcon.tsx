@@ -4,7 +4,7 @@ interface NoResultsIconProps {
   className?: string;
 }
 
-const NoResultsIcon = ({ color = '#000', size = 100, className }: NoResultsIconProps) => (
+const NoResultsIcon = ({ color = "#000", size = 100, className }: NoResultsIconProps) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width={size} height={size} className={className}>
     <g fill={color}>
       <path d="M36.1 75.5c-3.9 0-7.5 1.4-9.6 3.7-.6.7-.6 1.7.1 2.3.3.3.7.4 1.1.4.4 0 .9-.2 1.2-.5a10 10 0 0 1 7.2-2.6c2.9 0 5.7 1 7.2 2.6.6.7 1.7.7 2.3.1.7-.6.7-1.7.1-2.3a13.4 13.4 0 0 0-9.6-3.7z" />

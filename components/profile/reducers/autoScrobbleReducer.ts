@@ -1,7 +1,11 @@
 import {
-  RECEIVED_AUTO_SCROBBLES, SET_LOADING_STATE, SET_ERROR_STATE, START_DELETING,
-  END_DELETING, REMOVE_AUTO_SCROBBLE,
-} from '../constants/autoScrobbleConstants';
+  RECEIVED_AUTO_SCROBBLES,
+  SET_LOADING_STATE,
+  SET_ERROR_STATE,
+  START_DELETING,
+  END_DELETING,
+  REMOVE_AUTO_SCROBBLE,
+} from "../constants/autoScrobbleConstants";
 
 const initialState = {
   data: null,

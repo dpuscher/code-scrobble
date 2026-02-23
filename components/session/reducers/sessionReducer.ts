@@ -1,4 +1,4 @@
-import { RECEIVED_SESSION, SET_LOADING_STATE, SET_ERROR_STATE } from '../constants/sessionConstants';
+import { RECEIVED_SESSION, SET_LOADING_STATE, SET_ERROR_STATE } from "../constants/sessionConstants";
 
 const sessionReducer = (state = {}, action: any = {}) => {
   switch (action.type) {

@@ -1,29 +1,43 @@
-import { bindActionCreators } from 'redux';
-import { connect, ConnectedProps } from 'react-redux';
-import React from 'react';
-import Head from 'next/head';
-import Link from 'next/link';
-import { IoIosSearch } from 'react-icons/io';
-import { MdClose } from 'react-icons/md';
-import compact from 'lodash/compact';
-import { trackEvent } from '../../lib/analytics';
-import { silver } from '../../lib/colors';
-import NoResultsIcon from '../icons/NoResultsIcon';
-import Loading from '../layout/Loading';
-import { queryRelease, resetResults, setQuery } from './actions/queryActions';
+import { bindActionCreators } from "redux";
+import { connect, ConnectedProps } from "react-redux";
+import React from "react";
+import Head from "next/head";
+import Link from "next/link";
+import { IoIosSearch } from "react-icons/io";
+import { MdClose } from "react-icons/md";
+import compact from "lodash/compact";
+import { trackEvent } from "../../lib/analytics";
+import { silver } from "../../lib/colors";
+import NoResultsIcon from "../icons/NoResultsIcon";
+import Loading from "../layout/Loading";
+import { queryRelease, resetResults, setQuery } from "./actions/queryActions";
 import {
-  Button, CloseButton, Content, FallbackIcon, FallbackWrapper, HeadWrapper, Icon, Input,
-  LoadingWrapper, Meta, Overlay, Result, ResultInfo, ResultWrapper, Submit, Thumbnail,
-  ThumbnailWrapper, Title, Wrapper,
-} from './styles/QueryRelease.styles';
+  Button,
+  CloseButton,
+  Content,
+  FallbackIcon,
+  FallbackWrapper,
+  HeadWrapper,
+  Icon,
+  Input,
+  LoadingWrapper,
+  Meta,
+  Overlay,
+  Result,
+  ResultInfo,
+  ResultWrapper,
+  Submit,
+  Thumbnail,
+  ThumbnailWrapper,
+  Title,
+  Wrapper,
+} from "./styles/QueryRelease.styles";
 
 const mapStateToProps = (state: any) => ({
   ...(state.query as { results?: any[]; query?: string; loading?: boolean }),
 });
 
-const mapDispatchToProps = (dispatch: any) => (
-  bindActionCreators({ queryRelease, resetResults, setQuery }, dispatch)
-);
+const mapDispatchToProps = (dispatch: any) => bindActionCreators({ queryRelease, resetResults, setQuery }, dispatch);
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
@@ -34,48 +48,56 @@ class QueryRelease extends React.Component<PropsFromRedux, { open: boolean; sear
   state = {
     open: false,
     searched: false,
-  }
+  };
 
   reset = () => {
     this.props.resetResults();
     this.props.setQuery();
     this.setState({ searched: false });
-  }
+  };
 
   open = () => {
     this.reset();
-    trackEvent('Detect', 'Query Release');
+    trackEvent("Detect", "Query Release");
     this.setState({ open: true });
-  }
+  };
 
   close = () => {
     this.setState({ open: false, searched: false });
-  }
+  };
 
-  onInput = (e) => {
+  onInput = e => {
     this.props.setQuery(e.target.value);
-  }
+  };
 
-  onSubmit = (e) => {
+  onSubmit = e => {
     e.preventDefault();
     this.inputRef.current.blur();
     this.props.queryRelease();
     this.setState({ searched: true });
-  }
+  };
 
   render() {
     const { open, searched } = this.state;
-    const { loading = false, results = [], query = '' } = this.props;
+    const { loading = false, results = [], query = "" } = this.props;
 
-    let content = <FallbackWrapper><FallbackIcon color="#F4F4F4" /></FallbackWrapper>;
+    let content = (
+      <FallbackWrapper>
+        <FallbackIcon color="#F4F4F4" />
+      </FallbackWrapper>
+    );
     if (loading) {
-      content = <FallbackWrapper><LoadingWrapper><Loading /></LoadingWrapper></FallbackWrapper>;
+      content = (
+        <FallbackWrapper>
+          <LoadingWrapper>
+            <Loading />
+          </LoadingWrapper>
+        </FallbackWrapper>
+      );
     } else if (results.length) {
       content = (
         <ResultWrapper>
-          {results.map(({
-            id, title, thumb, country, year, format = [],
-          }) => (
+          {results.map(({ id, title, thumb, country, year, format = [] }) => (
             <Link key={id} href={`/detected/id:${id}`} passHref legacyBehavior>
               <Result>
                 <ThumbnailWrapper>
@@ -86,9 +108,7 @@ class QueryRelease extends React.Component<PropsFromRedux, { open: boolean; sear
                     {title}
                     {year && ` (${year})`}
                   </Title>
-                  <Meta>
-                    {compact([country, (format || []).join(', ')]).join(' · ')}
-                  </Meta>
+                  <Meta>{compact([country, (format || []).join(", ")]).join(" · ")}</Meta>
                 </ResultInfo>
               </Result>
             </Link>
@@ -98,7 +118,7 @@ class QueryRelease extends React.Component<PropsFromRedux, { open: boolean; sear
     } else if (searched) {
       content = (
         <FallbackWrapper css="text-align:center">
-          <NoResultsIcon {...{ css: 'margin-bottom:20px' } as any} />
+          <NoResultsIcon {...({ css: "margin-bottom:20px" } as any)} />
           No results were found
           <br />
           for your query
@@ -121,7 +141,13 @@ class QueryRelease extends React.Component<PropsFromRedux, { open: boolean; sear
                 <MdClose size="30" color={silver} />
               </CloseButton>
               <HeadWrapper onSubmit={this.onSubmit}>
-                <Input value={query} onChange={this.onInput} placeholder="Search release..." autoFocus ref={this.inputRef} />
+                <Input
+                  value={query}
+                  onChange={this.onInput}
+                  placeholder="Search release..."
+                  autoFocus
+                  ref={this.inputRef}
+                />
                 <Submit type="submit">
                   <IoIosSearch size={30} />
                 </Submit>

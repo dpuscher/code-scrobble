@@ -1,5 +1,5 @@
-import { getIronSession, IronSession, SessionOptions } from 'iron-session';
-import type { IncomingMessage, ServerResponse } from 'http';
+import { getIronSession, IronSession, SessionOptions } from "iron-session";
+import type { IncomingMessage, ServerResponse } from "http";
 
 export interface SessionData {
   userId?: string;
@@ -15,9 +15,9 @@ export interface SessionData {
 
 export const sessionOptions: SessionOptions = {
   password: process.env.SESSION_SECRET as string,
-  cookieName: 'code-scrobble-session',
+  cookieName: "code-scrobble-session",
   cookieOptions: {
-    secure: process.env.NODE_ENV === 'production',
+    secure: process.env.NODE_ENV === "production",
     maxAge: 2592000, // 30 days in seconds
   },
 };

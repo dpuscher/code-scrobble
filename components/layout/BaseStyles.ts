@@ -1,5 +1,5 @@
-import { createGlobalStyle } from 'styled-components';
-import { dark, silver } from '../../lib/colors';
+import { createGlobalStyle } from "styled-components";
+import { dark, silver } from "../../lib/colors";
 
 export default createGlobalStyle`
   html {

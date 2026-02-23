@@ -1,6 +1,6 @@
-import mongoose, { Schema, HydratedDocument, Model } from 'mongoose';
-import pick from 'lodash/pick';
-import * as Discogs from '../discogs';
+import mongoose, { Schema, HydratedDocument, Model } from "mongoose";
+import pick from "lodash/pick";
+import * as Discogs from "../discogs";
 
 interface ITrack {
   title: string;
@@ -27,7 +27,10 @@ interface IReleaseMethods {
 
 interface IReleaseModel extends Model<IRelease, object, IReleaseMethods> {
   createFromDiscogs(id: number, barcode?: string): Promise<HydratedDocument<IRelease, IReleaseMethods>>;
-  firstOrCreate(param: { id?: string | number; barcode?: string }): Promise<HydratedDocument<IRelease, IReleaseMethods> | null>;
+  firstOrCreate(param: {
+    id?: string | number;
+    barcode?: string;
+  }): Promise<HydratedDocument<IRelease, IReleaseMethods> | null>;
 }
 
 const releaseSchema = new Schema<IRelease, IReleaseModel, IReleaseMethods>(
@@ -41,11 +44,13 @@ const releaseSchema = new Schema<IRelease, IReleaseModel, IReleaseMethods>(
     image: String,
     url: String,
     year: String,
-    tracks: [{
-      title: String,
-      trackNumber: Number,
-      duration: Number,
-    }],
+    tracks: [
+      {
+        title: String,
+        trackNumber: Number,
+        duration: Number,
+      },
+    ],
     barcode: String,
   },
   { timestamps: true },
@@ -60,7 +65,7 @@ releaseSchema.methods.toJSON = function toJSON() {
     image: this.image,
     url: this.url,
     year: this.year,
-    tracks: this.tracks.map((track: ITrack) => pick(track, ['title', 'trackNumber', 'duration'])),
+    tracks: this.tracks.map((track: ITrack) => pick(track, ["title", "trackNumber", "duration"])),
   };
 };
 
@@ -82,7 +87,7 @@ releaseSchema.methods.updateFromDiscogs = async function updateFromDiscogs() {
 };
 
 releaseSchema.statics.createFromDiscogs = async function createFromDiscogs(id: number, barcodeValue?: string) {
-  const release = new (this)({ id });
+  const release = new this({ id });
   if (barcodeValue) release.barcode = barcodeValue;
   await release.updateFromDiscogs();
   return release;
@@ -92,12 +97,13 @@ releaseSchema.statics.firstOrCreate = async function firstOrCreate(param: { id?:
   const release = await this.findOne(param).exec();
   if (!release) {
     const paramId = param.id ? Number(param.id) : undefined;
-    const id = paramId || await Discogs.barcode(param.barcode);
+    const id = paramId || (await Discogs.barcode(param.barcode));
     if (!id) return null;
 
     try {
       return await this.createFromDiscogs(id, param.barcode);
-    } catch (err: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      // eslint-disable-line @typescript-eslint/no-explicit-any
       if (err.code === 11000) {
         return this.findOne({ id }).exec();
       }
@@ -113,7 +119,7 @@ releaseSchema.statics.firstOrCreate = async function firstOrCreate(param: { id?:
   return release;
 };
 
-const Release = (mongoose.models.Release as IReleaseModel) ||
-  mongoose.model<IRelease, IReleaseModel>('Release', releaseSchema);
+const Release =
+  (mongoose.models.Release as IReleaseModel) || mongoose.model<IRelease, IReleaseModel>("Release", releaseSchema);
 
 export default Release;

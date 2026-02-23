@@ -1,6 +1,6 @@
-import styled from 'styled-components';
-import { silver } from '../../../lib/colors';
-import { buttonReset } from '../../../styles/mixins';
+import styled from "styled-components";
+import { silver } from "../../../lib/colors";
+import { buttonReset } from "../../../styles/mixins";
 
 // eslint-disable-next-line import/prefer-default-export
 export const Button = styled.button`
@@ -14,7 +14,7 @@ export const Button = styled.button`
   padding: 5px;
   overflow: hidden;
   border-bottom: 1px solid ${silver};
-  background: rgba(0, 0, 0, .6);
+  background: rgba(0, 0, 0, 0.6);
   box-shadow: 0 0 3px 2px black;
   backdrop-filter: blur(5px);
   font-size: 16px;

@@ -1,11 +1,12 @@
 {
-  "presets": [
-    "next/babel"
-  ],
+  "presets": ["next/babel"],
   "plugins": [
-    ["styled-components", {
-      "displayName": false,
-      "ssr": true
-    }]
+    [
+      "styled-components",
+      {
+        "displayName": false,
+        "ssr": true
+      }
+    ]
   ]
 }

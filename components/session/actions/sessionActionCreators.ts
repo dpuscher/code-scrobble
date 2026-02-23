@@ -1,4 +1,4 @@
-import { SET_LOADING_STATE, SET_ERROR_STATE, RECEIVED_SESSION } from '../constants/sessionConstants';
+import { SET_LOADING_STATE, SET_ERROR_STATE, RECEIVED_SESSION } from "../constants/sessionConstants";
 
 export const setLoadingState = loading => ({
   type: SET_LOADING_STATE,

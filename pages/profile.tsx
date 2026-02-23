@@ -1,16 +1,14 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { fetchSessionIfNeeded } from '../components/session/actions/sessionActions';
-import { receivedSession } from '../components/session/actions/sessionActionCreators';
-import { getSession } from '../lib/session';
-import BackButton from '../components/ui/BackButton';
-import ProfileAutoScrobbles from '../components/profile/ProfileAutoScrobbles';
-import ProfileHistory from '../components/profile/ProfileHistory';
-import { wrapper } from '../client/reduxStore';
-import {
-  H1, H2, Header, ProfileImg, Wrapper,
-} from '../styles/profile.styles';
+import React from "react";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import { fetchSessionIfNeeded } from "../components/session/actions/sessionActions";
+import { receivedSession } from "../components/session/actions/sessionActionCreators";
+import { getSession } from "../lib/session";
+import BackButton from "../components/ui/BackButton";
+import ProfileAutoScrobbles from "../components/profile/ProfileAutoScrobbles";
+import ProfileHistory from "../components/profile/ProfileHistory";
+import { wrapper } from "../client/reduxStore";
+import { H1, H2, Header, ProfileImg, Wrapper } from "../styles/profile.styles";
 
 interface ProfileProps {
   session?: any;
@@ -43,9 +41,7 @@ const mapStateToProps = state => ({
   session: state.session.data,
 });
 
-const mapDispatchToProps = dispatch => (
-  bindActionCreators({ fetchSessionIfNeeded }, dispatch)
-);
+const mapDispatchToProps = dispatch => bindActionCreators({ fetchSessionIfNeeded }, dispatch);
 
 export const getServerSideProps = wrapper.getServerSideProps(store => async ({ req, res }) => {
   const session = await getSession(req, res);
@@ -55,7 +51,4 @@ export const getServerSideProps = wrapper.getServerSideProps(store => async ({ r
   return { props: {} };
 });
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(Profile);
+export default connect(mapStateToProps, mapDispatchToProps)(Profile);

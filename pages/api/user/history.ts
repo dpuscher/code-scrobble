@@ -1,9 +1,9 @@
-import find from 'lodash/find';
-import sortBy from 'lodash/sortBy';
-import compact from 'lodash/compact';
-import type { NextApiRequest, NextApiResponse } from 'next';
-import { requireUser } from '../../../lib/withAuth';
-import Release from '../../../app/models/release';
+import find from "lodash/find";
+import sortBy from "lodash/sortBy";
+import compact from "lodash/compact";
+import type { NextApiRequest, NextApiResponse } from "next";
+import { requireUser } from "../../../lib/withAuth";
+import Release from "../../../app/models/release";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const user = await requireUser(req, res);
@@ -29,8 +29,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       };
     });
 
-    res.json(sortBy(compact(data), ['time']).reverse());
+    res.json(sortBy(compact(data), ["time"]).reverse());
   } catch (err) {
-    res.status(400).json({ error: err instanceof Error ? err.message : 'Unknown error' });
+    res.status(400).json({ error: err instanceof Error ? err.message : "Unknown error" });
   }
 }

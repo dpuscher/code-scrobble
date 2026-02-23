@@ -1,11 +1,19 @@
-import React from 'react';
-import { createGlobalStyle } from 'styled-components';
-import Link from 'next/link';
+import React from "react";
+import { createGlobalStyle } from "styled-components";
+import Link from "next/link";
 import {
-  Center, Content, Footer, Header, HeightWrapper, Logo, LogoWrapper, SessionWrapper, Wrapper,
-} from '../../styles/layout.styles';
-import Session from '../session/Session';
-import LegalLinks from '../ui/LegalLinks';
+  Center,
+  Content,
+  Footer,
+  Header,
+  HeightWrapper,
+  Logo,
+  LogoWrapper,
+  SessionWrapper,
+  Wrapper,
+} from "../../styles/layout.styles";
+import Session from "../session/Session";
+import LegalLinks from "../ui/LegalLinks";
 
 const ScrollLock = createGlobalStyle`
   body {
@@ -37,9 +45,7 @@ const CircleLayout = ({ children = null, header = null, footer = null }: CircleL
         {header}
       </Header>
       <Content>
-        <HeightWrapper>
-          {children}
-        </HeightWrapper>
+        <HeightWrapper>{children}</HeightWrapper>
       </Content>
       <Footer>
         <LegalLinks />

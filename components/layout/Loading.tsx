@@ -1,4 +1,4 @@
-import { LoadingSpinner, LoadingWrapper } from './styles/Loading.styles';
+import { LoadingSpinner, LoadingWrapper } from "./styles/Loading.styles";
 
 const Loading = () => (
   <LoadingWrapper>

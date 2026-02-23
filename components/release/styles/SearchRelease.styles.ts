@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 export const Poster = styled.div<{ image?: string }>`
   display: flex;
@@ -18,7 +18,7 @@ export const PosterContent = styled.div`
   display: flex;
   width: 100%;
   padding: 0 20%;
-  background: rgba(0, 0, 0, .5);
+  background: rgba(0, 0, 0, 0.5);
   text-align: center;
   backdrop-filter: blur(10px);
 `;

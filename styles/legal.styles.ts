@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 export const Wrapper = styled.div`
   width: 100%;
@@ -8,7 +8,8 @@ export const Wrapper = styled.div`
   line-height: 1.4;
   word-wrap: break-word;
 
-  h2, h3 {
+  h2,
+  h3 {
     margin: 1.5em 0 0.5em;
   }
 

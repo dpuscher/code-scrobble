@@ -1,5 +1,5 @@
-import Router from 'next/router';
-import NProgress from 'nprogress';
+import Router from "next/router";
+import NProgress from "nprogress";
 
 let progressTimeout = null;
 
@@ -11,10 +11,10 @@ const stopProgress = () => {
 export default () => {
   NProgress.configure({ showSpinner: false });
 
-  Router.events.on('routeChangeStart', () => {
+  Router.events.on("routeChangeStart", () => {
     progressTimeout = setTimeout(NProgress.start, 100);
   });
 
-  Router.events.on('routeChangeComplete', stopProgress);
-  Router.events.on('routeChangeError', stopProgress);
+  Router.events.on("routeChangeComplete", stopProgress);
+  Router.events.on("routeChangeError", stopProgress);
 };

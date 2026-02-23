@@ -22,7 +22,6 @@ In addition to the software requirements, you need access to the following APIs:
 - [Discogs](https://www.discogs.com/applications/edit) for searching and getting release info
 - [Last.fm](https://www.last.fm/api/account/create) for authentication and scrobbling data
 
-
 ### Installing
 
 First you need to clone the repository from github:
@@ -85,6 +84,7 @@ yarn test
 ```
 
 You can also use watch-mode and display the current test coverage:
+
 ```
 yarn test:watch
 yarm test:coverage
@@ -110,7 +110,7 @@ yarn start
 
 ## Authors
 
-* **Daniel Puscher** - *Initial work* - [dpuscher](https://github.com/dpuscher)
+- **Daniel Puscher** - _Initial work_ - [dpuscher](https://github.com/dpuscher)
 
 See also the list of [contributors](https://github.com/dpuscher/code-scrobble/contributors) who participated in this project.
 
