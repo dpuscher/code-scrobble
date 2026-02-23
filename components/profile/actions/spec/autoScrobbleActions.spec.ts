@@ -18,12 +18,19 @@ const demoAutoScrobbleData = [
   },
 ];
 
+const mockJsonResponse = data =>
+  ({
+  ok: true,
+  status: 200,
+  json: async () => data,
+}) as Response;
+
 describe("historyActions", () => {
+  let fetchMock;
   beforeEach(() => {
-    fetch.mockResponse(JSON.stringify(demoAutoScrobbleData));
-  });
-  afterEach(() => {
-    fetch.resetMocks();
+    fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(mockJsonResponse(demoAutoScrobbleData));
   });
 
   describe("fetchAutoScrobbles", () => {
@@ -52,7 +59,7 @@ describe("historyActions", () => {
 
     it("sets error state to store when loading fails", () => {
       const error = new Error("Foooo!");
-      fetch.mockReject(error);
+      fetchMock.mockRejectedValue(error);
       const expectedAction = actionCreators.setErrorState(error);
       const store = emptyStore();
 
@@ -72,8 +79,8 @@ describe("historyActions", () => {
       const store = emptyStore();
 
       return store.dispatch(fetchAutoScrobbles()).then(() => {
-        expect(fetch.mock.calls.length).toEqual(1);
-        expect(fetch.mock.calls[0][0]).toEqual("/api/user/autoscrobbles");
+        expect(fetchMock.mock.calls.length).toEqual(1);
+        expect(fetchMock.mock.calls[0][0]).toEqual("/api/user/autoscrobbles");
       });
     });
   });
@@ -110,7 +117,7 @@ describe("historyActions", () => {
     it("sets error state to store when loading fails", () => {
       const id = 1337;
       const error = new Error("Foooo!");
-      fetch.mockReject(error);
+      fetchMock.mockRejectedValue(error);
       const expectedAction = actionCreators.setErrorState(error);
       const store = emptyStore();
 
@@ -134,10 +141,10 @@ describe("historyActions", () => {
       const store = emptyStore();
 
       return store.dispatch(deleteAutoScrobble(id)).then(() => {
-        expect(fetch.mock.calls.length).toEqual(1);
-        expect(fetch.mock.calls[0][0]).toEqual("/api/user/autoscrobbles");
-        expect(fetch.mock.calls[0][1].method).toEqual("DELETE");
-        expect(fetch.mock.calls[0][1].body).toEqual(JSON.stringify({ id }));
+        expect(fetchMock.mock.calls.length).toEqual(1);
+        expect(fetchMock.mock.calls[0][0]).toEqual("/api/user/autoscrobbles");
+        expect(fetchMock.mock.calls[0][1].method).toEqual("DELETE");
+        expect(fetchMock.mock.calls[0][1].body).toEqual(JSON.stringify({ id }));
       });
     });
   });

@@ -1,3 +1,4 @@
-import fetchMock from "jest-fetch-mock";
-
-global.fetch = fetchMock as any;
+afterEach(() => {
+  vi.restoreAllMocks();
+  vi.unstubAllGlobals();
+});

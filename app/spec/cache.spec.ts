@@ -1,17 +1,15 @@
 /* eslint-disable no-underscore-dangle */
 
+import * as redis from "redis";
 import * as Cache from "../cache";
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const redis = require("redis");
-
-jest.mock("redis");
+vi.mock("redis", async () => import("../__mocks__/redis"));
 
 describe("cache", () => {
   beforeEach(() => {
-    redis._get.mockClear();
-    redis._set.mockClear();
-    redis._reset();
+    (redis as any)._get.mockClear();
+    (redis as any)._set.mockClear();
+    (redis as any)._reset();
   });
 
   describe("set", () => {
@@ -21,10 +19,10 @@ describe("cache", () => {
 
       await Cache.set(key, value);
 
-      expect(redis._set.mock.calls.length).toBe(1);
-      expect(redis._set.mock.calls[0][0]).toBe(key);
-      expect(redis._set.mock.calls[0][1]).toBe(JSON.stringify(value));
-      expect(redis._set.mock.calls[0][2]).toEqual({ EX: 86400 });
+      expect((redis as any)._set.mock.calls.length).toBe(1);
+      expect((redis as any)._set.mock.calls[0][0]).toBe(key);
+      expect((redis as any)._set.mock.calls[0][1]).toBe(JSON.stringify(value));
+      expect((redis as any)._set.mock.calls[0][2]).toEqual({ EX: 86400 });
     });
 
     it("passes given ttl to redis store", async () => {
@@ -34,7 +32,7 @@ describe("cache", () => {
 
       await Cache.set(key, value, ttl);
 
-      expect(redis._set.mock.calls[0][2]).toEqual({ EX: ttl });
+      expect((redis as any)._set.mock.calls[0][2]).toEqual({ EX: ttl });
     });
 
     it("uses 24 hours as default ttl", async () => {
@@ -43,7 +41,7 @@ describe("cache", () => {
 
       await Cache.set(key, value);
 
-      expect(redis._set.mock.calls[0][2]).toEqual({ EX: 24 * 60 * 60 });
+      expect((redis as any)._set.mock.calls[0][2]).toEqual({ EX: 24 * 60 * 60 });
     });
   });
 
@@ -57,8 +55,8 @@ describe("cache", () => {
         // ignore errors
       }
 
-      expect(redis._get.mock.calls.length).toBe(1);
-      expect(redis._get.mock.calls[0][0]).toBe(key);
+      expect((redis as any)._get.mock.calls.length).toBe(1);
+      expect((redis as any)._get.mock.calls[0][0]).toBe(key);
     });
 
     it("returns correct data from redis store after it was saved", async () => {
@@ -71,10 +69,10 @@ describe("cache", () => {
       expect(cachedData).toEqual(value);
     });
 
-    it("rejects the promise when no data is stored in redis", () => {
+    it("rejects the promise when no data is stored in redis", async () => {
       const key = "foo";
 
-      expect(Cache.get(key)).rejects.toBeUndefined();
+      await expect(Cache.get(key)).rejects.toBeUndefined();
     });
   });
 });
