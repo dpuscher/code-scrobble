@@ -4,6 +4,7 @@ const prettierConfig = require("eslint-config-prettier/flat");
 
 const compat = new FlatCompat({
   baseDirectory: __dirname,
+  recommendedConfig: js.configs.recommended,
 });
 
 module.exports = [
