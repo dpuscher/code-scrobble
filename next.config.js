@@ -6,6 +6,7 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
 const nextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
+  transpilePackages: ["styled-components"],
 };
 
 module.exports = withBundleAnalyzer(nextConfig);
