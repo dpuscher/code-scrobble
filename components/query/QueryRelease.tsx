@@ -1,5 +1,6 @@
 import { bindActionCreators } from "redux";
-import { connect, ConnectedProps } from "react-redux";
+import { connect } from "react-redux";
+import type { ConnectedProps } from "react-redux";
 import React from "react";
 import Head from "next/head";
 import Link from "next/link";
@@ -141,6 +142,7 @@ class QueryRelease extends React.Component<PropsFromRedux, { open: boolean; sear
                 <MdClose size="30" color={silver} />
               </CloseButton>
               <HeadWrapper onSubmit={this.onSubmit}>
+                {/* eslint-disable jsx-a11y/no-autofocus */}
                 <Input
                   value={query}
                   onChange={this.onInput}
@@ -148,6 +150,7 @@ class QueryRelease extends React.Component<PropsFromRedux, { open: boolean; sear
                   autoFocus
                   ref={this.inputRef}
                 />
+                {/* eslint-enable jsx-a11y/no-autofocus */}
                 <Submit type="submit">
                   <IoIosSearch size={30} />
                 </Submit>
