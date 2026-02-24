@@ -3431,6 +3431,7 @@ __metadata:
     next: "npm:^14.2.0"
     next-redux-wrapper: "npm:^8.1.0"
     nprogress: "npm:^0.2.0"
+    postcss-styled-syntax: "npm:^0.7.1"
     prettier: "npm:^3.8.1"
     quagga: "npm:^0.12.1"
     react: "npm:^18.0.0"
@@ -8045,6 +8046,17 @@ __metadata:
     cssesc: "npm:^3.0.0"
     util-deprecate: "npm:^1.0.2"
   checksum: 10c0/02d3b1589ddcddceed4b583b098b95a7266dacd5135f041e5d913ebb48e874fd333a36e564cc9a2ec426a464cb18db11cb192ac76247aced5eba8c951bf59507
+  languageName: node
+  linkType: hard
+
+"postcss-styled-syntax@npm:^0.7.1":
+  version: 0.7.1
+  resolution: "postcss-styled-syntax@npm:0.7.1"
+  dependencies:
+    typescript: "npm:^5.7.3"
+  peerDependencies:
+    postcss: ^8.5.1
+  checksum: 10c0/85339ca0c511c88cb46bd3e2cdc1bc7ff695960946b653f411939f06cb47bd3e4f2d47e580cf949e56978153c49b462702c9e71d598f1e38619569783e431073
   languageName: node
   linkType: hard
 
