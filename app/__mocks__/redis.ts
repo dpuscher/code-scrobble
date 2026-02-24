@@ -1,25 +1,20 @@
 /* eslint-disable no-underscore-dangle */
 
-const store = new Map();
+const store = new Map<string, string>();
 
-const mockGet = jest.fn(async key => store.get(key) || null);
-const mockSet = jest.fn(async (key, value) => {
+export const _get = vi.fn(async (key: string) => store.get(key) || null);
+export const _set = vi.fn(async (key: string, value: string) => {
   store.set(key, value);
   return "OK";
 });
-const mockConnect = jest.fn(async () => {});
-const mockOn = jest.fn();
+const mockConnect = vi.fn(async () => {});
+const mockOn = vi.fn();
 
-const createClient = jest.fn(() => ({
-  get: mockGet,
-  set: mockSet,
+export const createClient = vi.fn(() => ({
+  get: _get,
+  set: _set,
   connect: mockConnect,
   on: mockOn,
 }));
 
-module.exports = {
-  createClient,
-  _get: mockGet,
-  _set: mockSet,
-  _reset: () => store.clear(),
-};
+export const _reset = () => store.clear();

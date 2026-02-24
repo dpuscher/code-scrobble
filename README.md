@@ -77,7 +77,7 @@ You can adjust the port by setting the `PORT` environment variable.
 
 ## Running the tests
 
-Jest is used as a test runner in this project:
+Vitest is used as a test runner in this project:
 
 ```
 yarn test
@@ -87,7 +87,7 @@ You can also use watch-mode and display the current test coverage:
 
 ```
 yarn test:watch
-yarm test:coverage
+yarn test:coverage
 ```
 
 ### Coding style tests

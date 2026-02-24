@@ -1,6 +1,9 @@
 const { FlatCompat } = require("@eslint/eslintrc");
 const js = require("@eslint/js");
 const prettierConfig = require("eslint-config-prettier/flat");
+const vitestModule = require("@vitest/eslint-plugin");
+
+const vitest = vitestModule.default ?? vitestModule;
 
 const compat = new FlatCompat({
   baseDirectory: __dirname,
@@ -29,19 +32,18 @@ module.exports = [
     "plugin:import/recommended",
   ),
   {
-    files: ["**/*.spec.{js,jsx,ts,tsx}", "**/*.test.{js,jsx,ts,tsx}"],
+    files: ["**/*.{spec,test}.{js,jsx,ts,tsx}"],
+    plugins: {
+      vitest,
+    },
     languageOptions: {
       globals: {
-        describe: "readonly",
-        it: "readonly",
-        test: "readonly",
-        expect: "readonly",
-        beforeAll: "readonly",
-        beforeEach: "readonly",
-        afterAll: "readonly",
-        afterEach: "readonly",
-        jest: "readonly",
+        ...vitest.environments.env.globals,
       },
+    },
+    rules: {
+      ...vitest.configs.recommended.rules,
+      "vitest/no-importing-vitest-globals": "error",
     },
   },
   {

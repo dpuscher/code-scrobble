@@ -21,12 +21,19 @@ const demoHistoryData = [
   },
 ];
 
+const mockJsonResponse = data =>
+  ({
+  ok: true,
+  status: 200,
+  json: async () => data,
+}) as Response;
+
 describe("historyActions", () => {
+  let fetchMock;
   beforeEach(() => {
-    fetch.mockResponse(JSON.stringify(demoHistoryData));
-  });
-  afterEach(() => {
-    fetch.resetMocks();
+    fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(mockJsonResponse(demoHistoryData));
   });
 
   it("sets loading state to true as first action", () => {
@@ -52,7 +59,7 @@ describe("historyActions", () => {
 
   it("sets error state to store when loading fails", () => {
     const error = new Error("Foooo!");
-    fetch.mockReject(error);
+    fetchMock.mockRejectedValue(error);
     const expectedAction = actionCreators.setErrorState(error);
     const store = emptyStore();
 
@@ -70,8 +77,8 @@ describe("historyActions", () => {
     const store = emptyStore();
 
     return store.dispatch(fetchHistory()).then(() => {
-      expect(fetch.mock.calls.length).toEqual(1);
-      expect(fetch.mock.calls[0][0]).toEqual("/api/user/history");
+      expect(fetchMock.mock.calls.length).toEqual(1);
+      expect(fetchMock.mock.calls[0][0]).toEqual("/api/user/history");
     });
   });
 });
