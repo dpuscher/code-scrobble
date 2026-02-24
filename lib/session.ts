@@ -25,3 +25,9 @@ export const sessionOptions: SessionOptions = {
 export function getSession(req: IncomingMessage, res: ServerResponse): Promise<IronSession<SessionData>> {
   return getIronSession<SessionData>(req, res, sessionOptions);
 }
+
+export async function getAppRouterSession(): Promise<IronSession<SessionData>> {
+  const { cookies } = await import("next/headers");
+  const cookieStore = await cookies();
+  return getIronSession<SessionData>(cookieStore, sessionOptions);
+}
