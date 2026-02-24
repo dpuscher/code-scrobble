@@ -91,7 +91,8 @@
       "@lavamoat/preinstall-always-fail": false,
       "babel-jest>@jest/transform>jest-haste-map>fsevents": false,
       "jest-environment-jsdom>jest-util>jest-util>fsevents": false,
-      "@babel/runtime-corejs2>core-js": false
+      "@babel/runtime-corejs2>core-js": false,
+      "eslint-config-next>eslint-import-resolver-typescript>unrs-resolver": false
     }
   },
   "lint-staged": {
