@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { connectToDatabase } from "./mongodb";
 import { getSession } from "./session";
-import User from "../app/models/user";
+import User from "../server/models/user";
 
 export async function requireUser(req: NextApiRequest, res: NextApiResponse): Promise<any | null> {
   await connectToDatabase();

@@ -2,10 +2,10 @@ import crypto from "crypto";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { connectToDatabase } from "../../../../lib/mongodb";
 import { getSession } from "../../../../lib/session";
-import * as LastFM from "../../../../app/lastfm";
-import type { LastFMUserData } from "../../../../app/lastfm";
-import User from "../../../../app/models/user";
-import type { UserJSON } from "../../../../app/models/user";
+import * as LastFM from "../../../../server/lastfm";
+import type { LastFMUserData } from "../../../../server/lastfm";
+import User from "../../../../server/models/user";
+import type { UserJSON } from "../../../../server/models/user";
 
 async function getLastFMSession(token: string): Promise<{ name: string; key: string }> {
   const method = "auth.getSession";

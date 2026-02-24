@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { requireUser } from "../../../lib/withAuth";
-import Release from "../../../app/models/release";
+import Release from "../../../server/models/release";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const user = await requireUser(req, res);

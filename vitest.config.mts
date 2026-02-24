@@ -12,7 +12,7 @@ export default defineConfig({
     exclude: ['.next/**', 'node_modules/**'],
     coverage: {
       include: [
-        'app/**/*.{js,jsx,ts,tsx}',
+        'server/**/*.{js,jsx,ts,tsx}',
         'components/**/*.{js,jsx,ts,tsx}',
         'lib/**/*.{js,jsx,ts,tsx}',
       ],
