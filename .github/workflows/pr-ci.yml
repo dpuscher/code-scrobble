@@ -47,7 +47,7 @@ jobs:
         run: yarn lint:css
 
       - name: Run tests
-        run: yarn test --ci --watch=false
+        run: yarn test
 
       - name: Build
         run: yarn build
