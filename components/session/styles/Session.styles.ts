@@ -1,19 +1,21 @@
-import styled, { css } from 'styled-components';
-import { dark, yellow, yellowRGB } from '../../../lib/colors';
-import { animation } from '../../layout/Spinner';
-import { buttonReset } from '../../../styles/mixins';
+import styled, { css } from "styled-components";
+import { dark, yellow, yellowRGB } from "../../../lib/colors";
+import { animation } from "../../layout/Spinner";
+import { buttonReset } from "../../../styles/mixins";
 
 const fadeInOnOpen = css<{ open?: boolean }>`
-  transition: opacity .3s;
+  transition: opacity 0.3s;
   opacity: 0;
-  pointer-events:none;
-  ${props => props.open && css`
-    opacity: 1;
-    pointer-events: auto;
-  `}
+  pointer-events: none;
+  ${props =>
+    props.open &&
+    css`
+      opacity: 1;
+      pointer-events: auto;
+    `}
 `;
 
-export const Image = styled.div<{ image?: string }>`
+export const Avatar = styled.div<{ image?: string }>`
   z-index: 1;
   width: 8vw;
   max-width: 50px;
@@ -30,7 +32,7 @@ export const Loader = styled.div`
   width: 100%;
   height: 100%;
   animation: ${animation} 1s ease-in-out infinite;
-  border: 2px solid rgba(${yellowRGB}, .3);
+  border: 2px solid rgba(${yellowRGB}, 0.3);
   border-radius: 50%;
   border-top-color: ${yellow};
 `;
@@ -44,7 +46,7 @@ export const Arrow = styled.div<{ open?: boolean }>`
   height: 8px;
 
   &:before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 50%;

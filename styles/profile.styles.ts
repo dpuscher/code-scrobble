@@ -1,7 +1,7 @@
-import TimeAgo from 'react-timeago';
-import styled, { css } from 'styled-components';
-import { grey, silver } from '../lib/colors';
-import { liReset, ulReset, buttonReset } from './mixins';
+import TimeAgo from "react-timeago";
+import styled, { css } from "styled-components";
+import { grey, silver } from "../lib/colors";
+import { liReset, ulReset, buttonReset } from "./mixins";
 
 export const Wrapper = styled.div`
   width: 100%;
@@ -58,11 +58,13 @@ export const ListItem = styled.li`
 export const ListCaption = styled.span<{ disabled?: boolean }>`
   flex-grow: 1;
   padding: 10px 0;
-  transition: opacity .3s;
+  transition: opacity 0.3s;
   text-decoration: none;
-  ${props => props.disabled && css`
-    opacity: .3;
-  `}
+  ${props =>
+    props.disabled &&
+    css`
+      opacity: 0.3;
+    `}
 `;
 
 export const DeleteButton = styled.button<{ disabled?: boolean }>`
@@ -70,15 +72,17 @@ export const DeleteButton = styled.button<{ disabled?: boolean }>`
   position: relative;
   right: -20px;
   padding: 15px;
-  transition: opacity .3s;
-  ${props => props.disabled && css`
-    opacity: .3;
-  `}
+  transition: opacity 0.3s;
+  ${props =>
+    props.disabled &&
+    css`
+      opacity: 0.3;
+    `}
 `;
 
 export const Fallback = styled.div`
   padding: 10px 40px;
-  opacity: .5;
+  opacity: 0.5;
   color: ${silver};
   font-style: italic;
   text-align: center;
@@ -90,7 +94,7 @@ export const Meta = styled.div`
 
 export const Time = styled(TimeAgo)`
   display: inline-block;
-  opacity: .5;
+  opacity: 0.5;
   font-size: 12px;
   white-space: nowrap;
 `;

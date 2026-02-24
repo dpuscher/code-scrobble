@@ -1,5 +1,5 @@
-import styled from 'styled-components';
-import LogoModule from '../components/assets/Logo';
+import styled from "styled-components";
+import LogoModule from "../components/assets/Logo";
 
 export const Wrapper = styled.div`
   display: flex;

@@ -1,11 +1,10 @@
-import { createClient } from 'redis';
+import { createClient } from "redis";
 
 const client = createClient({ url: process.env.REDISCLOUD_URL });
 client.connect().catch(console.error);
-client.on('error', console.error);
+client.on("error", console.error);
 
-export const set = (key: string, value: unknown, ttl = 86400) =>
-  client.set(key, JSON.stringify(value), { EX: ttl });
+export const set = (key: string, value: unknown, ttl = 86400) => client.set(key, JSON.stringify(value), { EX: ttl });
 
 export const get = async <T = unknown>(key: string): Promise<T> => {
   const value = await client.get(key);

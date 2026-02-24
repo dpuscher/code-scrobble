@@ -1,6 +1,6 @@
 // Source: https://github.com/iceteabottle/css-checkbox
-import styled, { keyframes } from 'styled-components';
-import { dark, silver, yellow } from '../../../lib/colors';
+import styled, { keyframes } from "styled-components";
+import { dark, silver, yellow } from "../../../lib/colors";
 
 // custom checkbox/radios
 const inputHeight = 30;
@@ -27,7 +27,7 @@ export const Label = styled.label`
   display: inline-flex;
   position: relative;
   align-items: center;
-  height: ${inputHeight + (2 * inputBorderWidth)}px;
+  height: ${inputHeight + 2 * inputBorderWidth}px;
   padding: 0 6px 0 42px;
   cursor: pointer;
   user-select: none;
@@ -38,15 +38,15 @@ export const Label = styled.label`
     width: ${inputWidth}px;
     height: ${inputHeight}px;
     margin-top: ${-(inputHeight / 2 + inputBorderWidth)}px;
-    transition: .2s ease;
+    transition: 0.2s ease;
     transition-property: background-color, border-color;
     border: ${inputBorderWidth}px solid ${borderColor};
     border-radius: 50%;
-    background: rgba(255, 255, 255, .1);
+    background: rgba(255, 255, 255, 0.1);
     text-align: center;
   }
 
-  &:after{
+  &:after {
     top: 50%;
     left: 9px;
     width: 11px;
@@ -54,7 +54,7 @@ export const Label = styled.label`
     margin-top: 0;
     transform: translateY(-5px) rotate(-45deg) scale(0);
     transform-origin: 50%;
-    transition: transform .2s ease-out;
+    transition: transform 0.2s ease-out;
     border-width: 0 0 3px 3px;
     border-style: solid;
     border-color: ${dark};
@@ -63,8 +63,8 @@ export const Label = styled.label`
   }
 
   &:before,
-  &:after{
-    content: '';
+  &:after {
+    content: "";
     position: absolute;
     box-sizing: content-box;
   }
@@ -91,13 +91,13 @@ export const Input = styled.input`
   &:checked {
     & + ${Label} {
       &:after {
-        content: '';
+        content: "";
         transform: translateY(-5px) rotate(-45deg) scale(1);
-        transition: transform .2s ease-out;
+        transition: transform 0.2s ease-out;
         border-color: ${dark};
       }
       &:before {
-        animation: ${borderscale1} .2s ease-in;
+        animation: ${borderscale1} 0.2s ease-in;
         border-color: ${checkboxColor};
         background: ${checkboxColor};
       }

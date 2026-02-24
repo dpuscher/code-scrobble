@@ -1,5 +1,5 @@
-import styled from 'styled-components';
-import Spinner from '../../layout/Spinner';
+import styled from "styled-components";
+import Spinner from "../../layout/Spinner";
 
 export const Loading = styled(Spinner)`
   width: 100%;
@@ -23,8 +23,11 @@ export const LoadingContent = styled.div`
   left: 0;
   width: 100%;
   padding: 12% 20%;
-  background: rgba(0, 0, 0, .5);
+  background: rgba(0, 0, 0, 0.5);
   text-align: center;
   backdrop-filter: blur(10px);
-  text-shadow: 0 0 3px black, 0 0 3px black, 0 0 3px black;
+  text-shadow:
+    0 0 3px black,
+    0 0 3px black,
+    0 0 3px black;
 `;

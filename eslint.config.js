@@ -1,5 +1,6 @@
-const { FlatCompat } = require('@eslint/eslintrc');
-const babelParser = require('@babel/eslint-parser');
+const { FlatCompat } = require("@eslint/eslintrc");
+const js = require("@eslint/js");
+const prettierConfig = require("eslint-config-prettier/flat");
 
 const compat = new FlatCompat({
   baseDirectory: __dirname,
@@ -7,44 +8,48 @@ const compat = new FlatCompat({
 
 module.exports = [
   {
-    ignores: ['.next/**', 'node_modules/**', 'public/**'],
+    ignores: [
+      ".next/**",
+      "node_modules/**",
+      ".storybook/**",
+      "coverage/**",
+      "dist/**",
+      "build/**",
+      "out/**",
+      "public/static/**",
+      "test-results/**",
+    ],
   },
+  js.configs.recommended,
   ...compat.extends(
-    'eslint:recommended',
-    'plugin:react/recommended',
-    'plugin:jest/recommended',
-    'airbnb',
+    "next/core-web-vitals",
+    "next/typescript",
+    "plugin:jsx-a11y/recommended",
+    "plugin:import/recommended",
   ),
   {
+    files: ["**/*.spec.{js,jsx,ts,tsx}", "**/*.test.{js,jsx,ts,tsx}"],
     languageOptions: {
-      parser: babelParser,
-      parserOptions: {
-        requireConfigFile: false,
-        babelOptions: {
-          presets: ['next/babel'],
-        },
-      },
       globals: {
-        browser: true,
-        es6: true,
-        node: true,
+        describe: "readonly",
+        it: "readonly",
+        test: "readonly",
+        expect: "readonly",
+        beforeAll: "readonly",
+        beforeEach: "readonly",
+        afterAll: "readonly",
+        afterEach: "readonly",
+        jest: "readonly",
       },
-    },
-    rules: {
-      'import/extensions': 'off',
-      'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
-      'import/no-unresolved': 'off',
-      'jsx-a11y/anchor-is-valid': ['error', {
-        components: ['Link'],
-        specialLink: ['route'],
-        aspects: ['invalidHref', 'preferButton'],
-      }],
-      'no-unused-vars': ['error', { args: 'none' }],
-      'react/destructuring-assignment': 'off',
-      'react/forbid-prop-types': 'off',
-      'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx', '.ts', '.tsx'] }],
-      'react/jsx-one-expression-per-line': 'off',
-      'react/react-in-jsx-scope': 'off',
     },
   },
+  {
+    rules: {
+      "@typescript-eslint/no-empty-object-type": "warn",
+      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/no-require-imports": "off",
+      "import/no-unresolved": "off",
+    },
+  },
+  prettierConfig,
 ];

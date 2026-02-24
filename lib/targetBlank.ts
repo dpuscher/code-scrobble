@@ -1,4 +1,4 @@
 export default {
-  target: '_blank',
-  rel: 'noopener noreferrer',
+  target: "_blank",
+  rel: "noopener noreferrer",
 };

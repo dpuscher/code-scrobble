@@ -1,4 +1,4 @@
-import { SET_LOADING_STATE, SET_ERROR_STATE, RECEIVED_RELEASE } from '../constants/releaseConstants';
+import { SET_LOADING_STATE, SET_ERROR_STATE, RECEIVED_RELEASE } from "../constants/releaseConstants";
 
 export const setLoadingState = (code, loading) => ({
   type: SET_LOADING_STATE,

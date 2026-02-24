@@ -1,4 +1,4 @@
-import mongoose, { Schema, HydratedDocument, Model } from 'mongoose';
+import mongoose, { Schema, HydratedDocument, Model } from "mongoose";
 
 interface IHistoryItem {
   id: string;
@@ -40,10 +40,12 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>({
   imageLarge: String,
   imageXLarge: String,
   instantScrobbles: [String],
-  history: [{
-    id: String,
-    time: { type: Date, default: Date.now },
-  }],
+  history: [
+    {
+      id: String,
+      time: { type: Date, default: Date.now },
+    },
+  ],
 });
 
 userSchema.methods.toJSON = function toJSON(): UserJSON {
@@ -62,7 +64,8 @@ userSchema.methods.isInstantScrobble = function isInstantScrobble(id: string) {
   return (this.instantScrobbles || []).includes(String(id));
 };
 
-const User = (mongoose.models.User as UserModel & { new(): HydratedDocument<IUser, IUserMethods> }) ||
-  mongoose.model<IUser, UserModel>('User', userSchema);
+const User =
+  (mongoose.models.User as UserModel & { new (): HydratedDocument<IUser, IUserMethods> }) ||
+  mongoose.model<IUser, UserModel>("User", userSchema);
 
 export default User;

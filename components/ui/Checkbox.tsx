@@ -1,6 +1,6 @@
-import React from 'react';
+import React from "react";
 
-import { Input, Label, Wrapper } from './styles/Checkbox.styles';
+import { Input, Label, Wrapper } from "./styles/Checkbox.styles";
 
 interface CheckboxProps {
   checked?: boolean;
@@ -21,7 +21,7 @@ class Checkbox extends React.Component<CheckboxProps, {}> {
 
   shouldComponentUpdate(nextProps: CheckboxProps) {
     // eslint-disable-next-line react/destructuring-assignment
-    return ['checked', 'disabled'].some(prop => this.props[prop] !== nextProps[prop]);
+    return ["checked", "disabled"].some(prop => this.props[prop] !== nextProps[prop]);
   }
 
   handleCheck(event) {
@@ -30,18 +30,11 @@ class Checkbox extends React.Component<CheckboxProps, {}> {
   }
 
   render() {
-    const {
-      name, className = null, checked = false, disabled = false, children = null,
-    } = this.props;
+    const { name, className = null, checked = false, disabled = false, children = null } = this.props;
     const id = `checkbox-${name}`;
 
     return (
-      <Wrapper
-        className={className}
-        role="checkbox"
-        aria-checked={!!checked}
-        tabIndex={0}
-      >
+      <Wrapper className={className} role="checkbox" aria-checked={!!checked} tabIndex={0}>
         <Input
           name={name}
           id={id}
@@ -50,7 +43,12 @@ class Checkbox extends React.Component<CheckboxProps, {}> {
           onChange={this.handleCheck}
           disabled={disabled}
         />
-        <Label htmlFor={id} ref={(e) => { this.label = e; }}>
+        <Label
+          htmlFor={id}
+          ref={e => {
+            this.label = e;
+          }}
+        >
           {children}
         </Label>
       </Wrapper>

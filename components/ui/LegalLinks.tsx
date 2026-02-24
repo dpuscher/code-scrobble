@@ -1,5 +1,5 @@
-import NextLink from 'next/link';
-import { Link, Links } from './styles/LegalLinks.styles';
+import NextLink from "next/link";
+import { Link, Links } from "./styles/LegalLinks.styles";
 
 const LegalLinks = () => (
   <Links>

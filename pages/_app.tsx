@@ -1,10 +1,10 @@
-import React from 'react';
-import Head from 'next/head';
-import { Provider } from 'react-redux';
-import BaseStyles from '../components/layout/BaseStyles';
-import NProgressStyles from '../styles/nprogress.styles';
-import initNProgress from '../lib/initNProgress';
-import { wrapper } from '../client/reduxStore';
+import React from "react";
+import Head from "next/head";
+import { Provider } from "react-redux";
+import BaseStyles from "../components/layout/BaseStyles";
+import NProgressStyles from "../styles/nprogress.styles";
+import initNProgress from "../lib/initNProgress";
+import { wrapper } from "../client/reduxStore";
 
 initNProgress();
 

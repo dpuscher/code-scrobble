@@ -1,4 +1,4 @@
-import { RECEIVED_HISTORY, SET_LOADING_STATE, SET_ERROR_STATE } from '../constants/historyConstants';
+import { RECEIVED_HISTORY, SET_LOADING_STATE, SET_ERROR_STATE } from "../constants/historyConstants";
 
 const historyReducer = (state = {}, action: any = {}) => {
   switch (action.type) {

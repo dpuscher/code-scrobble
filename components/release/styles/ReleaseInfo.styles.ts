@@ -1,6 +1,6 @@
-import { IoIosInformationCircleOutline } from 'react-icons/io';
-import styled from 'styled-components';
-import { dark } from '../../../lib/colors';
+import { IoIosInformationCircleOutline } from "react-icons/io";
+import styled from "styled-components";
+import { dark } from "../../../lib/colors";
 
 export const Wrapper = styled.div`
   position: relative;
@@ -41,7 +41,7 @@ export const Overlay = styled.div`
   width: 100%;
   height: 100%;
   overflow: auto;
-  background: rgba(0,0,0,.7);
+  background: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(10px);
   -webkit-overflow-scrolling: touch;
 `;
@@ -79,7 +79,7 @@ export const Cover = styled.img`
   height: 100%;
   object-fit: cover;
   filter: blur(10px);
-  opacity: .4;
+  opacity: 0.4;
 `;
 
 export const Meta = styled.div`
@@ -97,12 +97,12 @@ export const Title = styled.div`
 `;
 
 export const Year = styled.div`
-  font-size: .5em;
+  font-size: 0.5em;
 `;
 
 export const Artist = styled.div`
   margin-bottom: 8px;
-  font-size: .8em;
+  font-size: 0.8em;
 `;
 
 export const TrackListWrapper = styled.div`

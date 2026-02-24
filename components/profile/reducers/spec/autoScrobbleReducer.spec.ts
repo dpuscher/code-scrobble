@@ -1,11 +1,15 @@
-import autoScrobbleReducer from '../autoScrobbleReducer';
+import autoScrobbleReducer from "../autoScrobbleReducer";
 import {
-  setLoadingState, setErrorState, receivedAutoScrobbles, startDeleting, removeAutoScrobble,
+  setLoadingState,
+  setErrorState,
+  receivedAutoScrobbles,
+  startDeleting,
+  removeAutoScrobble,
   endDeleting,
-} from '../../actions/autoScrobbleActionCreators';
+} from "../../actions/autoScrobbleActionCreators";
 
-describe('autoScrobbleReducer', () => {
-  it('uses the correct initial state', () => {
+describe("autoScrobbleReducer", () => {
+  it("uses the correct initial state", () => {
     expect(autoScrobbleReducer()).toEqual({
       data: null,
       deleting: [],
@@ -14,11 +18,11 @@ describe('autoScrobbleReducer', () => {
     });
   });
 
-  it('saves autoScrobbles to store', () => {
+  it("saves autoScrobbles to store", () => {
     const state = {
       data: null,
     };
-    const autoScrobbles = ['foo', 'bar'];
+    const autoScrobbles = ["foo", "bar"];
     const action = receivedAutoScrobbles(autoScrobbles);
     const nextState = autoScrobbleReducer(state, action);
 
@@ -27,7 +31,7 @@ describe('autoScrobbleReducer', () => {
     });
   });
 
-  it('saves loading state to store', () => {
+  it("saves loading state to store", () => {
     const state = {
       loading: false,
     };
@@ -39,11 +43,11 @@ describe('autoScrobbleReducer', () => {
     });
   });
 
-  it('saves error state to store', () => {
+  it("saves error state to store", () => {
     const state = {
       error: null,
     };
-    const error = 'FooBar';
+    const error = "FooBar";
     const action = setErrorState(error);
     const nextState = autoScrobbleReducer(state, action);
 
@@ -52,42 +56,42 @@ describe('autoScrobbleReducer', () => {
     });
   });
 
-  it('saves starting of delete-process to store', () => {
+  it("saves starting of delete-process to store", () => {
     const state = {
-      deleting: ['foo'],
+      deleting: ["foo"],
     };
-    const deleting = 'bar';
+    const deleting = "bar";
     const action = startDeleting(deleting);
     const nextState = autoScrobbleReducer(state, action);
 
     expect(nextState).toEqual({
-      deleting: ['foo', 'bar'],
+      deleting: ["foo", "bar"],
     });
   });
 
-  it('removes autoScrobble from store', () => {
+  it("removes autoScrobble from store", () => {
     const state = {
-      data: [{ id: 'foo' }, { id: 'bar' }],
+      data: [{ id: "foo" }, { id: "bar" }],
     };
-    const deleting = 'foo';
+    const deleting = "foo";
     const action = removeAutoScrobble(deleting);
     const nextState = autoScrobbleReducer(state, action);
 
     expect(nextState).toEqual({
-      data: [{ id: 'bar' }],
+      data: [{ id: "bar" }],
     });
   });
 
-  it('saves ending of delete-process to store', () => {
+  it("saves ending of delete-process to store", () => {
     const state = {
-      deleting: ['foo', 'bar'],
+      deleting: ["foo", "bar"],
     };
-    const deleting = 'bar';
+    const deleting = "bar";
     const action = endDeleting(deleting);
     const nextState = autoScrobbleReducer(state, action);
 
     expect(nextState).toEqual({
-      deleting: ['foo'],
+      deleting: ["foo"],
     });
   });
 });

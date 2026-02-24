@@ -1,8 +1,8 @@
-import { IoIosSearch } from 'react-icons/io';
-import styled from 'styled-components';
-import LogoIcon from '../../icons/LogoIcon';
-import { dark } from '../../../lib/colors';
-import { buttonReset } from '../../../styles/mixins';
+import { IoIosSearch } from "react-icons/io";
+import styled from "styled-components";
+import LogoIcon from "../../icons/LogoIcon";
+import { dark } from "../../../lib/colors";
+import { buttonReset } from "../../../styles/mixins";
 
 export const Wrapper = styled.div`
   position: relative;
@@ -43,7 +43,7 @@ export const Overlay = styled.div`
   width: 100%;
   height: 100%;
   overflow: auto;
-  background: rgba(0,0,0,.7);
+  background: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(10px);
   -webkit-overflow-scrolling: touch;
 `;

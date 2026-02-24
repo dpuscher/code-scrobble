@@ -1,4 +1,4 @@
-import { SET_LOADING_STATE, SET_ERROR_STATE, RECEIVED_HISTORY } from '../constants/historyConstants';
+import { SET_LOADING_STATE, SET_ERROR_STATE, RECEIVED_HISTORY } from "../constants/historyConstants";
 
 export const setLoadingState = loading => ({
   type: SET_LOADING_STATE,

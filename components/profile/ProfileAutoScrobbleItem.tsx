@@ -1,9 +1,9 @@
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import React from 'react';
-import { TrashAlt as DeleteIcon } from 'styled-icons/fa-regular';
-import { deleteAutoScrobble } from './actions/autoScrobbleActions';
-import { DeleteButton, ListCaption, ListItem } from '../../styles/profile.styles';
+import { bindActionCreators } from "redux";
+import { connect } from "react-redux";
+import React from "react";
+import { TrashAlt as DeleteIcon } from "styled-icons/fa-regular";
+import { deleteAutoScrobble } from "./actions/autoScrobbleActions";
+import { DeleteButton, ListCaption, ListItem } from "../../styles/profile.styles";
 
 interface ProfileAutoScrobbleItemProps {
   id: string;
@@ -18,12 +18,10 @@ class ProfileAutoScrobbleItem extends React.PureComponent<ProfileAutoScrobbleIte
   handleDelete = () => {
     const { id } = this.props;
     this.props.deleteAutoScrobble(id);
-  }
+  };
 
   render() {
-    const {
-      id, artist, title, year, isDeleting = false,
-    } = this.props;
+    const { id, artist, title, year, isDeleting = false } = this.props;
     return (
       <ListItem key={id}>
         <ListCaption disabled={isDeleting}>
@@ -38,11 +36,6 @@ class ProfileAutoScrobbleItem extends React.PureComponent<ProfileAutoScrobbleIte
   }
 }
 
-const mapDispatchToProps = dispatch => (
-  bindActionCreators({ deleteAutoScrobble }, dispatch)
-);
+const mapDispatchToProps = dispatch => bindActionCreators({ deleteAutoScrobble }, dispatch);
 
-export default connect(
-  null,
-  mapDispatchToProps,
-)(ProfileAutoScrobbleItem);
+export default connect(null, mapDispatchToProps)(ProfileAutoScrobbleItem);

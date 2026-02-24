@@ -1,10 +1,10 @@
-import orderBy from 'lodash/orderBy';
-import pick from 'lodash/pick';
-import find from 'lodash/find';
-import * as Cache from './cache';
+import orderBy from "lodash/orderBy";
+import pick from "lodash/pick";
+import find from "lodash/find";
+import * as Cache from "./cache";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const DiscogsClient = require('disconnect').Client;
+const DiscogsClient = require("disconnect").Client;
 
 interface DiscogsError {
   statusCode: number;
@@ -71,19 +71,17 @@ const Database = new DiscogsClient({
 const convertTimecode = (timecode: string | undefined): number => {
   if (!timecode) return 0;
   return timecode
-    .split(':')
-    .map(n => (parseInt(n, 10) || 0))
+    .split(":")
+    .map(n => parseInt(n, 10) || 0)
     .reverse()
-    .map((n, i) => n * (60 ** i))
+    .map((n, i) => n * 60 ** i)
     .reduce((pv, cv) => pv + cv);
 };
 
 const normalizeTracklist = (tracks: DiscogsTrack[]): DiscogsTrack[] => {
   const vinylPositionRegex = /^[A-Z]-?[0-9]+$/;
   // eslint-disable-next-line no-underscore-dangle
-  let tracklist = tracks
-    .filter(track => track.type_ === 'track')
-    .filter(track => !/video/i.test(track.position));
+  let tracklist = tracks.filter(track => track.type_ === "track").filter(track => !/video/i.test(track.position));
 
   // Remove Bonus CDs from vinyl releases:
   if (tracklist.length && vinylPositionRegex.test(tracklist[0].position)) {
@@ -97,67 +95,70 @@ const normalizeTracklist = (tracks: DiscogsTrack[]): DiscogsTrack[] => {
 };
 
 const getBarcode = (data: DiscogsIdentifier[] = []): string | undefined =>
-  (find(data, { type: 'Barcode' }) || {}).value;
+  (find(data, { type: "Barcode" }) || {}).value;
 
 const buildRelease = (id: number, data: DiscogsData): ReleaseData => ({
   id,
-  artist: (data.artists || []).map(a => a.name).join(', '),
+  artist: (data.artists || []).map(a => a.name).join(", "),
   title: data.title,
   image: data?.images?.[0]?.uri,
   url: data.uri,
   year: data.year,
-  tracks: normalizeTracklist(data.tracklist || [])
-    .map((track, index) => ({
-      title: track.title,
-      trackNumber: index + 1,
-      duration: convertTimecode(track.duration),
-    })),
+  tracks: normalizeTracklist(data.tracklist || []).map((track, index) => ({
+    title: track.title,
+    trackNumber: index + 1,
+    duration: convertTimecode(track.duration),
+  })),
   barcode: getBarcode(data.identifiers),
 });
 
 export const barcode = (barcodeValue: string): Promise<number | undefined> =>
-  new Promise((resolve) => {
+  new Promise(resolve => {
     const cacheKey = `barcode--${barcodeValue}`;
 
     Cache.get<number>(cacheKey)
-      .then((result) => {
+      .then(result => {
         resolve(result);
       })
       .catch(() => {
-        Database.search(undefined, { barcode: barcodeValue, type: 'release' }, (err: DiscogsError, data: { results: DiscogsSearchResult[] }) => {
-          if (err || !data || !data.results || !data.results.length) {
-            return resolve(undefined);
-          }
-          const results = orderBy(
-            data.results,
-            ['community.have', 'community.want'],
-            ['desc', 'desc'],
-          ) as DiscogsSearchResult[];
+        Database.search(
+          undefined,
+          { barcode: barcodeValue, type: "release" },
+          (err: DiscogsError, data: { results: DiscogsSearchResult[] }) => {
+            if (err || !data || !data.results || !data.results.length) {
+              return resolve(undefined);
+            }
+            const results = orderBy(
+              data.results,
+              ["community.have", "community.want"],
+              ["desc", "desc"],
+            ) as DiscogsSearchResult[];
 
-          Cache.set(cacheKey, results[0].id);
+            Cache.set(cacheKey, results[0].id);
 
-          return resolve(results[0].id);
-        });
+            return resolve(results[0].id);
+          },
+        );
       });
   });
 
 export const search = (query: string): Promise<SearchResult[] | undefined> =>
-  new Promise((resolve) => {
+  new Promise(resolve => {
     const cacheKey = `search--${query}`;
 
     Cache.get<SearchResult[]>(cacheKey)
-      .then((results) => {
+      .then(results => {
         resolve(results);
       })
       .catch(() => {
         // eslint-disable-next-line consistent-return
-        Database.search(query, { type: 'release' }, (err: DiscogsError, data: { results: any[] }) => {
+        Database.search(query, { type: "release" }, (err: DiscogsError, data: { results: any[] }) => {
           if (err || !data || !data.results || !data.results.length) {
             return resolve(undefined);
           }
 
           const results: SearchResult[] = data.results.map(result =>
-            pick(result, ['id', 'title', 'thumb', 'country', 'year', 'format', 'uri']),
+            pick(result, ["id", "title", "thumb", "country", "year", "format", "uri"]),
           );
 
           Cache.set(cacheKey, results);
@@ -174,7 +175,7 @@ export const getRelease = (id: number): Promise<ReleaseData> =>
         if (err.statusCode === 404) {
           Database.getMaster(id, (masterErr: DiscogsError, masterData: DiscogsData) => {
             if (masterErr || !masterData) {
-              reject(masterErr || new Error('No data returned from Discogs'));
+              reject(masterErr || new Error("No data returned from Discogs"));
             } else {
               resolve(buildRelease(id, masterData));
             }
@@ -183,7 +184,7 @@ export const getRelease = (id: number): Promise<ReleaseData> =>
           reject(err);
         }
       } else if (!data) {
-        reject(new Error('No data returned from Discogs'));
+        reject(new Error("No data returned from Discogs"));
       } else {
         resolve(buildRelease(id, data));
       }

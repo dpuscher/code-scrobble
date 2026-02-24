@@ -1,7 +1,11 @@
 import {
-  SET_LOADING_STATE, SET_ERROR_STATE, RECEIVED_AUTO_SCROBBLES, START_DELETING,
-  REMOVE_AUTO_SCROBBLE, END_DELETING,
-} from '../constants/autoScrobbleConstants';
+  SET_LOADING_STATE,
+  SET_ERROR_STATE,
+  RECEIVED_AUTO_SCROBBLES,
+  START_DELETING,
+  REMOVE_AUTO_SCROBBLE,
+  END_DELETING,
+} from "../constants/autoScrobbleConstants";
 
 export const setLoadingState = loading => ({
   type: SET_LOADING_STATE,

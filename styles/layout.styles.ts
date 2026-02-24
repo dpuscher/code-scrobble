@@ -1,13 +1,13 @@
-import styled from 'styled-components';
-import LogoSmall from '../components/assets/LogoSmall';
-import { grey } from '../lib/colors';
+import styled from "styled-components";
+import LogoSmall from "../components/assets/LogoSmall";
+import { grey } from "../lib/colors";
 
 export const Center = styled.div<{ useMinHeight?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
-  ${props => (props.useMinHeight ? 'min-height: 100%' : 'height: 100%')};
+  ${props => (props.useMinHeight ? "min-height: 100%" : "height: 100%")};
   padding: 15px 0;
 `;
 

@@ -1,16 +1,16 @@
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import React from 'react';
-import Router from 'next/router';
-import { FaCheckCircle } from 'react-icons/fa';
-import { IoMdQrScanner } from 'react-icons/io';
-import { fetchReleaseIfNeeded } from '../../components/release/actions/releaseActions';
-import CircleLayout from '../../components/layout/CircleLayout';
-import { RetryButton } from '../../components/layout/styles/Error.styles';
-import { trackEvent } from '../../lib/analytics';
-import { yellow } from '../../lib/colors';
-import { FlexContent } from '../../styles/layout.styles';
-import { CoverBackground } from '../../styles/scrobbled.styles';
+import { bindActionCreators } from "redux";
+import { connect } from "react-redux";
+import React from "react";
+import Router from "next/router";
+import { FaCheckCircle } from "react-icons/fa";
+import { IoMdQrScanner } from "react-icons/io";
+import { fetchReleaseIfNeeded } from "../../components/release/actions/releaseActions";
+import CircleLayout from "../../components/layout/CircleLayout";
+import { RetryButton } from "../../components/layout/styles/Error.styles";
+import { trackEvent } from "../../lib/analytics";
+import { yellow } from "../../lib/colors";
+import { FlexContent } from "../../styles/layout.styles";
+import { CoverBackground } from "../../styles/scrobbled.styles";
 
 interface ScrobbledProps {
   barcode: string;
@@ -24,9 +24,9 @@ class Scrobbled extends React.Component<ScrobbledProps, {}> {
   }
 
   onRetry = () => {
-    trackEvent('Scrobbled', 'Rescan');
-    Router.push('/');
-  }
+    trackEvent("Scrobbled", "Rescan");
+    Router.push("/");
+  };
 
   render() {
     const { data = {} } = this.props;
@@ -53,11 +53,6 @@ const mapStateToProps = (state, { barcode }) => ({
   ...state.release[barcode],
 });
 
-const mapDispatchToProps = dispatch => (
-  bindActionCreators({ fetchReleaseIfNeeded }, dispatch)
-);
+const mapDispatchToProps = dispatch => bindActionCreators({ fetchReleaseIfNeeded }, dispatch);
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(Scrobbled);
+export default connect(mapStateToProps, mapDispatchToProps)(Scrobbled);

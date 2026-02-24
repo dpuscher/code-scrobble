@@ -1,5 +1,5 @@
-import { createGlobalStyle, keyframes } from 'styled-components';
-import { yellow } from '../lib/colors';
+import { createGlobalStyle, keyframes } from "styled-components";
+import { yellow } from "../lib/colors";
 
 const spinnerAnimation = keyframes`
   0% {

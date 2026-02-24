@@ -1,6 +1,6 @@
-import React from 'react';
-import Link from 'next/link';
-import { ListCaption, ListItem, Time } from '../../styles/profile.styles';
+import React from "react";
+import Link from "next/link";
+import { ListCaption, ListItem, Time } from "../../styles/profile.styles";
 
 interface ProfileHistoryItemProps {
   id: string;
@@ -15,9 +15,7 @@ interface ProfileHistoryItemProps {
 
 class ProfileHistoryItem extends React.PureComponent<ProfileHistoryItemProps, {}> {
   render() {
-    const {
-      id, artist, title, year, barcode, discogsId, time, isDeleting = false,
-    } = this.props;
+    const { id, artist, title, year, barcode, discogsId, time, isDeleting = false } = this.props;
 
     const barcodeParam = barcode || `id:${discogsId}`;
 

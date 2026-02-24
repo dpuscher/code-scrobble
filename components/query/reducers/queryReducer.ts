@@ -1,9 +1,7 @@
-import {
-  SET_LOADING_STATE, SET_ERROR_STATE, SET_QUERY_STRING, RECEIVED_RESULTS,
-} from '../constants/queryConstants';
+import { SET_LOADING_STATE, SET_ERROR_STATE, SET_QUERY_STRING, RECEIVED_RESULTS } from "../constants/queryConstants";
 
 const initialState = {
-  query: '',
+  query: "",
   results: [],
   error: null,
   loading: false,

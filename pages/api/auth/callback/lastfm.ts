@@ -1,20 +1,20 @@
-import crypto from 'crypto';
-import type { NextApiRequest, NextApiResponse } from 'next';
-import { connectToDatabase } from '../../../../lib/mongodb';
-import { getSession } from '../../../../lib/session';
-import * as LastFM from '../../../../app/lastfm';
-import type { LastFMUserData } from '../../../../app/lastfm';
-import User from '../../../../app/models/user';
-import type { UserJSON } from '../../../../app/models/user';
+import crypto from "crypto";
+import type { NextApiRequest, NextApiResponse } from "next";
+import { connectToDatabase } from "../../../../lib/mongodb";
+import { getSession } from "../../../../lib/session";
+import * as LastFM from "../../../../app/lastfm";
+import type { LastFMUserData } from "../../../../app/lastfm";
+import User from "../../../../app/models/user";
+import type { UserJSON } from "../../../../app/models/user";
 
 async function getLastFMSession(token: string): Promise<{ name: string; key: string }> {
-  const method = 'auth.getSession';
+  const method = "auth.getSession";
   const apiKey = process.env.LASTFM_KEY as string;
   const secret = process.env.LASTFM_SECRET as string;
 
   // Build signature: sorted params (excluding format/callback) concatenated, then append secret
   const sigStr = `api_key${apiKey}method${method}token${token}${secret}`;
-  const apiSig = crypto.createHash('md5').update(sigStr).digest('hex');
+  const apiSig = crypto.createHash("md5").update(sigStr).digest("hex");
 
   const url = `https://ws.audioscrobbler.com/2.0/?method=${method}&api_key=${apiKey}&token=${token}&api_sig=${apiSig}&format=json`;
   const response = await fetch(url);
@@ -27,8 +27,8 @@ async function getLastFMSession(token: string): Promise<{ name: string; key: str
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { token } = req.query;
 
-  if (!token || typeof token !== 'string') {
-    return res.redirect('/login');
+  if (!token || typeof token !== "string") {
+    return res.redirect("/login");
   }
 
   try {
@@ -42,11 +42,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     user.name = name;
     user.key = key;
 
-    const userData = await LastFM.getUserData(name, key) as LastFMUserData;
+    const userData = (await LastFM.getUserData(name, key)) as LastFMUserData;
     user.url = userData.url;
-    user.image = userData?.image?.[1]?.['#text'];
-    user.imageLarge = userData?.image?.[2]?.['#text'];
-    user.imageXLarge = userData?.image?.[3]?.['#text'];
+    user.image = userData?.image?.[1]?.["#text"];
+    user.imageLarge = userData?.image?.[2]?.["#text"];
+    user.imageXLarge = userData?.image?.[3]?.["#text"];
 
     await user.save();
 
@@ -56,9 +56,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     session.user = user.toJSON() as unknown as UserJSON;
     await session.save();
 
-    return res.redirect('/');
+    return res.redirect("/");
   } catch (err) {
-    console.error('Last.fm auth error:', err);
-    return res.redirect('/login');
+    console.error("Last.fm auth error:", err);
+    return res.redirect("/login");
   }
 }

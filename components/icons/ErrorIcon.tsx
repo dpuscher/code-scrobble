@@ -4,7 +4,7 @@ interface ErrorIconProps {
   className?: string;
 }
 
-const ErrorIcon = ({ color = '#000', size = 100, className }: ErrorIconProps) => (
+const ErrorIcon = ({ color = "#000", size = 100, className }: ErrorIconProps) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 367 367" width={size} height={size} className={className}>
     <title>Error</title>
     <g fill={color}>
