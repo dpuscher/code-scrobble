@@ -32,7 +32,7 @@ class Scrobble extends React.Component<ScrobbleProps, { loadingError: boolean }>
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, autoScrobble }),
       });
-    } catch (error) {
+    } catch {
       return this.setState({ loadingError: true });
     }
     return onScrobbled();

@@ -15,7 +15,7 @@ const fadeInOnOpen = css<{ open?: boolean }>`
     `}
 `;
 
-export const Image = styled.div<{ image?: string }>`
+export const Avatar = styled.div<{ image?: string }>`
   z-index: 1;
   width: 8vw;
   max-width: 50px;

@@ -5,7 +5,7 @@ import Head from "next/head";
 import Link from "next/link";
 import Router from "next/router";
 import { fetchSessionIfNeeded } from "./actions/sessionActions";
-import { Arrow, Image, ImageAndUser, Loader, Menu, MenuItem, Username } from "./styles/Session.styles";
+import { Arrow, Avatar, ImageAndUser, Loader, Menu, MenuItem, Username } from "./styles/Session.styles";
 import targetBlank from "../../lib/targetBlank";
 import { autotrackParams } from "../../lib/analytics";
 
@@ -66,12 +66,12 @@ class Session extends React.Component<SessionProps, { open: boolean }> {
               <Username href={session.url} open={open} {...targetBlank}>
                 {session.name}
               </Username>
-              <Image image={session.image} onClick={this.handleClick} />
+              <Avatar image={session.image} onClick={this.handleClick} />
             </>
           ) : (
-            <Image>
+            <Avatar>
               <Loader />
-            </Image>
+            </Avatar>
           )}
         </ImageAndUser>
         <Arrow open={open} />

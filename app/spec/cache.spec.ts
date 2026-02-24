@@ -53,7 +53,7 @@ describe("cache", () => {
 
       try {
         await Cache.get(key);
-      } catch (e) {
+      } catch {
         // ignore errors
       }
 

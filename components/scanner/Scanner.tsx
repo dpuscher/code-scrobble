@@ -88,8 +88,8 @@ class Scanner extends React.Component<ScannerProps, { loading: boolean; videoErr
             <ErrorDescription>Please make sure this website is allowed to use the camera.</ErrorDescription>
           </FlexContent>
         )}
-        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
         <Camera id="camera" $visible={ready}>
+          {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
           <video playsInline autoPlay />
         </Camera>
       </>
