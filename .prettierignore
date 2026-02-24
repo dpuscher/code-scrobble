@@ -1,0 +1,11 @@
+.next
+node_modules
+coverage
+dist
+build
+out
+test-results
+public/static
+.yarn
+.pnp.*
+yarn.lock

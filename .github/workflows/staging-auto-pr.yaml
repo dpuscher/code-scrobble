@@ -5,18 +5,90 @@ on:
 
 jobs:
   pull-request:
-    name: Open PR to main
+    name: Open or Update PR to Production
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    concurrency:
+      group: staging-auto-pr
+      cancel-in-progress: true
     steps:
-      - uses: actions/checkout@v2
-        name: checkout
+      - name: Create or update staging -> production PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          OWNER: ${{ github.repository_owner }}
+          SOURCE_BRANCH: staging
+          DESTINATION_BRANCH: production
+          PR_TITLE: Staging to Production
+          REVIEWER: ${{ github.actor }}
+        run: |
+          set -euo pipefail
 
-      - uses: repo-sync/pull-request@v2
-        name: pull-request
-        with:
-          destination_branch: "production"
-          pr_title: "Staging to Production"
-          pr_body: "This PR was auto-generated via a workflow action."
-          pr_reviewer: ${{ github.actor }}
-          source_branch: "staging"
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          compare_json="$(gh api "repos/${REPO}/compare/${DESTINATION_BRANCH}...${SOURCE_BRANCH}")"
+          compare_url="$(echo "${compare_json}" | jq -r '.html_url')"
+          ahead_by="$(echo "${compare_json}" | jq -r '.ahead_by')"
+
+          if [ "${ahead_by}" -eq 0 ]; then
+            echo "staging is not ahead of production (ahead_by=0). Nothing to do."
+            exit 0
+          fi
+
+          prs_tsv="$(mktemp)"
+          while IFS= read -r sha; do
+            [ -n "${sha}" ] || continue
+            gh api "repos/${REPO}/commits/${sha}/pulls" \
+              --jq '.[] | select(.merged_at != null) | "\(.number)\t\(.title)\t\(.html_url)"' \
+              >> "${prs_tsv}" || true
+          done < <(echo "${compare_json}" | jq -r '.commits[].sha')
+
+          if [ -s "${prs_tsv}" ]; then
+            prs_markdown="$(sort -t $'\t' -k1,1n -u "${prs_tsv}" | awk -F '\t' '{printf "- #%s %s (%s)\n", $1, $2, $3}')"
+          else
+            prs_markdown="- No linked pull requests found (direct commits or metadata unavailable)."
+          fi
+
+          pr_body_file="$(mktemp)"
+          {
+            echo "This PR was auto-generated via a workflow action."
+            echo
+            echo "## Included Pull Requests"
+            echo "${prs_markdown}"
+            echo
+            echo "## Diff"
+            echo "- Source: \`${SOURCE_BRANCH}\`"
+            echo "- Target: \`${DESTINATION_BRANCH}\`"
+            echo "- Commits ahead: ${ahead_by}"
+            echo "- Compare: ${compare_url}"
+          } > "${pr_body_file}"
+
+          pr_number="$(gh pr list \
+            --repo "${REPO}" \
+            --base "${DESTINATION_BRANCH}" \
+            --head "${SOURCE_BRANCH}" \
+            --state open \
+            --json number \
+            --jq '.[0].number // empty')"
+
+          if [ -z "${pr_number}" ]; then
+            echo "No open PR found for ${SOURCE_BRANCH} -> ${DESTINATION_BRANCH}. Creating one."
+            pr_url="$(gh pr create \
+              --repo "${REPO}" \
+              --base "${DESTINATION_BRANCH}" \
+              --head "${SOURCE_BRANCH}" \
+              --title "${PR_TITLE}" \
+              --body-file "${pr_body_file}")"
+            pr_number="${pr_url##*/}"
+          else
+            echo "Updating existing PR #${pr_number}."
+            gh pr edit "${pr_number}" \
+              --repo "${REPO}" \
+              --title "${PR_TITLE}" \
+              --body-file "${pr_body_file}"
+          fi
+
+          gh pr edit "${pr_number}" \
+            --repo "${REPO}" \
+            --add-reviewer "${REVIEWER}" || \
+            echo "Reviewer assignment skipped for ${REVIEWER}."
