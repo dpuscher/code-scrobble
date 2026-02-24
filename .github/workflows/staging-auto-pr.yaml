@@ -30,6 +30,11 @@ jobs:
           compare_url="$(echo "${compare_json}" | jq -r '.html_url')"
           ahead_by="$(echo "${compare_json}" | jq -r '.ahead_by')"
 
+          if [ "${ahead_by}" -eq 0 ]; then
+            echo "staging is not ahead of production (ahead_by=0). Nothing to do."
+            exit 0
+          fi
+
           prs_tsv="$(mktemp)"
           while IFS= read -r sha; do
             [ -n "${sha}" ] || continue
@@ -58,38 +63,32 @@ jobs:
             echo "- Compare: ${compare_url}"
           } > "${pr_body_file}"
 
-          pr_number="$(gh api "repos/${REPO}/pulls" \
-            -f state="open" \
-            -f base="${DESTINATION_BRANCH}" \
-            -f head="${OWNER}:${SOURCE_BRANCH}" \
+          pr_number="$(gh pr list \
+            --repo "${REPO}" \
+            --base "${DESTINATION_BRANCH}" \
+            --head "${SOURCE_BRANCH}" \
+            --state open \
+            --json number \
             --jq '.[0].number // empty')"
 
           if [ -z "${pr_number}" ]; then
             echo "No open PR found for ${SOURCE_BRANCH} -> ${DESTINATION_BRANCH}. Creating one."
-            create_payload="$(jq -n \
-              --arg title "${PR_TITLE}" \
-              --arg head "${SOURCE_BRANCH}" \
-              --arg base "${DESTINATION_BRANCH}" \
-              --rawfile body "${pr_body_file}" \
-              '{title: $title, head: $head, base: $base, body: $body}')"
-
-            pr_number="$(gh api \
-              -X POST "repos/${REPO}/pulls" \
-              --input - \
-              --jq '.number' <<<"${create_payload}")"
+            pr_url="$(gh pr create \
+              --repo "${REPO}" \
+              --base "${DESTINATION_BRANCH}" \
+              --head "${SOURCE_BRANCH}" \
+              --title "${PR_TITLE}" \
+              --body-file "${pr_body_file}")"
+            pr_number="${pr_url##*/}"
           else
             echo "Updating existing PR #${pr_number}."
-            update_payload="$(jq -n \
-              --arg title "${PR_TITLE}" \
-              --rawfile body "${pr_body_file}" \
-              '{title: $title, body: $body}')"
-
-            gh api \
-              -X PATCH "repos/${REPO}/pulls/${pr_number}" \
-              --input - <<<"${update_payload}" >/dev/null
+            gh pr edit "${pr_number}" \
+              --repo "${REPO}" \
+              --title "${PR_TITLE}" \
+              --body-file "${pr_body_file}"
           fi
 
-          gh api \
-            -X POST "repos/${REPO}/pulls/${pr_number}/requested_reviewers" \
-            -f reviewers[]="${REVIEWER}" >/dev/null || \
+          gh pr edit "${pr_number}" \
+            --repo "${REPO}" \
+            --add-reviewer "${REVIEWER}" || \
             echo "Reviewer assignment skipped for ${REVIEWER}."
