@@ -1,19 +1,17 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { connectToDatabase } from "../../../../lib/mongodb";
 import { getAppRouterSession } from "../../../../lib/session";
-import User from "../../../../server/models/user";
-import Release from "../../../../server/models/release";
+import { findUserById, getInstantScrobbles } from "../../../../server/db/userRepository";
+import { firstOrCreateRelease } from "../../../../server/db/releaseRepository";
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    await connectToDatabase();
     const session = await getAppRouterSession();
 
     if (!session.userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const user = await User.findById(session.userId);
+    const user = await findUserById(session.userId);
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -22,12 +20,26 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const [barcode, id] = raw.split("id:");
     const query = id ? { id } : { barcode };
 
-    const release = await Release.firstOrCreate(query);
+    const release = await firstOrCreateRelease(query);
     if (!release) return NextResponse.json({});
 
-    // eslint-disable-next-line no-underscore-dangle
-    const instantScrobble = user.isInstantScrobble(String(release._id));
-    return NextResponse.json({ instantScrobble, ...release.toJSON() });
+    const instantScrobbles = await getInstantScrobbles(session.userId);
+    const instantScrobble = instantScrobbles.includes(release.id);
+
+    return NextResponse.json({
+      instantScrobble,
+      id: release.id,
+      artist: release.artist,
+      title: release.title,
+      image: release.imageUrl,
+      url: release.discogsUrl,
+      year: release.releaseYear,
+      tracks: release.tracks.map(t => ({
+        title: t.title,
+        trackNumber: t.trackNumber,
+        duration: t.durationSeconds,
+      })),
+    });
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : "Unknown error" }, { status: 400 });
   }

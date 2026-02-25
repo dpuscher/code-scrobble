@@ -1,11 +1,9 @@
 import crypto from "crypto";
 import { type NextRequest, NextResponse } from "next/server";
-import { connectToDatabase } from "../../../../../lib/mongodb";
 import { getAppRouterSession } from "../../../../../lib/session";
 import * as LastFM from "../../../../../server/lastfm";
 import type { LastFMUserData } from "../../../../../server/lastfm";
-import User from "../../../../../server/models/user";
-import type { UserJSON } from "../../../../../server/models/user";
+import { upsertUser } from "../../../../../server/db/userRepository";
 
 async function getLastFMSession(token: string): Promise<{ name: string; key: string }> {
   const method = "auth.getSession";
@@ -32,28 +30,28 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    await connectToDatabase();
-
     const { name, key } = await getLastFMSession(token);
 
-    let user = await User.findOne({ name });
-    if (!user) user = new User();
-
-    user.name = name;
-    user.key = key;
-
     const userData = (await LastFM.getUserData(name, key)) as LastFMUserData;
-    user.url = userData.url;
-    user.image = userData?.image?.[1]?.["#text"];
-    user.imageLarge = userData?.image?.[2]?.["#text"];
-    user.imageXLarge = userData?.image?.[3]?.["#text"];
-
-    await user.save();
+    const user = await upsertUser({
+      name,
+      key,
+      url: userData.url,
+      image: userData?.image?.[1]?.["#text"],
+      imageLarge: userData?.image?.[2]?.["#text"],
+      imageXLarge: userData?.image?.[3]?.["#text"],
+    });
 
     const session = await getAppRouterSession();
-    // eslint-disable-next-line no-underscore-dangle
-    session.userId = String(user._id);
-    session.user = user.toJSON() as unknown as UserJSON;
+    session.userId = user.id;
+    session.user = {
+      id: user.id,
+      name: user.name,
+      url: user.lastfmUrl ?? "",
+      image: user.imageSmall ?? "",
+      imageLarge: user.imageLarge ?? "",
+      imageXLarge: user.imageXLarge ?? "",
+    };
     await session.save();
 
     return NextResponse.redirect(new URL("/", request.url));

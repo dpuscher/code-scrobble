@@ -1,46 +1,41 @@
 import { NextResponse } from "next/server";
-import find from "lodash/find";
-import sortBy from "lodash/sortBy";
-import compact from "lodash/compact";
-import { connectToDatabase } from "../../../../lib/mongodb";
 import { getAppRouterSession } from "../../../../lib/session";
-import User from "../../../../server/models/user";
-import Release from "../../../../server/models/release";
+import { findUserById, getHistory } from "../../../../server/db/userRepository";
+import { findReleaseById } from "../../../../server/db/releaseRepository";
 
 export async function GET() {
   try {
-    await connectToDatabase();
     const session = await getAppRouterSession();
 
     if (!session.userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const user = await User.findById(session.userId);
+    const user = await findUserById(session.userId);
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { history } = user;
-    const releases = await Release.find({ _id: { $in: history.map((h: any) => h.id) } });
+    const history = await getHistory(session.userId);
 
-    const data = history.map((item: any) => {
-      // eslint-disable-next-line no-underscore-dangle
-      const release = find(releases, (r: any) => String(r._id) === item.id);
-      if (!release) return undefined;
-      return {
-        // eslint-disable-next-line no-underscore-dangle
-        id: item._id,
-        time: item.time,
-        artist: release.artist,
-        title: release.title,
-        year: release.year,
-        barcode: release.barcode,
-        discogsId: release.id,
-      };
-    });
+    const data = await Promise.all(
+      history.map(async item => {
+        const release = await findReleaseById(item.releaseId);
+        if (!release) return undefined;
+        return {
+          id: item.id,
+          time: item.scrobbledAt,
+          artist: release.artist,
+          title: release.title,
+          year: release.releaseYear,
+          barcode: release.barcode,
+          discogsId: release.discogsId,
+        };
+      }),
+    );
 
-    return NextResponse.json(sortBy(compact(data), ["time"]).reverse());
+    const filtered = data.filter(Boolean);
+    return NextResponse.json(filtered.sort((a, b) => new Date(b!.time).getTime() - new Date(a!.time).getTime()));
   } catch (err) {
     return NextResponse.json({ error: err instanceof Error ? err.message : "Unknown error" }, { status: 400 });
   }
