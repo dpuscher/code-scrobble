@@ -17,7 +17,7 @@ class Scanner extends React.Component<ScannerProps, { loading: boolean; videoErr
   }
 
   componentDidMount() {
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    if (navigator.mediaDevices && "getUserMedia" in navigator.mediaDevices) {
       Quagga.init(
         {
           inputStream: {
@@ -64,7 +64,7 @@ class Scanner extends React.Component<ScannerProps, { loading: boolean; videoErr
     this.setState({ loading: false });
   };
 
-  onDetected = result => {
+  onDetected = (result: { codeResult: { code: string } }) => {
     const { onDetected } = this.props;
     this.setState({ loading: true });
 

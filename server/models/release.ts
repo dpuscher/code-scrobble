@@ -12,11 +12,11 @@ export interface IRelease {
   id: number;
   artist: string;
   title: string;
-  image: string;
+  image: string | undefined;
   url: string;
   year: string;
   tracks: ITrack[];
-  barcode: string;
+  barcode: string | undefined;
   updatedAt: Date;
 }
 
@@ -97,7 +97,7 @@ releaseSchema.statics.firstOrCreate = async function firstOrCreate(param: { id?:
   const release = await this.findOne(param).exec();
   if (!release) {
     const paramId = param.id ? Number(param.id) : undefined;
-    const id = paramId || (await Discogs.barcode(param.barcode));
+    const id = paramId || (param.barcode ? await Discogs.barcode(param.barcode) : undefined);
     if (!id) return null;
 
     try {

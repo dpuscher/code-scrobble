@@ -1,10 +1,10 @@
 import Router from "next/router";
 import NProgress from "nprogress";
 
-let progressTimeout = null;
+let progressTimeout: ReturnType<typeof setTimeout> | null = null;
 
 const stopProgress = () => {
-  clearTimeout(progressTimeout);
+  if (progressTimeout !== null) clearTimeout(progressTimeout);
   NProgress.done();
 };
 

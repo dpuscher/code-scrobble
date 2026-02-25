@@ -1,4 +1,4 @@
-export default function durationFormat(duration) {
+export default function durationFormat(duration: number) {
   if (duration <= 0) return "";
 
   const hrs = Math.floor(duration / 3600);

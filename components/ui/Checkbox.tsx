@@ -19,10 +19,10 @@ class Checkbox extends React.Component<CheckboxProps, {}> {
 
   shouldComponentUpdate(nextProps: CheckboxProps) {
     // eslint-disable-next-line react/destructuring-assignment
-    return ["checked", "disabled"].some(prop => this.props[prop] !== nextProps[prop]);
+    return (["checked", "disabled"] as const).some(prop => this.props[prop] !== nextProps[prop]);
   }
 
-  handleCheck(event) {
+  handleCheck(event: React.ChangeEvent<HTMLInputElement>) {
     const { onChange = () => {} } = this.props;
     onChange(event.target.checked);
   }
