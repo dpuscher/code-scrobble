@@ -1,84 +1,57 @@
 "use client";
 
-import { connect } from "react-redux";
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import ReleaseInfo from "../release/ReleaseInfo";
 import Scrobble from "../scrobble/Scrobble";
 import SearchRelease from "../release/SearchRelease";
 import CircleLayout from "../layout/CircleLayout";
+import { useRelease } from "../../client/hooks/useRelease";
 import { trackEvent } from "../../lib/analytics";
 import { FooterContent } from "../../styles/layout.styles";
 import Checkbox from "../ui/Checkbox";
 
 interface DetectedPageClientProps {
   barcode: string;
-  data?: any;
 }
 
-class DetectedPage extends React.Component<
-  DetectedPageClientProps & { router: ReturnType<typeof useRouter> },
-  { autoScrobble: boolean; scrobbling: boolean }
-> {
-  state = {
-    autoScrobble: false,
-    scrobbling: false,
+export default function DetectedPageClient({ barcode }: DetectedPageClientProps) {
+  const router = useRouter();
+  const { data } = useRelease(barcode);
+  const [autoScrobble, setAutoScrobble] = useState(false);
+  const [scrobbling, setScrobbling] = useState(false);
+
+  const reScan = () => router.push("/");
+
+  const scrobble = () => setScrobbling(true);
+
+  const scrobbled = () => router.push(`/scrobbled/${barcode}`);
+
+  const handleAutoScrobble = (value: boolean) => {
+    if (value) trackEvent("Detected", "AutoScrobble");
+    setAutoScrobble(value);
   };
 
-  reScan = () => {
-    this.props.router.push("/");
-  };
+  const showRelease = !scrobbling && data?.id;
 
-  scrobble = () => {
-    this.setState({ scrobbling: true });
-  };
-
-  scrobbled = () => {
-    const { barcode } = this.props;
-    this.props.router.push(`/scrobbled/${barcode}`);
-  };
-
-  handleAutoScrobble = (autoScrobble: boolean) => {
-    if (autoScrobble) trackEvent("Detected", "AutoScrobble");
-    this.setState({ autoScrobble });
-  };
-
-  render() {
-    const { scrobbling, autoScrobble } = this.state;
-    const { barcode, data = null } = this.props;
-    const showRelease = !scrobbling && data && data.id;
-    return (
-      <CircleLayout
-        footer={
-          showRelease && (
-            <FooterContent>
-              <Checkbox name="autoScrobble" checked={autoScrobble} onChange={this.handleAutoScrobble}>
-                Auto-scrobble on next scan
-              </Checkbox>
-            </FooterContent>
-          )
-        }
-        header={showRelease && <ReleaseInfo release={data} />}
-      >
-        {scrobbling ? (
-          <Scrobble release={data} autoScrobble={autoScrobble} onScrobbled={this.scrobbled} />
-        ) : (
-          <SearchRelease code={barcode} onScrobble={this.scrobble} onCancel={this.reScan} />
-        )}
-      </CircleLayout>
-    );
-  }
+  return (
+    <CircleLayout
+      footer={
+        showRelease && (
+          <FooterContent>
+            <Checkbox name="autoScrobble" checked={autoScrobble} onChange={handleAutoScrobble}>
+              Auto-scrobble on next scan
+            </Checkbox>
+          </FooterContent>
+        )
+      }
+      header={showRelease && <ReleaseInfo release={data} />}
+    >
+      {scrobbling ? (
+        <Scrobble release={data} autoScrobble={autoScrobble} onScrobbled={scrobbled} />
+      ) : (
+        <SearchRelease code={barcode} onScrobble={scrobble} onCancel={reScan} />
+      )}
+    </CircleLayout>
+  );
 }
-
-function withRouter(Component: typeof DetectedPage) {
-  return function WithRouterWrapper(props: DetectedPageClientProps) {
-    const router = useRouter();
-    return <Component {...props} router={router} />;
-  };
-}
-
-const mapStateToProps = (state: any, { barcode }: { barcode: string }) => ({
-  ...state.release[barcode],
-});
-
-export default connect(mapStateToProps)(withRouter(DetectedPage));

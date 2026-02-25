@@ -9,5 +9,5 @@ export default async function ProfilePage() {
     redirect("/login");
   }
 
-  return <ProfileClient initialUser={session.user} />;
+  return <ProfileClient />;
 }

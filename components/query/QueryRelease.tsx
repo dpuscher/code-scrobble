@@ -1,7 +1,6 @@
-import { bindActionCreators } from "redux";
-import { connect } from "react-redux";
-import type { ConnectedProps } from "react-redux";
-import React from "react";
+"use client";
+
+import React, { useRef, useState } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import { IoIosSearch } from "react-icons/io";
@@ -11,7 +10,7 @@ import { trackEvent } from "../../lib/analytics";
 import { silver } from "../../lib/colors";
 import NoResultsIcon from "../icons/NoResultsIcon";
 import Loading from "../layout/Loading";
-import { queryRelease, resetResults, setQuery } from "./actions/queryActions";
+import { useSearch } from "../../client/hooks/useSearch";
 import {
   Button,
   CloseButton,
@@ -34,134 +33,113 @@ import {
   Wrapper,
 } from "./styles/QueryRelease.styles";
 
-const mapStateToProps = (state: any) => ({
-  ...(state.query as { results?: any[]; query?: string; loading?: boolean }),
-});
+export default function QueryRelease() {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [searched, setSearched] = useState(false);
 
-const mapDispatchToProps = (dispatch: any) => bindActionCreators({ queryRelease, resetResults, setQuery }, dispatch);
+  const { data: results = [], isFetching } = useSearch(query, searched);
 
-const connector = connect(mapStateToProps, mapDispatchToProps);
-type PropsFromRedux = ConnectedProps<typeof connector>;
-
-class QueryRelease extends React.Component<PropsFromRedux, { open: boolean; searched: boolean }> {
-  inputRef = React.createRef<HTMLInputElement>();
-
-  state = {
-    open: false,
-    searched: false,
+  const reset = () => {
+    setQuery("");
+    setSearched(false);
   };
 
-  reset = () => {
-    this.props.resetResults();
-    this.props.setQuery();
-    this.setState({ searched: false });
-  };
-
-  open = () => {
-    this.reset();
+  const handleOpen = () => {
+    reset();
     trackEvent("Detect", "Query Release");
-    this.setState({ open: true });
+    setOpen(true);
   };
 
-  close = () => {
-    this.setState({ open: false, searched: false });
+  const handleClose = () => {
+    setOpen(false);
+    setSearched(false);
   };
 
-  onInput = e => {
-    this.props.setQuery(e.target.value);
-  };
-
-  onSubmit = e => {
+  const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    this.inputRef.current.blur();
-    this.props.queryRelease();
-    this.setState({ searched: true });
+    inputRef.current?.blur();
+    setSearched(true);
   };
 
-  render() {
-    const { open, searched } = this.state;
-    const { loading = false, results = [], query = "" } = this.props;
-
-    let content = (
+  let content = (
+    <FallbackWrapper>
+      <FallbackIcon color="#F4F4F4" />
+    </FallbackWrapper>
+  );
+  if (isFetching) {
+    content = (
       <FallbackWrapper>
-        <FallbackIcon color="#F4F4F4" />
+        <LoadingWrapper>
+          <Loading />
+        </LoadingWrapper>
       </FallbackWrapper>
     );
-    if (loading) {
-      content = (
-        <FallbackWrapper>
-          <LoadingWrapper>
-            <Loading />
-          </LoadingWrapper>
-        </FallbackWrapper>
-      );
-    } else if (results.length) {
-      content = (
-        <ResultWrapper>
-          {results.map(({ id, title, thumb, country, year, format = [] }) => (
-            <Link key={id} href={`/detected/id:${id}`} passHref legacyBehavior>
-              <Result>
-                <ThumbnailWrapper>
-                  <Thumbnail src={thumb} alt={title} width={60} height={60} />
-                </ThumbnailWrapper>
-                <ResultInfo>
-                  <Title>
-                    {title}
-                    {year && ` (${year})`}
-                  </Title>
-                  <Meta>{compact([country, (format || []).join(", ")]).join(" · ")}</Meta>
-                </ResultInfo>
-              </Result>
-            </Link>
-          ))}
-        </ResultWrapper>
-      );
-    } else if (searched) {
-      content = (
-        <FallbackWrapper css="text-align:center">
-          <NoResultsIcon {...({ css: "margin-bottom:20px" } as any)} />
-          No results were found
-          <br />
-          for your query
-        </FallbackWrapper>
-      );
-    }
-
-    return (
-      <Wrapper>
-        <Button onClick={this.open}>
-          <Icon />
-        </Button>
-        {open && (
-          <Overlay>
-            <Head>
-              <link rel="preconnect" href="https://img.discogs.com" />
-            </Head>
-            <Content>
-              <CloseButton onClick={this.close}>
-                <MdClose size="30" color={silver} />
-              </CloseButton>
-              <HeadWrapper onSubmit={this.onSubmit}>
-                {/* eslint-disable jsx-a11y/no-autofocus */}
-                <Input
-                  value={query}
-                  onChange={this.onInput}
-                  placeholder="Search release..."
-                  autoFocus
-                  ref={this.inputRef}
-                />
-                {/* eslint-enable jsx-a11y/no-autofocus */}
-                <Submit type="submit">
-                  <IoIosSearch size={30} />
-                </Submit>
-              </HeadWrapper>
-              {content}
-            </Content>
-          </Overlay>
-        )}
-      </Wrapper>
+  } else if (results.length) {
+    content = (
+      <ResultWrapper>
+        {results.map(({ id, title, thumb, country, year, format = [] }: any) => (
+          <Link key={id} href={`/detected/id:${id}`} passHref legacyBehavior>
+            <Result>
+              <ThumbnailWrapper>
+                <Thumbnail src={thumb} alt={title} width={60} height={60} />
+              </ThumbnailWrapper>
+              <ResultInfo>
+                <Title>
+                  {title}
+                  {year && ` (${year})`}
+                </Title>
+                <Meta>{compact([country, (format || []).join(", ")]).join(" · ")}</Meta>
+              </ResultInfo>
+            </Result>
+          </Link>
+        ))}
+      </ResultWrapper>
+    );
+  } else if (searched && !isFetching) {
+    content = (
+      <FallbackWrapper css="text-align:center">
+        <NoResultsIcon {...({ css: "margin-bottom:20px" } as any)} />
+        No results were found
+        <br />
+        for your query
+      </FallbackWrapper>
     );
   }
-}
 
-export default connector(QueryRelease);
+  return (
+    <Wrapper>
+      <Button onClick={handleOpen}>
+        <Icon />
+      </Button>
+      {open && (
+        <Overlay>
+          <Head>
+            <link rel="preconnect" href="https://img.discogs.com" />
+          </Head>
+          <Content>
+            <CloseButton onClick={handleClose}>
+              <MdClose size="30" color={silver} />
+            </CloseButton>
+            <HeadWrapper onSubmit={onSubmit}>
+              {/* eslint-disable jsx-a11y/no-autofocus */}
+              <Input
+                value={query}
+                onChange={e => setQuery(e.target.value)}
+                placeholder="Search release..."
+                autoFocus
+                ref={inputRef}
+              />
+              {/* eslint-enable jsx-a11y/no-autofocus */}
+              <Submit type="submit">
+                <IoIosSearch size={30} />
+              </Submit>
+            </HeadWrapper>
+            {content}
+          </Content>
+        </Overlay>
+      )}
+    </Wrapper>
+  );
+}
