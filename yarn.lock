@@ -40,7 +40,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/core@npm:^7.26.0, @babel/core@npm:^7.28.0":
+"@babel/core@npm:^7.28.0":
   version: 7.29.0
   resolution: "@babel/core@npm:7.29.0"
   dependencies:
@@ -196,15 +196,6 @@ __metadata:
   peerDependencies:
     "@babel/core": ^7.0.0-0
   checksum: 10c0/5e67b56c39c4d03e59e03ba80692b24c5a921472079b63af711b1d250fc37c1733a17069b63537f750f3e937ec44a42b1ee6a46cd23b1a0df5163b17f741f7f2
-  languageName: node
-  linkType: hard
-
-"@babel/runtime-corejs2@npm:^7.26.0":
-  version: 7.28.6
-  resolution: "@babel/runtime-corejs2@npm:7.28.6"
-  dependencies:
-    core-js: "npm:^2.6.12"
-  checksum: 10c0/8f93220196457aa4b5a1ddaa3e0a5719fe0c35f90f387b9037343ca4282094954460fff3f5c9685c299b9b1740994c1d050481b01896b7d609dfea30aa6c8bbe
   languageName: node
   linkType: hard
 
@@ -3200,8 +3191,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "code-scrobble@workspace:."
   dependencies:
-    "@babel/core": "npm:^7.26.0"
-    "@babel/runtime-corejs2": "npm:^7.26.0"
     "@eslint/eslintrc": "npm:^3.2.0"
     "@eslint/js": "npm:^9.18.0"
     "@lavamoat/allow-scripts": "npm:^3.4.3"
@@ -3246,11 +3235,9 @@ __metadata:
     react: "npm:^18.0.0"
     react-dom: "npm:^18.0.0"
     react-icons: "npm:^4.12.0"
-    react-test-renderer: "npm:^18.0.0"
     react-timeago: "npm:^8.3.0"
     redis: "npm:^5.0.0"
     redis-mock: "npm:^0.47.0"
-    redux-mock-store: "npm:^1.5.4"
     tailwind-merge: "npm:^3.5.0"
     tailwindcss: "npm:^3"
     tsx: "npm:^4.21.0"
@@ -3348,13 +3335,6 @@ __metadata:
   version: 0.7.2
   resolution: "cookie@npm:0.7.2"
   checksum: 10c0/9596e8ccdbf1a3a88ae02cf5ee80c1c50959423e1022e4e60b91dd87c622af1da309253d8abdb258fb5e3eacb4f08e579dc58b4897b8087574eee0fd35dfa5d2
-  languageName: node
-  linkType: hard
-
-"core-js@npm:^2.6.12":
-  version: 2.6.12
-  resolution: "core-js@npm:2.6.12"
-  checksum: 10c0/00128efe427789120a06b819adc94cc72b96955acb331cb71d09287baf9bd37bebd191d91f1ee4939c893a050307ead4faea08876f09115112612b6a05684b63
   languageName: node
   linkType: hard
 
@@ -6041,13 +6021,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash.isplainobject@npm:^4.0.6":
-  version: 4.0.6
-  resolution: "lodash.isplainobject@npm:4.0.6"
-  checksum: 10c0/afd70b5c450d1e09f32a737bed06ff85b873ecd3d3d3400458725283e3f2e0bb6bf48e67dbe7a309eb371a822b16a26cca4a63c8c52db3fc7dc9d5f9dd324cbb
-  languageName: node
-  linkType: hard
-
 "lodash.merge@npm:^4.6.2":
   version: 4.6.2
   resolution: "lodash.merge@npm:4.6.2"
@@ -7549,13 +7522,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-is@npm:^16.12.0 || ^17.0.0 || ^18.0.0, react-is@npm:^18.3.1":
-  version: 18.3.1
-  resolution: "react-is@npm:18.3.1"
-  checksum: 10c0/f2f1e60010c683479e74c63f96b09fb41603527cd131a9959e2aee1e5a8b0caf270b365e5ca77d4a6b18aae659b60a86150bb3979073528877029b35aecd2072
-  languageName: node
-  linkType: hard
-
 "react-is@npm:^16.13.1":
   version: 16.13.1
   resolution: "react-is@npm:16.13.1"
@@ -7574,31 +7540,6 @@ __metadata:
   version: 0.17.0
   resolution: "react-refresh@npm:0.17.0"
   checksum: 10c0/002cba940384c9930008c0bce26cac97a9d5682bc623112c2268ba0c155127d9c178a9a5cc2212d560088d60dfd503edd808669a25f9b377f316a32361d0b23c
-  languageName: node
-  linkType: hard
-
-"react-shallow-renderer@npm:^16.15.0":
-  version: 16.15.0
-  resolution: "react-shallow-renderer@npm:16.15.0"
-  dependencies:
-    object-assign: "npm:^4.1.1"
-    react-is: "npm:^16.12.0 || ^17.0.0 || ^18.0.0"
-  peerDependencies:
-    react: ^16.0.0 || ^17.0.0 || ^18.0.0
-  checksum: 10c0/c194d741792e86043a4ae272f7353c1cb9412bc649945c4220c6a101a6ea5410cceb3d65d5a4d750f11a24f7426e8eec7977e8a4e3ad5d3ee235ca2b18166fa8
-  languageName: node
-  linkType: hard
-
-"react-test-renderer@npm:^18.0.0":
-  version: 18.3.1
-  resolution: "react-test-renderer@npm:18.3.1"
-  dependencies:
-    react-is: "npm:^18.3.1"
-    react-shallow-renderer: "npm:^16.15.0"
-    scheduler: "npm:^0.23.2"
-  peerDependencies:
-    react: ^18.3.1
-  checksum: 10c0/c633558ef9af33bc68f0c4dbb5163a004c4fb9eade7bd0a7cfc0355fb367f36bd9d96533c90b7e85a146be6c525113a15f58683d269e0177ad77e2b04d4fe51c
   languageName: node
   linkType: hard
 
@@ -7669,15 +7610,6 @@ __metadata:
     "@redis/search": "npm:5.10.0"
     "@redis/time-series": "npm:5.10.0"
   checksum: 10c0/7103db47deb7ee3915e3c6015fc5dbe4cb956e7fa94365f981416e015d1e6e64ec3513235ea0e4150d733481ea7c92439e5489f0cfff0781598912e5fd045f90
-  languageName: node
-  linkType: hard
-
-"redux-mock-store@npm:^1.5.4":
-  version: 1.5.4
-  resolution: "redux-mock-store@npm:1.5.4"
-  dependencies:
-    lodash.isplainobject: "npm:^4.0.6"
-  checksum: 10c0/674fc7a68ffdb9a9ad50c9f987a2711387b1fc348a8ed3d07b7abd4d2560762347a9565cf9080e786d9f66012ff47f90bef244623c62136511d9b4f2411fb658
   languageName: node
   linkType: hard
 
