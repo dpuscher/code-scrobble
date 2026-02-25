@@ -8,7 +8,7 @@ import CircleLayout from "../layout/CircleLayout";
 export default function ScanPage() {
   const router = useRouter();
 
-  const codeDetected = ({ codeResult: { code: barcode } }) => {
+  const codeDetected = ({ codeResult: { code: barcode } }: { codeResult: { code: string } }) => {
     router.push(`/detected/${barcode}`);
   };
 
