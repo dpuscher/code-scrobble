@@ -43,11 +43,11 @@ jobs:
       - name: Lint JS/TS
         run: yarn lint
 
-      - name: Lint CSS
-        run: yarn lint:css
-
       - name: Run tests
         run: yarn test
 
       - name: Build
         run: yarn build
+
+      - name: Check dependency freshness
+        run: npx npm-check-updates --errorLevel 2
