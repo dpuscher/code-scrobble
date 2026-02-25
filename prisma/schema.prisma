@@ -1,0 +1,87 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id               String   @id @db.VarChar(24)
+  name             String
+  lastfmSessionKey String   @map("lastfm_session_key")
+  lastfmUrl        String?  @map("lastfm_url")
+  imageSmall       String?  @map("image_small")
+  imageLarge       String?  @map("image_large")
+  imageXLarge      String?  @map("image_xlarge")
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt        DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  history          ScrobbleHistory[]
+  instantScrobbles UserInstantScrobble[]
+
+  @@map("users")
+}
+
+model Release {
+  id          String   @id @db.VarChar(24)
+  discogsId   BigInt   @unique @map("discogs_id")
+  barcode     String?
+  artist      String
+  title       String
+  imageUrl    String?  @map("image_url")
+  discogsUrl  String?  @map("discogs_url")
+  releaseYear String?  @map("release_year")
+  createdAt   DateTime @map("created_at") @db.Timestamptz
+  updatedAt   DateTime @map("updated_at") @db.Timestamptz
+
+  tracks           ReleaseTracks[]
+  history          ScrobbleHistory[]
+  instantScrobbles UserInstantScrobble[]
+
+  @@index([barcode])
+  @@map("releases")
+}
+
+model ReleaseTracks {
+  id              String @id @db.VarChar(24)
+  releaseId       String @map("release_id") @db.VarChar(24)
+  trackNumber     Int    @map("track_number")
+  title           String
+  durationSeconds Int    @map("duration_seconds")
+
+  release Release @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+
+  @@index([releaseId, trackNumber])
+  @@map("release_tracks")
+}
+
+model ScrobbleHistory {
+  id               String   @id @db.VarChar(24)
+  userId           String   @map("user_id") @db.VarChar(24)
+  releaseId        String   @map("release_id") @db.VarChar(24)
+  scrobbledAt      DateTime @map("scrobbled_at") @db.Timestamptz
+  legacyArrayIndex Int?     @map("legacy_array_index")
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  release Release @relation(fields: [releaseId], references: [id])
+
+  @@index([userId, scrobbledAt(sort: Desc), id(sort: Desc)])
+  @@index([releaseId])
+  @@map("scrobble_history")
+}
+
+model UserInstantScrobble {
+  userId    String @map("user_id") @db.VarChar(24)
+  releaseId String @map("release_id") @db.VarChar(24)
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  release Release @relation(fields: [releaseId], references: [id])
+
+  @@id([userId, releaseId])
+  @@map("user_instant_scrobbles")
+}

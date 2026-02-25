@@ -29,6 +29,8 @@
   },
   "dependencies": {
     "@next/bundle-analyzer": "^14.2.0",
+    "@prisma/adapter-pg": "^7.4.1",
+    "@prisma/client": "^7.4.1",
     "@redux-devtools/extension": "^3.3.0",
     "disconnect": "^1.2.2",
     "dotenv": "^16.4.7",
@@ -39,6 +41,7 @@
     "next": "^14.2.0",
     "next-redux-wrapper": "^8.1.0",
     "nprogress": "^0.2.0",
+    "pg": "^8.18.0",
     "quagga": "^0.12.1",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
@@ -62,6 +65,7 @@
     "@testing-library/dom": "^10.0.0",
     "@testing-library/react": "^16.0.0",
     "@types/node": "^22.10.7",
+    "@types/pg": "^8.16.0",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.4.1",
@@ -78,11 +82,13 @@
     "lint-staged": "^16.2.4",
     "postcss-styled-syntax": "^0.7.1",
     "prettier": "^3.8.1",
+    "prisma": "^7.4.1",
     "react-test-renderer": "^18.0.0",
     "redis-mock": "^0.47.0",
     "redux-mock-store": "^1.5.4",
     "stylelint": "^16.12.0",
     "stylelint-config-recommended": "^14.0.1",
+    "tsx": "^4.21.0",
     "typescript": "^5.7.3",
     "vite": "^6.1.0",
     "vite-tsconfig-paths": "^5.1.4",
@@ -93,7 +99,15 @@
     "allowScripts": {
       "@lavamoat/preinstall-always-fail": false,
       "@babel/runtime-corejs2>core-js": false,
-      "eslint-config-next>eslint-import-resolver-typescript>unrs-resolver": false
+      "eslint-config-next>eslint-import-resolver-typescript>unrs-resolver": false,
+      "prisma": true,
+      "@prisma/engines": true,
+      "esbuild": true,
+      "prisma>@prisma/engines": true,
+      "tsx>esbuild": false,
+      "vite>esbuild": false,
+      "vitest>vite-node>vite>esbuild": false,
+      "vitest>vite>esbuild": false
     }
   },
   "lint-staged": {
