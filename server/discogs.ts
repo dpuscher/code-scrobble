@@ -94,7 +94,7 @@ const normalizeTracklist = (tracks: DiscogsTrack[]): DiscogsTrack[] => {
 };
 
 const getBarcode = (data: DiscogsIdentifier[] = []): string | undefined =>
-  (find(data, { type: "Barcode" }) || {}).value;
+  (find(data, { type: "Barcode" }) || {}).value?.replace(/\s+/g, "");
 
 const buildRelease = (id: number, data: DiscogsData): ReleaseData => ({
   id,

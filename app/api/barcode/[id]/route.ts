@@ -1,29 +1,25 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { getAppRouterSession } from "../../../../lib/session";
-import { findUserById, getInstantScrobbles } from "../../../../server/db/userRepository";
+import { getInstantScrobbles } from "../../../../server/db/userRepository";
 import { firstOrCreateRelease } from "../../../../server/db/releaseRepository";
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getAppRouterSession();
 
-    if (!session.userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const user = await findUserById(session.userId);
-    if (!user) {
+    if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { id: raw } = await params;
-    const [barcode, id] = raw.split("id:");
+    const [scanned, id] = raw.split("id:");
+    const barcode = scanned?.replace(/\s+/g, "");
     const query = id ? { id } : { barcode };
 
     const release = await firstOrCreateRelease(query);
     if (!release) return NextResponse.json({});
 
-    const instantScrobbles = await getInstantScrobbles(session.userId);
+    const instantScrobbles = await getInstantScrobbles(session.user.id);
     const instantScrobble = instantScrobbles.includes(release.id);
 
     return NextResponse.json({

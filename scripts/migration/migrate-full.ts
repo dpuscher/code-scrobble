@@ -59,7 +59,7 @@ interface MongoUser {
   url?: string;
   image?: string;
   imageLarge?: string;
-  imageXLarge?: string;
+  imageXLarge?: string; // highest quality — used as the canonical image
   instantScrobbles: string[];
   history: Array<{
     _id: mongoose.Types.ObjectId;
@@ -135,11 +135,27 @@ async function migrateUsers(
       create: {
         id: userId,
         name: user.name,
-        lastfmSessionKey: user.key,
+        email: `${user.name}@lastfm.local`,
+        emailVerified: true,
         lastfmUrl: user.url ?? null,
-        imageSmall: user.image ?? null,
-        imageLarge: user.imageLarge ?? null,
-        imageXLarge: user.imageXLarge ?? null,
+        image: user.imageXLarge ?? user.imageLarge ?? user.image ?? null,
+      },
+    });
+
+    // Seed the account row so Better Auth recognises this user on first login
+    // instead of creating a duplicate. The plugin looks up { providerId, accountId }.
+    const accountCreatedAt = user._id.getTimestamp();
+    await prisma.account.upsert({
+      where: { id: userId },
+      update: { accessToken: user.key },
+      create: {
+        id: userId,
+        accountId: user.name,
+        providerId: "lastfm",
+        userId,
+        accessToken: user.key,
+        createdAt: accountCreatedAt,
+        updatedAt: accountCreatedAt,
       },
     });
 
