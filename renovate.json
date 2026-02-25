@@ -1,0 +1,8 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "timezone": "Europe/Berlin",
+  "schedule": ["every weekend"],
+  "prCreation": "not-pending",
+  "minimumReleaseAge": "3 days"
+}
