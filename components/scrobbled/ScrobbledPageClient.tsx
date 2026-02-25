@@ -1,31 +1,33 @@
+"use client";
+
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import React from "react";
-import Router from "next/router";
+import { useRouter } from "next/navigation";
 import { FaCheckCircle } from "react-icons/fa";
 import { IoMdQrScanner } from "react-icons/io";
-import { fetchReleaseIfNeeded } from "../../components/release/actions/releaseActions";
-import CircleLayout from "../../components/layout/CircleLayout";
-import { RetryButton } from "../../components/layout/styles/Error.styles";
+import { fetchReleaseIfNeeded } from "../release/actions/releaseActions";
+import CircleLayout from "../layout/CircleLayout";
+import { RetryButton } from "../layout/styles/Error.styles";
 import { trackEvent } from "../../lib/analytics";
 import { yellow } from "../../lib/colors";
 import { FlexContent } from "../../styles/layout.styles";
 import { CoverBackground } from "../../styles/scrobbled.styles";
 
-interface ScrobbledProps {
+interface ScrobbledPageClientProps {
   barcode: string;
   fetchReleaseIfNeeded: (barcode: string) => void;
   data?: any;
 }
 
-class Scrobbled extends React.Component<ScrobbledProps, {}> {
+class ScrobbledPage extends React.Component<ScrobbledPageClientProps & { router: ReturnType<typeof useRouter> }, {}> {
   componentDidMount() {
     this.props.fetchReleaseIfNeeded(this.props.barcode);
   }
 
   onRetry = () => {
     trackEvent("Scrobbled", "Rescan");
-    Router.push("/");
+    this.props.router.push("/");
   };
 
   render() {
@@ -47,12 +49,17 @@ class Scrobbled extends React.Component<ScrobbledProps, {}> {
   }
 }
 
-(Scrobbled as any).getInitialProps = ({ query: { barcode } }) => ({ barcode });
+function withRouter(Component: typeof ScrobbledPage) {
+  return function WithRouterWrapper(props: Omit<ScrobbledPageClientProps, "router">) {
+    const router = useRouter();
+    return <Component {...(props as ScrobbledPageClientProps)} router={router} />;
+  };
+}
 
-const mapStateToProps = (state, { barcode }) => ({
+const mapStateToProps = (state: any, { barcode }: { barcode: string }) => ({
   ...state.release[barcode],
 });
 
-const mapDispatchToProps = dispatch => bindActionCreators({ fetchReleaseIfNeeded }, dispatch);
+const mapDispatchToProps = (dispatch: any) => bindActionCreators({ fetchReleaseIfNeeded }, dispatch);
 
-export default connect(mapStateToProps, mapDispatchToProps)(Scrobbled);
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(ScrobbledPage) as any);
