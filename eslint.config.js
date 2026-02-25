@@ -1,14 +1,10 @@
-const { FlatCompat } = require("@eslint/eslintrc");
 const js = require("@eslint/js");
 const prettierConfig = require("eslint-config-prettier/flat");
+const nextConfig = require("eslint-config-next/core-web-vitals");
+const nextTypescript = require("eslint-config-next/typescript");
 const vitestModule = require("@vitest/eslint-plugin");
 
 const vitest = vitestModule.default ?? vitestModule;
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-  recommendedConfig: js.configs.recommended,
-});
 
 module.exports = [
   {
@@ -25,12 +21,8 @@ module.exports = [
     ],
   },
   js.configs.recommended,
-  ...compat.extends(
-    "next/core-web-vitals",
-    "next/typescript",
-    "plugin:jsx-a11y/recommended",
-    "plugin:import/recommended",
-  ),
+  ...nextConfig,
+  ...nextTypescript,
   {
     files: ["**/*.{spec,test}.{js,jsx,ts,tsx}"],
     plugins: {

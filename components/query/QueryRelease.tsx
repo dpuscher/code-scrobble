@@ -111,7 +111,7 @@ export default function QueryRelease() {
               onSubmit={onSubmit}
               className="relative flex-none h-[38px] -mx-5 -mt-5 overflow-hidden border-b border-dark"
             >
-              {/* eslint-disable jsx-a11y/no-autofocus */}
+              {}
               <input
                 value={query}
                 onChange={e => setQuery(e.target.value)}
@@ -120,7 +120,7 @@ export default function QueryRelease() {
                 ref={inputRef}
                 className="w-full m-0 p-[10px_45px_10px_10px] border-0 rounded-[3px] shadow-none text-[16px] leading-none text-center outline-none"
               />
-              {/* eslint-enable jsx-a11y/no-autofocus */}
+              {}
               <button
                 type="submit"
                 className="flex absolute top-0 right-0 items-center justify-center w-[45px] h-[38px] border-0 bg-transparent cursor-pointer appearance-none"

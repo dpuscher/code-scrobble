@@ -3,7 +3,6 @@ import pick from "lodash/pick";
 import find from "lodash/find";
 import * as Cache from "./cache";
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const DiscogsClient = require("disconnect").Client;
 
 interface DiscogsError {
@@ -80,7 +79,7 @@ const convertTimecode = (timecode: string | undefined): number => {
 
 const normalizeTracklist = (tracks: DiscogsTrack[]): DiscogsTrack[] => {
   const vinylPositionRegex = /^[A-Z]-?[0-9]+$/;
-  // eslint-disable-next-line no-underscore-dangle
+
   let tracklist = tracks.filter(track => track.type_ === "track").filter(track => !/video/i.test(track.position));
 
   // Remove Bonus CDs from vinyl releases:
@@ -151,7 +150,6 @@ export const search = (query: string): Promise<SearchResult[] | undefined> =>
         resolve(results);
       })
       .catch(() => {
-        // eslint-disable-next-line consistent-return
         Database.search(query, { type: "release" }, (err: DiscogsError, data: { results: any[] }) => {
           if (err || !data || !data.results || !data.results.length) {
             return resolve(undefined);

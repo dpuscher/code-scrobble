@@ -1,5 +1,3 @@
-/* eslint-disable no-underscore-dangle */
-
 const store = new Map<string, string>();
 
 export const _get = vi.fn(async (key: string) => store.get(key) || null);

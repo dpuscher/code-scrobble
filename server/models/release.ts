@@ -58,7 +58,6 @@ const releaseSchema = new Schema<IRelease, IReleaseModel, IReleaseMethods>(
 
 releaseSchema.methods.toJSON = function toJSON() {
   return {
-    // eslint-disable-next-line no-underscore-dangle
     id: this._id,
     artist: this.artist,
     title: this.title,
@@ -94,7 +93,10 @@ releaseSchema.statics.createFromDiscogs = async function createFromDiscogs(id: n
 };
 
 releaseSchema.statics.firstOrCreate = async function firstOrCreate(param: { id?: string | number; barcode?: string }) {
-  const release = await this.findOne(param).exec();
+  const query: { id?: number; barcode?: string } = {};
+  if (param.id) query.id = Number(param.id);
+  if (param.barcode) query.barcode = param.barcode;
+  const release = await this.findOne(query).exec();
   if (!release) {
     const paramId = param.id ? Number(param.id) : undefined;
     const id = paramId || (param.barcode ? await Discogs.barcode(param.barcode) : undefined);
@@ -103,7 +105,6 @@ releaseSchema.statics.firstOrCreate = async function firstOrCreate(param: { id?:
     try {
       return await this.createFromDiscogs(id, param.barcode);
     } catch (err: any) {
-      // eslint-disable-line @typescript-eslint/no-explicit-any
       if (err.code === 11000) {
         return this.findOne({ id }).exec();
       }

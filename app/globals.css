@@ -1,6 +1,13 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-yellow: #feda6a;
+  --color-silver: #d4d4dc;
+  --color-grey: #393f4d;
+  --color-dark: #1d1e22;
+  --color-lastfm: #d51007;
+  --animate-spin-ease: spin 1s ease-in-out infinite;
+}
 
 /* Base body styles (replaces BaseStyles.tsx) */
 html {

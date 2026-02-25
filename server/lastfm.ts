@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const LastFMApi = require("lastfmapi");
 
 interface ScrobbleTrack {

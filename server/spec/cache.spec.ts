@@ -1,5 +1,3 @@
-/* eslint-disable no-underscore-dangle */
-
 import * as redis from "redis";
 import * as Cache from "../cache";
 

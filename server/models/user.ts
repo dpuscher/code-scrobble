@@ -50,7 +50,6 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>({
 
 userSchema.methods.toJSON = function toJSON(): UserJSON {
   return {
-    // eslint-disable-next-line no-underscore-dangle
     id: String(this._id),
     name: this.name,
     url: this.url,

@@ -89,7 +89,7 @@ class Scanner extends React.Component<ScannerProps, { loading: boolean; videoErr
           id="camera"
           className={`${ready ? "visible" : "invisible"} absolute inset-0 [transform:translate3d(0,0,0)] [&_video]:absolute [&_video]:inset-0 [&_video]:w-full [&_video]:h-full [&_video]:object-cover [&_canvas]:absolute [&_canvas]:inset-0 [&_canvas]:w-full [&_canvas]:h-full [&_canvas]:object-cover`}
         >
-          {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+          {}
           <video playsInline autoPlay />
         </div>
       </>

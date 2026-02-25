@@ -11,6 +11,6 @@ export const get = async <T = unknown>(key: string): Promise<T> => {
   if (value) {
     return JSON.parse(value as string) as T;
   }
-  // eslint-disable-next-line prefer-promise-reject-errors
+
   return Promise.reject();
 };
