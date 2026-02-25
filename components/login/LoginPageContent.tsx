@@ -4,6 +4,7 @@ import LogoModule from "../assets/Logo";
 import LegalLinks from "../ui/LegalLinks";
 import LoginButton from "../ui/LoginButton";
 import { autotrackParams } from "../../lib/analytics";
+import authClient from "../../lib/auth-client";
 
 export default function LoginPageContent() {
   return (
@@ -22,7 +23,7 @@ export default function LoginPageContent() {
               auto-scrobble mode, that makes scrobbling even faster.
             </p>
           </div>
-          <LoginButton href="/api/auth/lastfm" {...autotrackParams("Session", "Login")} />
+          <LoginButton onClick={() => authClient.signInWithLastfm()} {...autotrackParams("Session", "Login")} />
         </main>
       </div>
       <LegalLinks />

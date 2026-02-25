@@ -11,34 +11,10 @@ function newId(): string {
   return randomBytes(12).toString("hex");
 }
 
-export interface UserData {
-  id: string;
-  name: string;
-  lastfmSessionKey: string;
-  lastfmUrl?: string | null;
-  imageSmall?: string | null;
-  imageLarge?: string | null;
-  imageXLarge?: string | null;
-}
-
 export interface HistoryItem {
   id: string;
   releaseId: string;
   scrobbledAt: Date;
-}
-
-export async function findUserById(userId: string): Promise<UserData | null> {
-  const user = await prisma.user.findUnique({ where: { id: userId } });
-  if (!user) return null;
-  return {
-    id: user.id,
-    name: user.name,
-    lastfmSessionKey: user.lastfmSessionKey,
-    lastfmUrl: user.lastfmUrl,
-    imageSmall: user.imageSmall,
-    imageLarge: user.imageLarge,
-    imageXLarge: user.imageXLarge,
-  };
 }
 
 export async function getHistory(userId: string): Promise<HistoryItem[]> {
@@ -91,48 +67,4 @@ export async function removeInstantScrobble(userId: string, releaseId: string): 
   await prisma.userInstantScrobble.delete({ where: { userId_releaseId: { userId, releaseId } } }).catch(() => {
     // Ignore if already removed
   });
-}
-
-export async function upsertUser(data: {
-  name: string;
-  key: string;
-  url?: string;
-  image?: string;
-  imageLarge?: string;
-  imageXLarge?: string;
-}): Promise<UserData> {
-  // Look up by name to preserve existing ID
-  const existing = await prisma.user.findFirst({ where: { name: data.name } });
-  const id = existing?.id ?? newId();
-
-  const user = await prisma.user.upsert({
-    where: { id },
-    update: {
-      lastfmSessionKey: data.key,
-      lastfmUrl: data.url ?? null,
-      imageSmall: data.image ?? null,
-      imageLarge: data.imageLarge ?? null,
-      imageXLarge: data.imageXLarge ?? null,
-      updatedAt: new Date(),
-    },
-    create: {
-      id,
-      name: data.name,
-      lastfmSessionKey: data.key,
-      lastfmUrl: data.url ?? null,
-      imageSmall: data.image ?? null,
-      imageLarge: data.imageLarge ?? null,
-      imageXLarge: data.imageXLarge ?? null,
-    },
-  });
-
-  return {
-    id: user.id,
-    name: user.name,
-    lastfmSessionKey: user.lastfmSessionKey,
-    lastfmUrl: user.lastfmUrl,
-    imageSmall: user.imageSmall,
-    imageLarge: user.imageLarge,
-    imageXLarge: user.imageXLarge,
-  };
 }

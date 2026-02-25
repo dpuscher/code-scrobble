@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { getAppRouterSession } from "../../../lib/session";
-import { findUserById, appendHistory, addInstantScrobble } from "../../../server/db/userRepository";
+import { prisma } from "../../../lib/prisma";
+import { appendHistory, addInstantScrobble } from "../../../server/db/userRepository";
 import { findReleaseById } from "../../../server/db/releaseRepository";
 import * as LastFM from "../../../server/lastfm";
 
@@ -8,12 +9,20 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getAppRouterSession();
 
-    if (!session.userId) {
+    if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const user = await findUserById(session.userId);
+    const user = await prisma.user.findUnique({ where: { id: session.user.id } });
     if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const account = await prisma.account.findFirst({
+      where: { userId: session.user.id, providerId: "lastfm" },
+    });
+    const lastfmSessionKey = account?.accessToken;
+    if (!lastfmSessionKey) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -24,9 +33,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Release not found" }, { status: 400 });
     }
 
-    await appendHistory(session.userId, releaseId);
+    await appendHistory(session.user.id, releaseId);
     if (autoScrobble) {
-      await addInstantScrobble(session.userId, releaseId);
+      await addInstantScrobble(session.user.id, releaseId);
     }
 
     if (process.env.NODE_ENV !== "production") {
@@ -46,7 +55,7 @@ export async function POST(request: NextRequest) {
       artist: release.artist,
       tracks: release.tracks.map(t => ({ title: t.title, trackNumber: t.trackNumber, duration: t.durationSeconds })),
     };
-    const response = await LastFM.scrobbleTracks(user.name, user.lastfmSessionKey, releaseForScrobble);
+    const response = await LastFM.scrobbleTracks(user.name, lastfmSessionKey, releaseForScrobble);
     return NextResponse.json(response);
   } catch (error) {
     return NextResponse.json({ error }, { status: 400 });

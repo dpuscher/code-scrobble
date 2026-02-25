@@ -1,18 +1,14 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { getSessionCookie } from "better-auth/cookies";
 
-const PUBLIC_PATHS = ["/login", "/legal", "/privacy", "/api/auth/"];
+const PUBLIC_PATHS = ["/login", "/legal", "/privacy"];
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Skip API routes, Next.js internals, and static assets
-  if (
-    pathname.startsWith("/api/") ||
-    pathname.startsWith("/_next/") ||
-    pathname.startsWith("/static/") ||
-    pathname.includes(".")
-  ) {
+  // Skip static files in /public (e.g. robots.txt, images)
+  if (pathname.includes(".")) {
     return NextResponse.next();
   }
 
@@ -22,7 +18,7 @@ export function proxy(request: NextRequest) {
   }
 
   // Redirect to login if session cookie is absent
-  const sessionCookie = request.cookies.get("code-scrobble-session");
+  const sessionCookie = getSessionCookie(request);
   if (!sessionCookie) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
@@ -31,5 +27,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!api/|_next/|favicon\\.ico).*)"],
 };

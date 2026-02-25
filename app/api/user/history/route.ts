@@ -1,22 +1,17 @@
 import { NextResponse } from "next/server";
 import { getAppRouterSession } from "../../../../lib/session";
-import { findUserById, getHistory } from "../../../../server/db/userRepository";
+import { getHistory } from "../../../../server/db/userRepository";
 import { findReleaseById } from "../../../../server/db/releaseRepository";
 
 export async function GET() {
   try {
     const session = await getAppRouterSession();
 
-    if (!session.userId) {
+    if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const user = await findUserById(session.userId);
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const history = await getHistory(session.userId);
+    const history = await getHistory(session.user.id);
 
     const data = await Promise.all(
       history.map(async item => {
