@@ -25,7 +25,10 @@
     "format": "prettier . --write",
     "format:check": "prettier . --check",
     "prepare": "husky",
-    "analyze": "BUNDLE_ANALYZE=true yarn build"
+    "analyze": "BUNDLE_ANALYZE=true yarn build",
+    "migrate:full": "tsx scripts/migration/migrate-full.ts",
+    "migrate:dry-run": "tsx scripts/migration/dry-run.ts",
+    "migrate:parity": "tsx scripts/migration/parity-check.ts"
   },
   "dependencies": {
     "@next/bundle-analyzer": "^14.2.0",
