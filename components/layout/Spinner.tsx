@@ -1,20 +1,13 @@
-import styled, { keyframes } from "styled-components";
-import { yellow, yellowRGB } from "../../lib/colors";
+interface SpinnerProps {
+  size?: number | string;
+  className?: string;
+}
 
-export const animation = keyframes`
-  to {
-    transform: rotate(360deg);
-  }
-`;
-
-const Spinner = styled.div<{ size?: number | string }>`
-  display: inline-block;
-  width: ${props => props.size}px;
-  height: ${props => props.size}px;
-  animation: ${animation} 1s ease-in-out infinite;
-  border: 3px solid rgba(${yellowRGB}, 0.3);
-  border-radius: 50%;
-  border-top-color: ${yellow};
-`;
-
-export default Spinner;
+export default function Spinner({ size, className = "" }: SpinnerProps) {
+  return (
+    <div
+      className={`inline-block rounded-full border-[3px] border-[rgba(254,218,106,0.3)] border-t-yellow animate-spin-ease ${className}`}
+      style={size !== undefined ? { width: size, height: size } : undefined}
+    />
+  );
+}

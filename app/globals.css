@@ -1,0 +1,223 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base body styles (replaces BaseStyles.tsx) */
+html {
+  box-sizing: border-box;
+  line-height: 1.15;
+  -webkit-text-size-adjust: 100%;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+button,
+[type="button"],
+[type="reset"],
+[type="submit"] {
+  -webkit-appearance: button;
+}
+
+body {
+  margin: 0;
+  background: #1d1e22;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "HelveticaNeue-Light", "Helvetica Neue Light",
+    "Helvetica Neue", Helvetica, Arial, "Lucida Grande", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+    sans-serif;
+  font-size: 15px;
+  font-weight: 300;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  color: #d4d4dc;
+}
+
+body,
+a {
+  color: #d4d4dc;
+}
+
+html,
+body,
+#__next {
+  height: 100%;
+}
+
+/* Scroll lock (used by CircleLayout) */
+body.scroll-lock {
+  position: fixed;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* NProgress styles (replaces nprogress.styles.ts) */
+#nprogress {
+  pointer-events: none;
+}
+
+#nprogress .bar {
+  position: fixed;
+  z-index: 1031;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: #feda6a;
+}
+
+#nprogress .peg {
+  display: block;
+  position: absolute;
+  right: 0px;
+  width: 100px;
+  height: 100%;
+  transform: rotate(3deg) translate(0px, -4px);
+  opacity: 1;
+  box-shadow:
+    0 0 10px #feda6a,
+    0 0 5px #feda6a;
+}
+
+#nprogress .spinner {
+  display: block;
+  position: fixed;
+  z-index: 1031;
+  top: 15px;
+  right: 15px;
+}
+
+#nprogress .spinner-icon {
+  box-sizing: border-box;
+  width: 18px;
+  height: 18px;
+  animation: nprogress-spin 0.4s linear infinite;
+  border: solid 2px transparent;
+  border-radius: 50%;
+  border-top-color: #feda6a;
+  border-left-color: #feda6a;
+}
+
+@keyframes nprogress-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.nprogress-custom-parent {
+  position: relative;
+  overflow: hidden;
+}
+
+.nprogress-custom-parent #nprogress .spinner,
+.nprogress-custom-parent #nprogress .bar {
+  position: absolute;
+}
+
+/* Session dropdown arrow (::before pseudo-element CSS triangle) */
+.session-arrow {
+  position: absolute;
+  right: 0;
+  width: 8vw;
+  max-width: 50px;
+  height: 8px;
+}
+
+.session-arrow::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 0;
+  height: 0;
+  transform: rotate(360deg) translate(-50%, 2px);
+  border-width: 0 6px 6px 6px;
+  border-style: solid;
+  border-color: transparent transparent #fff transparent;
+}
+
+/* Checkbox styles (complex pseudo-element CSS) */
+.checkbox-label {
+  display: inline-flex;
+  position: relative;
+  align-items: center;
+  height: 32px;
+  padding: 0 6px 0 42px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-label::before,
+.checkbox-label::after {
+  content: "";
+  position: absolute;
+  box-sizing: content-box;
+}
+
+.checkbox-label::before {
+  top: 50%;
+  left: 0;
+  width: 30px;
+  height: 30px;
+  margin-top: -16px;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+  border: 1px solid #d4d4dc;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  text-align: center;
+}
+
+.checkbox-label::after {
+  top: 50%;
+  left: 9px;
+  width: 11px;
+  height: 5px;
+  margin-top: 0;
+  transform: translateY(-5px) rotate(-45deg) scale(0);
+  transform-origin: 50%;
+  transition: transform 0.2s ease-out;
+  border-width: 0 0 3px 3px;
+  border-style: solid;
+  border-color: #1d1e22;
+  background-color: transparent;
+  border-image: none;
+}
+
+.checkbox-input:active + .checkbox-label::before {
+  transition-duration: 0s;
+}
+
+.checkbox-input:checked + .checkbox-label::after {
+  transform: translateY(-5px) rotate(-45deg) scale(1);
+  transition: transform 0.2s ease-out;
+  border-color: #1d1e22;
+}
+
+.checkbox-input:checked + .checkbox-label::before {
+  animation: borderscale 0.2s ease-in;
+  border-color: #feda6a;
+  background: #feda6a;
+}
+
+@keyframes borderscale {
+  50% {
+    box-shadow: 0 0 0 2px #feda6a;
+  }
+}
+
+/* Text shadow for scrobble overlay text */
+.text-shadow-dark {
+  text-shadow:
+    0 0 3px black,
+    0 0 3px black,
+    0 0 3px black;
+}

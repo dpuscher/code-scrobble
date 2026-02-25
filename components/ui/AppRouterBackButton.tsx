@@ -1,9 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { ChevronLeft } from "styled-icons/boxicons-regular";
-import { silver } from "../../lib/colors";
-import { Button } from "./styles/BackButton.styles";
+import { MdChevronLeft } from "react-icons/md";
 
 const getHostFromUrl = (url: string) => (/\/\/([^/]+)\//i.exec(url) || [])[1];
 
@@ -24,9 +22,12 @@ export default function AppRouterBackButton() {
   };
 
   return (
-    <Button onClick={handleClick}>
-      <ChevronLeft color={silver} size="40" />
+    <button
+      onClick={handleClick}
+      className="flex fixed top-0 left-0 items-center w-full p-[5px] overflow-hidden border-0 border-b border-silver bg-black/60 shadow-[0_0_3px_2px_black] backdrop-blur-[5px] text-[16px] text-silver cursor-pointer appearance-none font-inherit"
+    >
+      <MdChevronLeft color="#d4d4dc" size={40} />
       Back
-    </Button>
+    </button>
   );
 }

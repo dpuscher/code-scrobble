@@ -1,9 +1,6 @@
 import React from "react";
 import Quagga from "quagga";
-import { yellow } from "../../lib/colors";
-import { FlexContent } from "../../styles/layout.styles";
-import { ErrorDescription, ErrorIcon } from "../layout/styles/Error.styles";
-import { Camera } from "./styles/Scanner.styles";
+import ErrorIcon from "../icons/ErrorIcon";
 import Loading from "../layout/Loading";
 
 interface ScannerProps {
@@ -82,16 +79,19 @@ class Scanner extends React.Component<ScannerProps, { loading: boolean; videoErr
       <>
         {loading && <Loading />}
         {videoError && (
-          <FlexContent>
-            <ErrorIcon color={yellow} />
+          <div className="absolute flex flex-col items-center justify-center w-full h-full p-[10%] text-center">
+            <ErrorIcon color="#feda6a" className="w-[30%] h-auto mb-[15px]" />
             <b>An error occurred</b>
-            <ErrorDescription>Please make sure this website is allowed to use the camera.</ErrorDescription>
-          </FlexContent>
+            <div className="mt-[10px]">Please make sure this website is allowed to use the camera.</div>
+          </div>
         )}
-        <Camera id="camera" $visible={ready}>
+        <div
+          id="camera"
+          className={`${ready ? "visible" : "invisible"} absolute inset-0 [transform:translate3d(0,0,0)] [&_video]:absolute [&_video]:inset-0 [&_video]:w-full [&_video]:h-full [&_video]:object-cover [&_canvas]:absolute [&_canvas]:inset-0 [&_canvas]:w-full [&_canvas]:h-full [&_canvas]:object-cover`}
+        >
           {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
           <video playsInline autoPlay />
-        </Camera>
+        </div>
       </>
     );
   }

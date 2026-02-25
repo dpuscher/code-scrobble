@@ -8,7 +8,6 @@ import SearchRelease from "../release/SearchRelease";
 import CircleLayout from "../layout/CircleLayout";
 import { useRelease } from "../../client/hooks/useRelease";
 import { trackEvent } from "../../lib/analytics";
-import { FooterContent } from "../../styles/layout.styles";
 import Checkbox from "../ui/Checkbox";
 
 interface DetectedPageClientProps {
@@ -38,11 +37,11 @@ export default function DetectedPageClient({ barcode }: DetectedPageClientProps)
     <CircleLayout
       footer={
         showRelease && (
-          <FooterContent>
+          <div className="w-[500px] max-w-[80%] mx-auto pt-5">
             <Checkbox name="autoScrobble" checked={autoScrobble} onChange={handleAutoScrobble}>
               Auto-scrobble on next scan
             </Checkbox>
-          </FooterContent>
+          </div>
         )
       }
       header={showRelease && <ReleaseInfo release={data} />}

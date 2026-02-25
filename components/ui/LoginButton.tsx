@@ -1,11 +1,15 @@
+import React from "react";
 import LastfmIcon from "../icons/LastfmIcon";
-import { Caption, Wrapper } from "./styles/LoginButton.styles";
 
-const LoginButton = props => (
-  <Wrapper title="Login with Last.fm" {...props}>
-    <Caption>Login with</Caption>
+const LoginButton = (props: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
+  <a
+    title="Login with Last.fm"
+    className="inline-flex flex-col items-start px-[25px] py-[10px] transition-[box-shadow,transform] duration-[250ms] border border-[#d51007] rounded-[5px] bg-lastfm shadow-[0px_2px_0px_#d51007] text-white text-[13px] no-underline active:translate-y-[3px] active:shadow-none"
+    {...props}
+  >
+    <span className="mb-[5px]">Login with</span>
     <LastfmIcon alt="Last.fm" />
-  </Wrapper>
+  </a>
 );
 
 export default LoginButton;

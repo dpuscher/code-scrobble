@@ -1,32 +1,31 @@
 "use client";
 
+import LogoModule from "../assets/Logo";
 import LegalLinks from "../ui/LegalLinks";
 import LoginButton from "../ui/LoginButton";
-import { Center } from "../../styles/layout.styles";
-import { Description, H1, Logo, P, Wrapper } from "../../styles/login.styles";
 import { autotrackParams } from "../../lib/analytics";
 
 export default function LoginPageContent() {
   return (
-    <Center useMinHeight>
-      <Wrapper>
+    <div className="flex items-center justify-center w-full min-h-full py-[15px]">
+      <div className="flex flex-col items-center justify-center text-center">
         <header>
-          <H1>
-            <Logo alt="CodeScrobble" />
-          </H1>
+          <h1 className="m-0">
+            <LogoModule className="w-[300px] h-auto" alt="CodeScrobble" />
+          </h1>
         </header>
         <main>
-          <Description>
-            <P>CodeScrobble makes it easy to scrobble your CD or vinyl records to Last.fm.</P>
-            <P>
+          <div className="max-w-[600px] px-[30px]">
+            <p className="my-[30px]">CodeScrobble makes it easy to scrobble your CD or vinyl records to Last.fm.</p>
+            <p className="my-[30px]">
               Just use you smartphone camera to scan the barcode, check the result and you are done. We also have an
               auto-scrobble mode, that makes scrobbling even faster.
-            </P>
-          </Description>
+            </p>
+          </div>
           <LoginButton href="/api/auth/lastfm" {...autotrackParams("Session", "Login")} />
         </main>
-      </Wrapper>
+      </div>
       <LegalLinks />
-    </Center>
+    </div>
   );
 }

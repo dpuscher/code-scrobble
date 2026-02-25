@@ -1,15 +1,14 @@
 import NextLink from "next/link";
-import { Link, Links } from "./styles/LegalLinks.styles";
 
 const LegalLinks = () => (
-  <Links>
-    <NextLink href="/privacy" passHref legacyBehavior>
-      <Link>Privacy</Link>
+  <div className="flex absolute right-[15px] bottom-[5px] text-[12px]">
+    <NextLink href="/privacy" className="px-[10px] py-[10px]">
+      Privacy
     </NextLink>
-    <NextLink href="/legal" passHref legacyBehavior>
-      <Link>Legal</Link>
+    <NextLink href="/legal" className="px-[10px] py-[10px]">
+      Legal
     </NextLink>
-  </Links>
+  </div>
 );
 
 export default LegalLinks;

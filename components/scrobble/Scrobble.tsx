@@ -1,5 +1,5 @@
 import React from "react";
-import { Loading, LoadingContent, LoadingWrapper } from "./styles/Scrobble.styles";
+import Spinner from "../layout/Spinner";
 import ScrobbleError from "./ScrobbleError";
 
 interface ScrobbleProps {
@@ -44,10 +44,15 @@ class Scrobble extends React.Component<ScrobbleProps, { loadingError: boolean }>
     return loadingError ? (
       <ScrobbleError onRetry={this.doRequest} />
     ) : (
-      <LoadingWrapper image={release.image}>
-        <Loading />
-        <LoadingContent>Sending data to Last.fm</LoadingContent>
-      </LoadingWrapper>
+      <div
+        className="flex absolute inset-0 items-center justify-center bg-cover"
+        style={release.image ? { backgroundImage: `url("${release.image}")` } : undefined}
+      >
+        <Spinner className="w-full h-full" />
+        <div className="absolute bottom-0 left-0 w-full py-[12%] px-[20%] bg-black/50 text-center backdrop-blur-[10px] text-shadow-dark">
+          Sending data to Last.fm
+        </div>
+      </div>
     );
   }
 }

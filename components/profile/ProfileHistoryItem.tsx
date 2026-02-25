@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { ListCaption, ListItem, Time } from "../../styles/profile.styles";
+import TimeAgo from "react-timeago";
 
 interface ProfileHistoryItemProps {
   id: string;
@@ -20,17 +20,23 @@ class ProfileHistoryItem extends React.PureComponent<ProfileHistoryItemProps, {}
     const barcodeParam = barcode || `id:${discogsId}`;
 
     return (
-      <ListItem key={id}>
-        <Link href={`/detected/${barcodeParam}`} passHref legacyBehavior>
-          <ListCaption disabled={isDeleting} as="a">
-            <span css="margin-right:1em">
-              {`${artist} - ${title}`}
-              {year && ` (${year})`}
-            </span>
-            <Time date={time} />
-          </ListCaption>
+      <li
+        key={id}
+        className="block flex items-center justify-between px-5 border-t border-grey last:border-b last:border-grey"
+      >
+        <Link
+          href={`/detected/${barcodeParam}`}
+          className={`flex-grow py-[10px] no-underline transition-opacity ${isDeleting ? "opacity-30" : ""}`}
+        >
+          <span style={{ marginRight: "1em" }}>
+            {`${artist} - ${title}`}
+            {year && ` (${year})`}
+          </span>
+          <span className="inline-block opacity-50 text-[12px] whitespace-nowrap">
+            <TimeAgo date={time} />
+          </span>
         </Link>
-      </ListItem>
+      </li>
     );
   }
 }

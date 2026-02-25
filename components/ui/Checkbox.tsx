@@ -1,7 +1,5 @@
 import React from "react";
 
-import { Input, Label, Wrapper } from "./styles/Checkbox.styles";
-
 interface CheckboxProps {
   checked?: boolean;
   className?: string | null;
@@ -34,8 +32,14 @@ class Checkbox extends React.Component<CheckboxProps, {}> {
     const id = `checkbox-${name}`;
 
     return (
-      <Wrapper className={className} role="checkbox" aria-checked={!!checked} tabIndex={0}>
-        <Input
+      <div
+        className={`flex items-center justify-center outline-none ${className ?? ""}`}
+        role="checkbox"
+        aria-checked={!!checked}
+        tabIndex={0}
+      >
+        <input
+          className="checkbox-input absolute w-px h-px m-[-1px] p-0 overflow-hidden clip-[rect(0_0_0_0)] border-0"
           name={name}
           id={id}
           type="checkbox"
@@ -43,15 +47,16 @@ class Checkbox extends React.Component<CheckboxProps, {}> {
           onChange={this.handleCheck}
           disabled={disabled}
         />
-        <Label
+        <label
+          className="checkbox-label"
           htmlFor={id}
           ref={e => {
             this.label = e;
           }}
         >
           {children}
-        </Label>
-      </Wrapper>
+        </label>
+      </div>
     );
   }
 }

@@ -4,8 +4,6 @@ import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import NProgress from "nprogress";
 import QueryProvider from "./QueryProvider";
-import BaseStyles from "../components/layout/BaseStyles";
-import NProgressStyles from "../styles/nprogress.styles";
 
 NProgress.configure({ showSpinner: false });
 
@@ -26,8 +24,6 @@ function NProgressObserver() {
 export default function ScanProviders({ children }: { children: React.ReactNode }) {
   return (
     <QueryProvider>
-      <BaseStyles />
-      <NProgressStyles />
       <NProgressObserver />
       {children}
     </QueryProvider>

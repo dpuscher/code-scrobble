@@ -6,11 +6,7 @@ import { FaCheckCircle } from "react-icons/fa";
 import { IoMdQrScanner } from "react-icons/io";
 import { useRelease } from "../../client/hooks/useRelease";
 import CircleLayout from "../layout/CircleLayout";
-import { RetryButton } from "../layout/styles/Error.styles";
 import { trackEvent } from "../../lib/analytics";
-import { yellow } from "../../lib/colors";
-import { FlexContent } from "../../styles/layout.styles";
-import { CoverBackground } from "../../styles/scrobbled.styles";
 
 interface ScrobbledPageClientProps {
   barcode: string;
@@ -29,15 +25,23 @@ export default function ScrobbledPageClient({ barcode }: ScrobbledPageClientProp
 
   return (
     <CircleLayout>
-      <FlexContent>
-        {image && <CoverBackground image={image} />}
-        <FaCheckCircle color={yellow} size="50px" />
-        <div css="margin: 30px 30px 0">Record sucessfully scrobbled to Last.fm</div>
-        <RetryButton onClick={onRetry}>
-          <IoMdQrScanner size="30px" css="margin-bottom: 7px" />
+      <div className="absolute flex flex-col items-center justify-center w-full h-full p-[10%] text-center">
+        {image && (
+          <div
+            className="absolute -z-10 inset-0 opacity-50 bg-cover blur-[20px]"
+            style={{ backgroundImage: `url('${image}')` }}
+          />
+        )}
+        <FaCheckCircle color="#feda6a" size="50px" />
+        <div style={{ margin: "30px 30px 0" }}>Record sucessfully scrobbled to Last.fm</div>
+        <button
+          onClick={onRetry}
+          className="flex flex-col items-center w-full mt-[10%] mb-[-5%] p-[5%] appearance-none border-0 bg-transparent text-inherit cursor-pointer"
+        >
+          <IoMdQrScanner size="30px" style={{ marginBottom: "7px" }} />
           Scan another code
-        </RetryButton>
-      </FlexContent>
+        </button>
+      </div>
     </CircleLayout>
   );
 }

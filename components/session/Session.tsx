@@ -5,7 +5,6 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "../../client/hooks/useSession";
-import { Arrow, Avatar, ImageAndUser, Loader, Menu, MenuItem, Username } from "./styles/Session.styles";
 import targetBlank from "../../lib/targetBlank";
 import { autotrackParams } from "../../lib/analytics";
 
@@ -32,34 +31,56 @@ export default function Session() {
 
   if (error) return null;
 
+  const fadeClass = open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none";
+
   return (
     <div ref={overlayRef}>
       <Head>
         <link rel="preconnect" href="https://lastfm-img2.akamaized.net" />
       </Head>
-      <ImageAndUser>
+      <div className="flex items-center">
         {session?.name ? (
           <>
-            <Username href={session.url} open={open} {...targetBlank}>
+            <a
+              href={session.url}
+              className={`pr-3 text-sm no-underline transition-opacity duration-300 ${fadeClass}`}
+              {...targetBlank}
+            >
               {session.name}
-            </Username>
-            <Avatar image={session.image} onClick={() => setOpen(s => !s)} />
+            </a>
+            <button
+              type="button"
+              aria-label="Open menu"
+              className="z-10 w-[8vw] max-w-[50px] h-[8vw] max-h-[50px] rounded-full bg-[#ccc] bg-cover cursor-pointer border-0 p-0"
+              style={session.image ? { backgroundImage: `url('${session.image}')` } : undefined}
+              onClick={() => setOpen(s => !s)}
+            />
           </>
         ) : (
-          <Avatar>
-            <Loader />
-          </Avatar>
+          <div className="z-10 w-[8vw] max-w-[50px] h-[8vw] max-h-[50px] rounded-full bg-[#ccc] bg-cover cursor-pointer">
+            <div className="w-full h-full rounded-full border-2 border-[rgba(254,218,106,0.3)] border-t-yellow animate-spin-ease" />
+          </div>
         )}
-      </ImageAndUser>
-      <Arrow open={open} />
-      <Menu open={open}>
-        <Link href="/profile" passHref legacyBehavior>
-          <MenuItem {...autotrackParams("Session", "Profile")}>Profile</MenuItem>
+      </div>
+      <div className={`session-arrow transition-opacity duration-300 ${fadeClass}`} />
+      <div
+        className={`absolute right-0 mt-2 rounded-[3px] bg-white text-dark text-right transition-opacity duration-300 ${fadeClass}`}
+      >
+        <Link
+          href="/profile"
+          className="block w-full px-5 py-[10px] text-dark cursor-pointer no-underline text-right"
+          {...autotrackParams("Session", "Profile")}
+        >
+          Profile
         </Link>
-        <Link href="/api/auth/logout" passHref legacyBehavior>
-          <MenuItem {...autotrackParams("Session", "Logout")}>Logout</MenuItem>
+        <Link
+          href="/api/auth/logout"
+          className="block w-full px-5 py-[10px] text-dark cursor-pointer no-underline text-right"
+          {...autotrackParams("Session", "Logout")}
+        >
+          Logout
         </Link>
-      </Menu>
+      </div>
     </div>
   );
 }

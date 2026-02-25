@@ -1,27 +1,10 @@
-import React from "react";
-import { createGlobalStyle } from "styled-components";
+"use client";
+
+import React, { useEffect } from "react";
 import Link from "next/link";
-import {
-  Center,
-  Content,
-  Footer,
-  Header,
-  HeightWrapper,
-  Logo,
-  LogoWrapper,
-  SessionWrapper,
-  Wrapper,
-} from "../../styles/layout.styles";
+import LogoSmall from "../assets/LogoSmall";
 import Session from "../session/Session";
 import LegalLinks from "../ui/LegalLinks";
-
-const ScrollLock = createGlobalStyle`
-  body {
-    position: fixed;
-    width: 100%;
-    overflow: hidden;
-  }
-`;
 
 interface CircleLayoutProps {
   children?: React.ReactNode;
@@ -29,30 +12,36 @@ interface CircleLayoutProps {
   footer?: React.ReactNode;
 }
 
-const CircleLayout = ({ children = null, header = null, footer = null }: CircleLayoutProps) => (
-  <Center>
-    <ScrollLock />
-    <Wrapper>
-      <Header>
-        <SessionWrapper>
-          <Session />
-        </SessionWrapper>
-        <LogoWrapper>
-          <Link href="/">
-            <Logo />
-          </Link>
-        </LogoWrapper>
-        {header}
-      </Header>
-      <Content>
-        <HeightWrapper>{children}</HeightWrapper>
-      </Content>
-      <Footer>
-        <LegalLinks />
-        {footer}
-      </Footer>
-    </Wrapper>
-  </Center>
-);
+const CircleLayout = ({ children = null, header = null, footer = null }: CircleLayoutProps) => {
+  useEffect(() => {
+    document.body.classList.add("scroll-lock");
+    return () => document.body.classList.remove("scroll-lock");
+  }, []);
+
+  return (
+    <div className="flex items-center justify-center w-full h-full py-[15px]">
+      <div className="flex flex-col justify-around w-full h-full">
+        <div className="flex-1 relative">
+          <div className="absolute z-10 top-5 right-5">
+            <Session />
+          </div>
+          <div className="absolute z-10 top-5 left-5 h-[8vw] max-h-[50px]">
+            <Link href="/">
+              <LogoSmall className="w-auto h-full" />
+            </Link>
+          </div>
+          {header}
+        </div>
+        <div className="relative flex-none w-[500px] max-w-[80%] mx-auto overflow-hidden rounded-full bg-grey [mask-image:radial-gradient(white,black)]">
+          <div className="w-full h-0 pb-[100%]">{children}</div>
+        </div>
+        <div className="flex flex-1 flex-col items-center justify-start">
+          <LegalLinks />
+          {footer}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default CircleLayout;

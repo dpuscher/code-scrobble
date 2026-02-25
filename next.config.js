@@ -6,9 +6,6 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
 const nextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
-  compiler: {
-    styledComponents: true,
-  },
   serverExternalPackages: ["redis", "@redis/client", "mongoose", "lastfmapi", "disconnect"],
 };
 
