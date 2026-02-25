@@ -13,7 +13,6 @@ import authClient from "../../lib/auth-client";
 export default function Session() {
   const router = useRouter();
   const { data: session, error } = useSession();
-  console.log("🚀 ~ Session ~ session:", session);
   const [open, setOpen] = useState(false);
   const overlayRef = useRef<HTMLDivElement>(null);
 

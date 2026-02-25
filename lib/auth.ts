@@ -39,7 +39,6 @@ export const auth = betterAuth({
             const user = await prisma.user.findUnique({ where: { id: session.userId } });
             if (!user) return;
             const profile = (await LastFM.getUserData(user.name, account.accessToken)) as any;
-            console.log("🚀 ~ profile:", profile);
             await prisma.user.update({
               where: { id: session.userId },
               data: {
