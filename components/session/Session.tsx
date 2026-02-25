@@ -1,18 +1,26 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import LastFmImage from "../ui/LastFmImage";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "../../client/hooks/useSession";
 import targetBlank from "../../lib/targetBlank";
 import { autotrackParams } from "../../lib/analytics";
+import authClient from "../../lib/auth-client";
 
 export default function Session() {
   const router = useRouter();
   const { data: session, error } = useSession();
+  console.log("🚀 ~ Session ~ session:", session);
   const [open, setOpen] = useState(false);
   const overlayRef = useRef<HTMLDivElement>(null);
+
+  const signOut = async () => {
+    await authClient.signOut();
+    router.push("/login");
+  };
 
   useEffect(() => {
     if (error) router.push("/login");
@@ -51,10 +59,13 @@ export default function Session() {
             <button
               type="button"
               aria-label="Open menu"
-              className="z-10 w-[8vw] max-w-[50px] h-[8vw] max-h-[50px] rounded-full bg-[#ccc] bg-cover cursor-pointer border-0 p-0"
-              style={session.image ? { backgroundImage: `url('${session.image}')` } : undefined}
+              className="relative z-10 w-[8vw] max-w-[50px] h-[8vw] max-h-[50px] rounded-full bg-[#ccc] overflow-hidden cursor-pointer border-0 p-0"
               onClick={() => setOpen(s => !s)}
-            />
+            >
+              {session.image && (
+                <LastFmImage src={session.image} alt={session.name} fill sizes="50px" className="object-cover" />
+              )}
+            </button>
           </>
         ) : (
           <div className="z-10 w-[8vw] max-w-[50px] h-[8vw] max-h-[50px] rounded-full bg-[#ccc] bg-cover cursor-pointer">
@@ -73,13 +84,14 @@ export default function Session() {
         >
           Profile
         </Link>
-        <Link
-          href="/api/auth/logout"
-          className="block w-full px-5 py-[10px] text-dark cursor-pointer no-underline text-right"
+        <button
+          type="button"
+          className="block w-full px-5 py-[10px] text-dark cursor-pointer no-underline text-right bg-transparent border-0"
+          onClick={signOut}
           {...autotrackParams("Session", "Logout")}
         >
           Logout
-        </Link>
+        </button>
       </div>
     </div>
   );

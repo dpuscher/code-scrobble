@@ -5,8 +5,6 @@ export const SessionUserSchema = z.object({
   name: z.string(),
   url: z.string(),
   image: z.string(),
-  imageLarge: z.string(),
-  imageXLarge: z.string(),
 });
 
 export type SessionUser = z.infer<typeof SessionUserSchema>;
