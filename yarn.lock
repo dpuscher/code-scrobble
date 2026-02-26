@@ -3349,6 +3349,7 @@ __metadata:
     lastfmapi: "npm:^0.1.1"
     lint-staged: "npm:^16.2.7"
     lodash: "npm:^4.17.23"
+    lucide-react: "npm:^0.575.0"
     mongoose: "npm:^9.2.1"
     next: "npm:^16.1.6"
     nprogress: "npm:^0.2.0"
@@ -3359,7 +3360,6 @@ __metadata:
     quagga: "npm:^0.12.1"
     react: "npm:^19.2.4"
     react-dom: "npm:^19.2.4"
-    react-icons: "npm:^5.5.0"
     react-timeago: "npm:^8.3.0"
     redis: "npm:^5.11.0"
     redis-mock: "npm:^0.56.3"
@@ -6005,6 +6005,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lucide-react@npm:^0.575.0":
+  version: 0.575.0
+  resolution: "lucide-react@npm:0.575.0"
+  peerDependencies:
+    react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 10c0/4f42e81c88f60c8f904b178c0b28e8ac9a99da8ef24eba5f26ed97b63124304a847baea2f71125629a272df58dbb61cd799ff6a7e4878e5a4c28d8a699b84730
+  languageName: node
+  linkType: hard
+
 "lz-string@npm:^1.5.0":
   version: 1.5.0
   resolution: "lz-string@npm:1.5.0"
@@ -7240,15 +7249,6 @@ __metadata:
   peerDependencies:
     react: ^19.2.4
   checksum: 10c0/f0c63f1794dedb154136d4d0f59af00b41907f4859571c155940296808f4b94bf9c0c20633db75b5b2112ec13d8d7dd4f9bf57362ed48782f317b11d05a44f35
-  languageName: node
-  linkType: hard
-
-"react-icons@npm:^5.5.0":
-  version: 5.5.0
-  resolution: "react-icons@npm:5.5.0"
-  peerDependencies:
-    react: "*"
-  checksum: 10c0/a24309bfc993c19cbcbfc928157e53a137851822779977b9588f6dd41ffc4d11ebc98b447f4039b0d309a858f0a42980f6bfb4477fb19f9f2d1bc2e190fcf79c
   languageName: node
   linkType: hard
 

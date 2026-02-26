@@ -1,5 +1,5 @@
 import React from "react";
-import { IoIosRefresh } from "react-icons/io";
+import { RefreshCw } from "lucide-react";
 import ErrorIcon from "../icons/ErrorIcon";
 
 interface SearchReleaseErrorProps {
@@ -19,7 +19,7 @@ const SearchReleaseError = ({ code, onRetry }: SearchReleaseErrorProps) => (
       onClick={onRetry}
       className="flex flex-col items-center w-full mt-[10%] mb-[-5%] p-[5%] appearance-none border-0 bg-transparent text-inherit cursor-pointer"
     >
-      <IoIosRefresh size="30px" style={{ marginBottom: "7px" }} />
+      <RefreshCw size={30} style={{ marginBottom: "7px" }} />
       Retry
     </button>
   </div>

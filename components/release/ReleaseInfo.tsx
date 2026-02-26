@@ -1,6 +1,5 @@
 import React from "react";
-import { IoIosInformationCircleOutline } from "react-icons/io";
-import { MdClose } from "react-icons/md";
+import { CircleHelp, X } from "lucide-react";
 import durationFormat from "../../lib/durationFormat";
 import targetBlank from "../../lib/targetBlank";
 import { autotrackParams, trackEvent } from "../../lib/analytics";
@@ -44,7 +43,7 @@ class ReleaseInfo extends React.Component<ReleaseInfoProps, { open: boolean }> {
           onClick={this.handleButton}
           className="absolute z-10 bottom-0 left-0 w-[15%] p-[2.5%] appearance-none translate-y-full border-0 bg-transparent text-inherit cursor-pointer"
         >
-          <IoIosInformationCircleOutline className="w-full h-auto" />
+          <CircleHelp className="w-full h-auto" />
         </button>
         {open && (
           <div className="fixed inset-0 z-10 flex items-center justify-center overflow-auto bg-black/70 backdrop-blur-[10px] [-webkit-overflow-scrolling:touch]">
@@ -53,7 +52,7 @@ class ReleaseInfo extends React.Component<ReleaseInfoProps, { open: boolean }> {
                 onClick={this.handleButton}
                 className="absolute top-[-40px] right-0 py-[5px] appearance-none border-0 bg-transparent text-inherit cursor-pointer"
               >
-                <MdClose size="30" color="#d4d4dc" />
+                <X size={30} color="#d4d4dc" />
               </button>
               <div className="flex-none -mx-5 -mt-5 overflow-hidden border-b border-dark">
                 <div className="relative -m-[5px] overflow-hidden">

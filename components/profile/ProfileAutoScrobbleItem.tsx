@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { FiTrash2 } from "react-icons/fi";
+import { Trash2 } from "lucide-react";
 
 interface ProfileAutoScrobbleItemProps {
   id: string;
@@ -34,7 +34,7 @@ export default function ProfileAutoScrobbleItem({
         onClick={onDelete}
         className={`relative -right-5 p-[15px] transition-opacity border-0 bg-transparent text-inherit cursor-pointer appearance-none ${isDeleting ? "opacity-30" : ""}`}
       >
-        <FiTrash2 size={16} />
+        <Trash2 size={16} />
       </button>
     </li>
   );

@@ -3,8 +3,7 @@
 import React, { useRef, useState } from "react";
 import Head from "next/head";
 import Link from "next/link";
-import { IoIosSearch } from "react-icons/io";
-import { MdClose } from "react-icons/md";
+import { Search, X } from "lucide-react";
 import compact from "lodash/compact";
 import { trackEvent } from "../../lib/analytics";
 import NoResultsIcon from "../icons/NoResultsIcon";
@@ -93,7 +92,7 @@ export default function QueryRelease() {
         onClick={handleOpen}
         className="absolute z-10 bottom-0 left-0 w-[15%] p-[2.5%] appearance-none translate-y-full border-0 bg-transparent text-inherit cursor-pointer"
       >
-        <IoIosSearch className="w-full h-auto" />
+        <Search className="w-full h-auto" />
       </button>
       {open && (
         <div className="fixed inset-0 z-10 flex items-center justify-center overflow-auto bg-black/70 backdrop-blur-[10px] [-webkit-overflow-scrolling:touch]">
@@ -105,7 +104,7 @@ export default function QueryRelease() {
               onClick={handleClose}
               className="absolute top-[-40px] right-0 py-[5px] appearance-none border-0 bg-transparent text-inherit cursor-pointer"
             >
-              <MdClose size="30" color="#d4d4dc" />
+              <X size={30} color="#d4d4dc" />
             </button>
             <form
               onSubmit={onSubmit}
@@ -125,7 +124,7 @@ export default function QueryRelease() {
                 type="submit"
                 className="flex absolute top-0 right-0 items-center justify-center w-[45px] h-[38px] border-0 bg-transparent cursor-pointer appearance-none"
               >
-                <IoIosSearch size={30} />
+                <Search size={30} />
               </button>
             </form>
             {content}

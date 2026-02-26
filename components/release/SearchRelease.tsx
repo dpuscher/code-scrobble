@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { FaLastfm } from "react-icons/fa";
-import { MdClose } from "react-icons/md";
+import { X } from "lucide-react";
 import { useRelease } from "../../client/hooks/useRelease";
 import Loading from "../layout/Loading";
 import SearchReleaseError from "./SearchReleaseError";
 import { autotrackParams } from "../../lib/analytics";
+import LastfmIcon from "../icons/LastfmIcon";
 
 interface SearchReleaseProps {
   code: string;
@@ -40,7 +40,7 @@ export default function SearchRelease({ code, onScrobble, onCancel }: SearchRele
           className="flex flex-col flex-grow items-center py-[12%] appearance-none border-0 bg-transparent text-inherit cursor-pointer"
           {...autotrackParams("Detected", "Cancel")}
         >
-          <MdClose size="40px" style={{ marginBottom: "10px" }} />
+          <X size={40} style={{ marginBottom: "10px" }} />
           Cancel
         </button>
         <button
@@ -48,7 +48,7 @@ export default function SearchRelease({ code, onScrobble, onCancel }: SearchRele
           className="flex flex-col flex-grow items-center py-[12%] appearance-none border-0 bg-transparent text-inherit cursor-pointer"
           {...autotrackParams("Detected", "Scrobble")}
         >
-          <FaLastfm size="40px" style={{ marginBottom: "10px" }} />
+          <LastfmIcon className="w-10 h-auto mb-[10px]" />
           Scrobble
         </button>
       </div>

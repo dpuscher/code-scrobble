@@ -2,8 +2,7 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import { FaCheckCircle } from "react-icons/fa";
-import { IoMdQrScanner } from "react-icons/io";
+import { CircleCheck, ScanLine } from "lucide-react";
 import { useRelease } from "../../client/hooks/useRelease";
 import CircleLayout from "../layout/CircleLayout";
 import { trackEvent } from "../../lib/analytics";
@@ -32,13 +31,13 @@ export default function ScrobbledPageClient({ barcode }: ScrobbledPageClientProp
             style={{ backgroundImage: `url('${image}')` }}
           />
         )}
-        <FaCheckCircle color="#feda6a" size="50px" />
+        <CircleCheck color="#feda6a" size={50} />
         <div style={{ margin: "30px 30px 0" }}>Record sucessfully scrobbled to Last.fm</div>
         <button
           onClick={onRetry}
           className="flex flex-col items-center w-full mt-[10%] mb-[-5%] p-[5%] appearance-none border-0 bg-transparent text-inherit cursor-pointer"
         >
-          <IoMdQrScanner size="30px" style={{ marginBottom: "7px" }} />
+          <ScanLine size={30} style={{ marginBottom: "7px" }} />
           Scan another code
         </button>
       </div>
