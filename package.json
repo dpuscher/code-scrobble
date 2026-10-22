@@ -26,6 +26,7 @@
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
+    "screenshots": "playwright test -c playwright.capture.config.ts",
     "db:generate": "drizzle-kit generate",
     "db:studio": "drizzle-kit studio",
     "analyze": "ANALYZE=true next build"
