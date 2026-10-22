@@ -2,7 +2,7 @@ import { FaRegTrashAlt } from 'react-icons/fa';
 import { useAutoScrobbles } from '../../lib/api';
 import { InlineSpinner } from '../layout/Spinner';
 import {
-  Cover, Fallback, List, ListItem, SectionHeading, SectionMeta,
+  Fallback, List, ListItem, Row, SectionHeading, SectionMeta,
 } from './ProfileList';
 
 const ProfileAutoScrobbles = () => {
@@ -23,16 +23,12 @@ const ProfileAutoScrobbles = () => {
             id, artist, title, year, image,
           }) => (
             <ListItem key={id}>
-              <Cover src={image} />
-              <span className="grow py-2.5">
-                {`${artist} - ${title}`}
-                {year && ` (${year})`}
-              </span>
+              <Row image={image} title={title} details={[artist, year].filter(Boolean).join(' · ')} />
               <button
                 type="button"
                 onClick={() => remove(id)}
                 aria-label={`Remove ${artist} - ${title}`}
-                className="relative -right-5 p-[15px] opacity-60 transition-[opacity,color] hover:text-lastfm hover:opacity-100 active:scale-90"
+                className="flex-none self-stretch px-5 opacity-60 transition-[opacity,color,scale] hover:text-lastfm hover:opacity-100 active:scale-90"
               >
                 <FaRegTrashAlt size={16} aria-hidden />
               </button>

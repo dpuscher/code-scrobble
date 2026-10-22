@@ -16,11 +16,11 @@ test('profile lists history and auto-scrobbles', async ({ page }) => {
 
   const history = page.getByRole('list').nth(1);
   await expect(history.getByRole('link')).toHaveText([
-    /The Testers - Night Drive \(2019\)/, /The Testers - Quiet Hours \(2021\)/,
+    /Night Drive\s*The Testers · 2019 · \d+ seconds? ago/, /Quiet Hours\s*The Testers · 2021/,
   ]);
 
   const autoScrobbles = page.getByRole('list').first();
-  await expect(autoScrobbles.getByRole('listitem')).toHaveText(['The Testers - Night Drive (2019)']);
+  await expect(autoScrobbles.getByRole('listitem')).toHaveText([/Night Drive\s*The Testers · 2019/]);
   await autoScrobbles.getByRole('button', { name: 'Remove The Testers - Night Drive' }).click();
   await expect(autoScrobbles.getByText('No entries found.')).toBeVisible();
   await page.reload();
