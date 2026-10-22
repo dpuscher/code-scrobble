@@ -137,3 +137,4 @@ sketch
 
 # Prisma generated client
 /generated
+tsconfig.tsbuildinfo

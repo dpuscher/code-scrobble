@@ -1,4 +1,8 @@
-const LastFMApi = require("lastfmapi");
+import LastFMApi from "lastfmapi";
+import { callbackToPromiseRequired } from "../lib/callbackToPromise";
+
+type LastFMScrobbleResponse = LastFMApi.ScrobbleResponse;
+type LastFMScrobbleCallback = (error: Error | null, data?: LastFMScrobbleResponse) => void;
 
 interface ScrobbleTrack {
   album: string;
@@ -23,41 +27,38 @@ const createApiClient = (username: string, key: string) => {
   return lfm;
 };
 
-const getScrobble = (data: ReleaseForScrobble): ScrobbleTrack[] => {
-  let nextTimestamp = Math.floor(Date.now() / 1000);
+const generateScrobbleData = (release: ReleaseForScrobble): ScrobbleTrack[] => {
+  const totalDuration = release.tracks.reduce((sum, t) => sum + t.duration, 0);
+  let nextTimestamp = Math.floor(Date.now() / 1000) - totalDuration;
   const trackData: ScrobbleTrack[] = [];
 
-  data.tracks.forEach(track => {
+  for (const track of release.tracks) {
     trackData.push({
-      album: data.title,
-      artist: data.artist,
+      album: release.title,
+      artist: release.artist,
       timestamp: nextTimestamp,
       track: track.title,
       trackNumber: track.trackNumber,
     });
     nextTimestamp += track.duration;
-  });
+  }
 
   return trackData;
 };
 
-export const scrobbleTracks = (username: string, key: string, data: ReleaseForScrobble): Promise<unknown> =>
-  new Promise((resolve, reject) => {
-    createApiClient(username, key).track.scrobble(getScrobble(data), (err: unknown, scrobbles: unknown) => {
-      if (err) reject(err);
-      resolve(scrobbles);
-    });
-  });
+export const scrobbleTracks = async (username: string, key: string, data: ReleaseForScrobble): Promise<LastFMScrobbleResponse> => {
+  const scrobbleData = generateScrobbleData(data);
+  const client = createApiClient(username, key);
+  return callbackToPromiseRequired((callback: LastFMScrobbleCallback) => {
+    client.track.scrobble(scrobbleData, callback);
+  }, "No scrobble response returned from Last.fm");
+};
 
-export interface LastFMUserData {
-  url: string;
-  image?: Array<{ "#text": string }>;
-}
+export type LastFMUserData = LastFMApi.UserProfile;
 
-export const getUserData = (username: string, key: string): Promise<LastFMUserData> =>
-  new Promise((resolve, reject) => {
-    createApiClient(username, key).user.getInfo(null, (err: unknown, userData: unknown) => {
-      if (err) reject(err);
-      resolve(userData as LastFMUserData);
-    });
-  });
+export const getUserData = async (username: string, key: string): Promise<LastFMUserData> => {
+  const client = createApiClient(username, key);
+  return callbackToPromiseRequired((callback: (error: Error | null, data?: LastFMUserData) => void) => {
+    client.user.getInfo(null, callback);
+  }, "No user data returned from Last.fm");
+};

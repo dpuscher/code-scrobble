@@ -11,6 +11,7 @@
   "bugs": {
     "url": "https://github.com/dpuscher/code-scrobble/issues"
   },
+  "type": "module",
   "homepage": "https://www.codescrobble.com/",
   "scripts": {
     "dev": "next dev",
@@ -74,8 +75,10 @@
     "eslint": "^9.39.3",
     "eslint-config-next": "^16.1.6",
     "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-better-tailwindcss": "^4.3.1",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-unicorn": "^63.0.0",
     "happy-dom": "^20.7.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
@@ -87,6 +90,7 @@
     "tailwindcss": "^4.2.0",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
+    "typescript-eslint": "^8.56.1",
     "vite": "^7.3.1",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^4.0.18"
