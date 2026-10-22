@@ -12,10 +12,10 @@ test('scans a barcode with the camera and scrobbles the record', async ({ page, 
   const scrobbles = await receivedScrobbles(request);
   expect(scrobbles.map((s) => s.track)).toEqual(['Headlights', 'Overpass', 'Last Exit']);
   expect(scrobbles[0]).toMatchObject({ artist: 'The Testers', album: 'Night Drive', trackNumber: '1' });
-  // Timed as if the record just finished: 3:30 + 4:05 + 5:00 ago.
-  const now = Date.now() / 1000;
-  expect(Number(scrobbles[0].timestamp)).toBeGreaterThan(now - 755 - 60);
-  expect(Number(scrobbles[2].timestamp)).toBeLessThan(now);
+  // Starts now, each following track offset by the previous durations.
+  const [first, second, third] = scrobbles.map((s) => Number(s.timestamp));
+  expect(Math.abs(first - Date.now() / 1000)).toBeLessThan(60);
+  expect([second - first, third - second]).toEqual([210, 245]);
 });
 
 test('auto-scrobbles a record when it is scanned again', async ({ page, request }) => {

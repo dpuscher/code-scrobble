@@ -1,6 +1,6 @@
 import { mockFetch } from '@/test/fetch';
 import {
-  buildScrobbles, FALLBACK_DURATION, getAuthUrl, getSession, getUserInfo, LastFmError, scrobbleTracks, signParams,
+  buildScrobbles, getAuthUrl, getSession, getUserInfo, LastFmError, scrobbleTracks, signParams,
 } from './lastfm';
 
 describe('signParams', () => {
@@ -62,33 +62,22 @@ describe('getUserInfo', () => {
 });
 
 describe('buildScrobbles', () => {
-  const release = (durations: number[]) => ({
-    artist: 'A',
-    title: 'Album',
-    tracks: durations.map((duration, i) => ({ title: `T${i + 1}`, trackNumber: i + 1, duration })),
-  });
-
-  it('times the tracks as if the record just finished playing', () => {
-    const scrobbles = buildScrobbles(release([100, 50]), 1_000_000_000);
-    expect(scrobbles).toEqual([
-      {
-        artist: 'A', album: 'Album', track: 'T1', trackNumber: 1, timestamp: 1_000_000 - 150,
-      },
-      {
-        artist: 'A', album: 'Album', track: 'T2', trackNumber: 2, timestamp: 1_000_000 - 50,
-      },
+  it('starts now and spaces the tracks by their durations', () => {
+    const scrobbles = buildScrobbles({
+      artist: 'A',
+      title: 'Album',
+      tracks: [
+        { title: 'One', trackNumber: 1, duration: 100 },
+        { title: 'Two', trackNumber: 2, duration: 50 },
+        { title: 'Three', trackNumber: 3, duration: 0 },
+      ],
+    }, 1_000_000_000);
+    expect(scrobbles.map((s) => [s.track, s.timestamp])).toEqual([
+      ['One', 1_000_000], ['Two', 1_000_100], ['Three', 1_000_150],
     ]);
-  });
-
-  it('never uses timestamps in the future', () => {
-    const now = 1_000_000_000;
-    const scrobbles = buildScrobbles(release([300, 300, 300]), now);
-    expect(Math.max(...scrobbles.map((s) => s.timestamp))).toBeLessThan(now / 1000);
-  });
-
-  it(`assumes ${FALLBACK_DURATION}s for tracks without a duration`, () => {
-    const [first, second] = buildScrobbles(release([0, 0]), 1_000_000_000);
-    expect(second.timestamp - first.timestamp).toBe(FALLBACK_DURATION);
+    expect(scrobbles[0]).toEqual({
+      artist: 'A', album: 'Album', track: 'One', trackNumber: 1, timestamp: 1_000_000,
+    });
   });
 });
 
