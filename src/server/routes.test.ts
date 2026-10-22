@@ -23,6 +23,21 @@ describe('authenticated API routes', () => {
     expect(res).toMatchObject({ status: 401, body: { error: 'Unauthorized' } });
   });
 
+  it('rejects cross-site writes', async () => {
+    const { cookies } = await loggedInUser();
+    const release = await createRelease();
+    const res = await callApi(scrobble, {
+      method: 'POST', body: { id: release.id }, cookies, headers: { origin: 'https://evil.test', host: 'www.codescrobble.test' },
+    });
+    expect(res.status).toBe(403);
+    expect(await testDb().select().from(scrobbles)).toHaveLength(0);
+
+    const sameSite = await callApi(scrobble, {
+      method: 'POST', body: { id: release.id }, cookies, headers: { origin: 'https://codescrobble.test', host: 'codescrobble.test' },
+    });
+    expect(sameSite.status).toBe(200);
+  });
+
   it('rejects unsupported methods', async () => {
     const { cookies } = await loggedInUser();
     const res = await callApi(session, { method: 'DELETE', cookies });
@@ -183,11 +198,42 @@ describe('Last.fm login', () => {
     expect(res.redirect).toBe('/login');
   });
 
-  it('logs out', async () => {
+  it('logs out with a POST', async () => {
     const { cookies } = await loggedInUser();
-    const res = await callApi(logout, { cookies });
-    expect(res.redirect).toBe('/');
+    const res = await callApi(logout, { method: 'POST', cookies });
+    expect(res).toMatchObject({ status: 303, redirect: '/' });
     const after = await callApi(session, { cookies });
     expect(after.status).toBe(401);
+  });
+
+  it('does not log out on GET or cross-site requests', async () => {
+    const { cookies } = await loggedInUser();
+    expect((await callApi(logout, { cookies })).status).toBe(405);
+    expect((await callApi(logout, { method: 'POST', cookies, headers: { origin: 'https://evil.test', host: 'www.codescrobble.test' } })).status).toBe(405);
+    expect((await callApi(session, { cookies })).status).toBe(200);
+  });
+});
+
+describe('POST /api/scrobble failures', () => {
+  beforeEach(() => {
+    vi.stubEnv('NODE_ENV', 'production');
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  it('answers 502 when Last.fm fails', async () => {
+    const { cookies } = await loggedInUser();
+    const release = await createRelease();
+    mockFetch({ '/2.0/': () => ({ error: 16, message: 'Temporarily unavailable' }) });
+    const res = await callApi(scrobble, { method: 'POST', body: { id: release.id }, cookies });
+    expect(res).toMatchObject({ status: 502, body: { error: 'Last.fm request failed' } });
+  });
+
+  it('logs the user out when Last.fm rejects the session key', async () => {
+    const { cookies } = await loggedInUser();
+    const release = await createRelease();
+    mockFetch({ '/2.0/': () => ({ error: 9, message: 'Invalid session key' }) });
+    const res = await callApi(scrobble, { method: 'POST', body: { id: release.id }, cookies });
+    expect(res.status).toBe(401);
+    expect((await callApi(session, { cookies })).status).toBe(401);
   });
 });

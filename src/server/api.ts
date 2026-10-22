@@ -1,5 +1,6 @@
 import type { NextApiHandler, NextApiRequest, NextApiResponse } from 'next';
 import type { User } from './db/schema';
+import { isSameOrigin } from './origin';
 import { getSessionUser } from './session';
 
 type Method = 'GET' | 'POST' | 'DELETE';
@@ -15,6 +16,9 @@ export function authenticatedApi(handlers: Partial<Record<Method, Handler>>): Ne
     if (!handler) {
       res.setHeader('Allow', Object.keys(handlers).join(', '));
       return res.status(405).json({ error: 'Method not allowed' });
+    }
+    if (req.method !== 'GET' && !isSameOrigin(req)) {
+      return res.status(403).json({ error: 'Forbidden' });
     }
     try {
       const user = await getSessionUser(req, res);

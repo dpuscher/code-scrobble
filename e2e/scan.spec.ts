@@ -1,5 +1,5 @@
 import { KNOWN_BARCODE, UNKNOWN_BARCODE } from './fixtures.ts';
-import { expect, receivedScrobbles, test } from './support/test.ts';
+import { expect, MOCK_URL, receivedScrobbles, test } from './support/test.ts';
 
 test('scans a barcode with the camera and scrobbles the record', async ({ page, request }) => {
   await page.goto('/');
@@ -12,6 +12,40 @@ test('scans a barcode with the camera and scrobbles the record', async ({ page, 
   const scrobbles = await receivedScrobbles(request);
   expect(scrobbles.map((s) => s.track)).toEqual(['Headlights', 'Overpass', 'Last Exit']);
   expect(scrobbles[0]).toMatchObject({ artist: 'The Testers', album: 'Night Drive', trackNumber: '1' });
+  // Timed as if the record just finished: 3:30 + 4:05 + 5:00 ago.
+  const now = Date.now() / 1000;
+  expect(Number(scrobbles[0].timestamp)).toBeGreaterThan(now - 755 - 60);
+  expect(Number(scrobbles[2].timestamp)).toBeLessThan(now);
+});
+
+test('auto-scrobbles a record when it is scanned again', async ({ page, request }) => {
+  await page.goto(`/detected/${KNOWN_BARCODE}`);
+  await page.getByText('Auto-scrobble on next scan').click();
+  await page.getByRole('button', { name: 'Scrobble' }).click();
+  await expect(page.getByText('Record successfully scrobbled to Last.fm')).toBeVisible();
+
+  // Client-side navigation back to the scanner, which reads the barcode again
+  // and goes straight through to /scrobbled.
+  await page.getByRole('button', { name: 'Scan another code' }).click();
+  await expect(page).toHaveURL(/:\d+\/$/);
+  await expect.poll(async () => (await receivedScrobbles(request)).length, { timeout: 30_000 }).toBe(6);
+  await expect(page).toHaveURL(new RegExp(`/scrobbled/${KNOWN_BARCODE}$`));
+});
+
+test('offers a retry when Last.fm fails', async ({ page, request, consoleErrors }) => {
+  await request.post(`${MOCK_URL}/__fail-scrobbles?count=1`);
+  await page.goto(`/detected/${KNOWN_BARCODE}`);
+  await page.getByRole('button', { name: 'Scrobble' }).click();
+
+  await expect(page.getByText('An error occurred while sending data to Last.fm')).toBeVisible();
+  expect(await receivedScrobbles(request)).toHaveLength(0);
+  // The failed request is expected to show up in the console.
+  expect(consoleErrors).toEqual([expect.stringContaining('502')]);
+  consoleErrors.length = 0;
+
+  await page.getByRole('button', { name: 'Retry' }).click();
+  await expect(page.getByText('Record successfully scrobbled to Last.fm')).toBeVisible();
+  expect(await receivedScrobbles(request)).toHaveLength(3);
 });
 
 test.describe('detected release', () => {
@@ -27,6 +61,10 @@ test.describe('detected release', () => {
 
     await page.getByRole('button', { name: 'Close' }).click();
     await expect(rows).toHaveCount(0);
+
+    await page.getByRole('button', { name: 'Release info' }).click();
+    await page.keyboard.press('Escape');
+    await expect(page.getByRole('dialog')).toHaveCount(0);
   });
 
   test('cancel goes back to the scanner', async ({ page }) => {

@@ -10,7 +10,7 @@ test('profile lists history and auto-scrobbles', async ({ page }) => {
 
   await page.goto('/');
   await page.getByRole('button', { name: 'Account menu' }).click();
-  await page.getByRole('link', { name: 'Profile' }).click();
+  await page.getByRole('menuitem', { name: 'Profile' }).click();
 
   await expect(page.getByRole('heading', { name: MOCK_USER.name })).toBeVisible();
 

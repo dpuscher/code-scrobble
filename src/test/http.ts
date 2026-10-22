@@ -5,18 +5,19 @@ type Options = {
   query?: Record<string, string>;
   body?: unknown;
   cookies?: Record<string, string>;
+  headers?: Record<string, string>;
 };
 
 /** Minimal stand-in for Next.js' API request/response objects. */
 export async function callApi(handler: NextApiHandler, {
-  method = 'GET', query = {}, body, cookies = {},
+  method = 'GET', query = {}, body, cookies = {}, headers: requestHeaders = {},
 }: Options = {}) {
   const headers: Record<string, string | string[]> = {};
   const result = {
     status: 200, body: undefined as unknown, headers, redirect: undefined as string | undefined,
   };
   const req = {
-    method, query, body, cookies, headers: {}, url: '/api/test',
+    method, query, body, cookies, headers: requestHeaders, url: '/api/test',
   } as unknown as NextApiRequest;
   const res = { headersSent: false } as { headersSent: boolean } & Record<string, unknown>;
   Object.assign(res, {

@@ -141,7 +141,6 @@ describe('importLegacyData', () => {
   it('writes nothing when the import fails, so it can be retried', async () => {
     const failing: LegacySource = {
       releases: () => iterate([release(1)]),
-      // eslint-disable-next-line require-yield
       async* users() { throw new Error('connection lost'); },
     };
     await expect(importLegacyData(testDb(), failing, silent)).rejects.toThrow('connection lost');

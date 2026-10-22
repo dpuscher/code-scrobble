@@ -77,9 +77,18 @@ export type Scrobble = {
   timestamp: number;
 };
 
+// Discogs often has no durations; assume a typical track length so the
+// scrobbles still get distinct, ordered timestamps.
+export const FALLBACK_DURATION = 180;
+
+/**
+ * One scrobble per track, timed as if the record finished playing just now:
+ * Last.fm ignores scrobbles with timestamps in the future.
+ */
 export function buildScrobbles(release: Pick<Release, 'artist' | 'title' | 'tracks'>, now = Date.now()): Scrobble[] {
-  let timestamp = Math.floor(now / 1000);
-  return release.tracks.map((track) => {
+  const durations = release.tracks.map((track) => track.duration || FALLBACK_DURATION);
+  let timestamp = Math.floor(now / 1000) - durations.reduce((total, d) => total + d, 0);
+  return release.tracks.map((track, i) => {
     const scrobble = {
       artist: release.artist,
       album: release.title,
@@ -87,7 +96,7 @@ export function buildScrobbles(release: Pick<Release, 'artist' | 'title' | 'trac
       trackNumber: track.trackNumber,
       timestamp,
     };
-    timestamp += track.duration;
+    timestamp += durations[i];
     return scrobble;
   });
 }

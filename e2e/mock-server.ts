@@ -6,6 +6,7 @@
  *   /lastfm/api/    Last.fm web service (auth.getSession, user.getInfo, track.scrobble)
  *   /discogs/...    Discogs database search and release endpoints
  *   /__scrobbles    GET: scrobbles received so far, DELETE: reset
+ *   /__fail-scrobbles?count=n  POST: make the next n track.scrobble calls fail
  *
  * Run with `node e2e/mock-server.ts` (Node 24 strips the types).
  */
@@ -14,6 +15,7 @@ import { fixtures, MOCK_PORT, MOCK_USER } from './fixtures.ts';
 
 type Scrobble = Record<string, string>;
 let scrobbles: Scrobble[] = [];
+let failNextScrobbles = 0;
 
 function send(res: ServerResponse, status: number, body: unknown) {
   res.writeHead(status, { 'Content-Type': 'application/json' });
@@ -40,6 +42,10 @@ function lastfm(params: URLSearchParams, res: ServerResponse) {
         },
       });
     case 'track.scrobble': {
+      if (failNextScrobbles > 0) {
+        failNextScrobbles -= 1;
+        return send(res, 200, { error: 16, message: 'The service is temporarily unavailable' });
+      }
       if (params.get('sk') !== MOCK_USER.sessionKey) return send(res, 200, { error: 9, message: 'Invalid session key' });
       const batch: Record<number, Scrobble> = {};
       params.forEach((value, key) => {
@@ -99,8 +105,15 @@ const server = createServer(async (req, res) => {
     }
     if (url.pathname.startsWith('/discogs/')) return discogs(url, res);
     if (url.pathname === '/__scrobbles') {
-      if (req.method === 'DELETE') scrobbles = [];
+      if (req.method === 'DELETE') {
+        scrobbles = [];
+        failNextScrobbles = 0;
+      }
       return send(res, 200, scrobbles);
+    }
+    if (url.pathname === '/__fail-scrobbles' && req.method === 'POST') {
+      failNextScrobbles = Number(url.searchParams.get('count') ?? 1);
+      return send(res, 200, { failNextScrobbles });
     }
     return send(res, 404, { message: 'Not found' });
   } catch (error) {

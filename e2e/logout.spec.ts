@@ -12,7 +12,7 @@ test('logs in and out', async ({ page }) => {
   await expect(page).toHaveURL(/:\d+\/$/);
 
   await page.getByRole('button', { name: 'Account menu' }).click();
-  await page.getByRole('link', { name: 'Logout' }).click();
+  await page.getByRole('menuitem', { name: 'Logout' }).click();
   await expect(page).toHaveURL(/\/login$/);
 
   await page.goto('/profile');

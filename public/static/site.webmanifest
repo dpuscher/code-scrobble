@@ -1,6 +1,6 @@
 {
-    "name": "CodeScobble",
-    "short_name": "CodeScobble",
+    "name": "CodeScrobble",
+    "short_name": "CodeScrobble",
     "icons": [
         {
             "src": "/static/android-chrome-192x192.png",

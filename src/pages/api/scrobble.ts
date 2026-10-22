@@ -1,6 +1,7 @@
 import { authenticatedApi } from '@/server/api';
 import { getDb } from '@/server/db';
-import { buildScrobbles, scrobbleTracks } from '@/server/lastfm';
+import { buildScrobbles, LastFmError, scrobbleTracks } from '@/server/lastfm';
+import { destroySession } from '@/server/session';
 import { config } from '@/server/config';
 import { addAutoScrobble, addToHistory } from '@/server/users';
 
@@ -20,7 +21,18 @@ export default authenticatedApi({
       return res.json({});
     }
 
-    const response = await scrobbleTracks(user.sessionKey, buildScrobbles(release));
-    return res.json(response);
+    try {
+      return res.json(await scrobbleTracks(user.sessionKey, buildScrobbles(release)));
+    } catch (error) {
+      if (!(error instanceof LastFmError)) throw error;
+      console.error(`Scrobbling for ${user.name} failed`, error);
+      if (error.code === 9) {
+        // Invalid session key: the user revoked access on last.fm and has
+        // to log in again.
+        await destroySession(req, res);
+        return res.status(401).json({ error: 'Last.fm session expired' });
+      }
+      return res.status(502).json({ error: 'Last.fm request failed' });
+    }
   },
 });
