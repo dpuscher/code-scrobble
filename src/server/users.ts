@@ -52,7 +52,7 @@ export async function removeAutoScrobble(userId: number, releaseId: number) {
 export function listAutoScrobbles(userId: number) {
   return getDb()
     .select({
-      id: releases.id, artist: releases.artist, title: releases.title, year: releases.year,
+      id: releases.id, artist: releases.artist, title: releases.title, year: releases.year, image: releases.image,
     })
     .from(autoScrobbles)
     .innerJoin(releases, eq(releases.id, autoScrobbles.releaseId))
@@ -82,6 +82,7 @@ export function listHistory(userId: number) {
       artist: releases.artist,
       title: releases.title,
       year: releases.year,
+      image: releases.image,
       barcode: releases.barcode,
       discogsId: releases.id,
     })

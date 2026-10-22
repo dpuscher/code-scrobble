@@ -8,7 +8,7 @@ type Props = {
   onCancel: () => void;
 };
 
-const buttonClass = 'flex grow flex-col items-center py-[12%] [&_svg]:mb-2.5';
+const buttonClass = 'flex grow flex-col items-center py-[12%] transition-[scale,opacity] duration-100 ease-out active:scale-95 hover:opacity-80 [&_svg]:mb-2.5';
 
 /** Cover art with the "Cancel" and "Scrobble" actions. */
 const ReleaseActions = ({ release, onScrobble, onCancel }: Props) => (

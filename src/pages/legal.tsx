@@ -13,7 +13,7 @@ const images = (
 );
 
 const Index = () => (
-  <div className="legal-text m-auto w-full max-w-[768px] px-5 pt-[72px] pb-5 leading-[1.4] break-words select-text">
+  <div className="legal-text m-auto w-full max-w-[768px] px-5 pt-[calc(72px+env(safe-area-inset-top))] pb-[calc(20px+env(safe-area-inset-bottom))] leading-[1.4] break-words select-text">
     <BackButton />
     <p>
       <span role="img" aria-label="Deutsch">🇩🇪</span>

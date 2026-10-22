@@ -15,12 +15,12 @@ const Scrobbled = ({ barcode }: { barcode: string }) => {
       <CircleContent role="status">
         {release?.image && (
           <div
-            className="absolute -z-1 h-full w-full bg-cover opacity-50 blur-[20px]"
+            className="absolute -z-1 h-full w-full bg-cover opacity-50 blur-[20px] after:absolute after:inset-0 after:bg-dark/50"
             style={{ backgroundImage: `url("${release.image}")` }}
           />
         )}
-        <FaCheckCircle size="50px" aria-hidden className="text-yellow" />
-        <div className="mx-[30px] mt-[30px]">Record successfully scrobbled to Last.fm</div>
+        <FaCheckCircle size="50px" aria-hidden className="text-yellow motion-safe:animate-pop-in" />
+        <div className="mx-[30px] mt-[30px] font-normal text-white">Record successfully scrobbled to Last.fm</div>
         <RoundButton onClick={() => router.push('/')}>
           <IoMdQrScanner size="30px" aria-hidden />
           Scan another code

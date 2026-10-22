@@ -12,20 +12,20 @@ type Props = {
 
 /** The app shell: logo and session on top, the round content area, footer. */
 const CircleLayout = ({ children, header, footer }: Props) => (
-  <div data-scroll-lock className="flex h-full w-full items-center justify-center py-[15px]">
+  <div data-scroll-lock className="flex h-full w-full items-center justify-center pt-[calc(15px+env(safe-area-inset-top))] pb-[calc(15px+env(safe-area-inset-bottom))]">
     <div className="flex h-full w-full flex-col justify-around">
       <div className="flex-1">
-        <div className="absolute top-5 right-5 z-1">
+        <div className="absolute top-[calc(20px+env(safe-area-inset-top))] right-[calc(20px+env(safe-area-inset-right))] z-1">
           <Session />
         </div>
-        <div className="absolute top-5 left-5 z-1 h-[8vw] max-h-[50px]">
-          <Link href="/" aria-label="Scan" className="block h-full">
+        <div className="absolute top-[calc(20px+env(safe-area-inset-top))] left-[calc(20px+env(safe-area-inset-left))] z-1 h-[8vw] max-h-[50px]">
+          <Link href="/" aria-label="Scan" className="block h-full rounded-sm">
             <LogoSmall className="h-full w-auto" />
           </Link>
         </div>
         {header}
       </div>
-      <div className="relative mx-auto w-[500px] max-w-[80%] flex-none overflow-hidden rounded-full bg-grey [mask-image:radial-gradient(white,black)]">
+      <div className="relative mx-auto w-[500px] max-w-[80%] flex-none overflow-hidden rounded-full bg-grey shadow-[0_0_0_1px_rgb(255_255_255/0.06),0_20px_60px_-20px_rgb(0_0_0/0.8)] [mask-image:radial-gradient(white,black)]">
         <div className="h-0 w-full pb-[100%]">
           {children}
         </div>

@@ -2,7 +2,7 @@
 
 CodeScrobble is a web application that makes it easy to scrobble your CD or vinyl records to Last.fm by scanning the barcode with your smartphone camera.
 
-Next.js 16 (Pages Router) and React 19, Postgres via Drizzle ORM, and styled-components. Barcodes are decoded in the browser with [quagga2](https://github.com/ericblade/quagga2). Release data comes from [Discogs](https://www.discogs.com/developers), scrobbles go to [Last.fm](https://www.last.fm/api).
+Next.js 16 (Pages Router) and React 19, Postgres via Drizzle ORM, and Tailwind CSS. Barcodes are decoded in the browser with [quagga2](https://github.com/ericblade/quagga2). Release data comes from [Discogs](https://www.discogs.com/developers), scrobbles go to [Last.fm](https://www.last.fm/api).
 
 ## Development
 
@@ -37,6 +37,7 @@ Edit `src/server/db/schema.ts`, then generate a migration with `yarn db:generate
 yarn test           # Vitest: server code against in-process PGlite, client units
 yarn test:e2e       # Playwright against the production build
 yarn lint && yarn typecheck
+yarn screenshots    # every screen at phone and desktop size, in test-results/screens
 ```
 
 The end-to-end tests run the standalone server (as in Docker) against Postgres (`E2E_DATABASE_URL`, default: the `codescrobble_e2e` database of the compose Postgres) and a mock of the Last.fm and Discogs APIs (`e2e/mock-server.ts`). Chromium's fake camera plays a generated barcode video, so scanning is tested for real.

@@ -45,7 +45,12 @@ const QueryRelease = () => {
     }
   };
 
-  let content = <Fallback><LogoIcon color="#F4F4F4" className="h-auto w-1/2" /></Fallback>;
+  let content = (
+    <Fallback>
+      <LogoIcon color="#F4F4F4" className="h-auto w-1/2" />
+      <p className="mt-5 text-center text-sm text-dark/50">Search Discogs by artist and title</p>
+    </Fallback>
+  );
   if (search.status === 'loading') {
     content = <Fallback><div className="relative h-0 w-full pb-[100%]"><Loading /></div></Fallback>;
   } else if (search.status === 'done' && search.results.length) {
@@ -54,8 +59,8 @@ const QueryRelease = () => {
         {search.results.map(({
           id, title, thumb, country, year, format,
         }) => (
-          <Link key={id} href={`/detected/id:${id}`} className="mb-2.5 flex w-full text-dark">
-            <div className="mr-2.5 block size-[60px] flex-[0_0_60px]">
+          <Link key={id} href={`/detected/id:${id}`} className="-mx-2 mb-1 flex rounded-lg p-2 text-dark transition-colors hover:bg-black/5 active:bg-black/10">
+            <div className="mr-2.5 block size-[60px] flex-[0_0_60px] overflow-hidden rounded-md bg-black/5">
               {thumb && <img src={thumb} alt="" width={60} height={60} loading="lazy" className="size-[60px] object-cover" />}
             </div>
             <div className="flex grow flex-col">
@@ -91,7 +96,7 @@ const QueryRelease = () => {
           <form
             onSubmit={onSubmit}
             role="search"
-            className="relative -mx-5 -mt-5 h-[38px] flex-[0_0_38px] overflow-hidden border-b border-dark"
+            className="relative -mx-5 -mt-5 h-[46px] flex-[0_0_46px] overflow-hidden rounded-t-xl border-b border-black/10"
           >
             <input
               ref={inputRef}
@@ -102,10 +107,10 @@ const QueryRelease = () => {
               aria-label="Search release"
               enterKeyHint="search"
               autoFocus
-              className="w-full rounded-[3px] py-2.5 pr-[45px] pl-2.5 text-center text-base/none font-normal"
+              className="h-full w-full py-2.5 pr-[45px] pl-[45px] text-center text-base/none font-normal outline-none placeholder:text-dark/40 [&::-webkit-search-cancel-button]:hidden"
             />
-            <button type="submit" aria-label="Search" className="absolute top-0 right-0 flex h-[38px] w-[45px] items-center justify-center">
-              <IoIosSearch size={30} aria-hidden />
+            <button type="submit" aria-label="Search" className="absolute top-0 right-0 flex h-[46px] w-[45px] items-center justify-center text-dark/70 transition-colors hover:text-dark">
+              <IoIosSearch size={26} aria-hidden />
             </button>
           </form>
           {content}

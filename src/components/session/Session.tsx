@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useSession } from '../../lib/session';
 import targetBlank from '../../lib/targetBlank';
 
-const menuItemClass = 'block w-full px-5 py-2.5 text-right leading-[normal] text-dark';
+const menuItemClass = 'block w-full px-5 py-2.5 text-right leading-[normal] text-dark transition-colors hover:bg-black/5 active:bg-black/10';
 
 /** Avatar with a menu for the profile and logout. */
 const Session = () => {
@@ -48,7 +48,7 @@ const Session = () => {
           aria-label="Account menu"
           aria-expanded={open}
           aria-haspopup="menu"
-          className="z-1 size-[8vw] max-h-[50px] max-w-[50px] rounded-full bg-[#ccc] bg-cover"
+          className="z-1 size-[8vw] max-h-[50px] max-w-[50px] rounded-full bg-[#ccc] bg-cover ring-2 ring-white/10 transition-[scale,box-shadow] duration-100 ease-out hover:ring-white/30 active:scale-95"
           style={session.image ? { backgroundImage: `url("${session.image}")` } : undefined}
         />
       </div>
@@ -56,7 +56,7 @@ const Session = () => {
         aria-hidden
         className={`absolute right-0 h-2 w-[8vw] max-w-[50px] before:absolute before:top-0 before:left-1/2 before:size-0 before:translate-x-[-50%] before:translate-y-0.5 before:border-x-6 before:border-b-6 before:border-x-transparent before:border-b-white ${fade}`}
       />
-      <div role="menu" className={`absolute right-0 mt-2 rounded-[3px] bg-white text-right text-dark ${fade}`}>
+      <div role="menu" className={`absolute right-0 mt-2 overflow-hidden rounded-lg bg-white text-right text-dark shadow-xl ${fade}`}>
         <Link href="/profile" role="menuitem" className={menuItemClass}>Profile</Link>
         {/* Logging out changes state, so it is a POST, not a link. */}
         <form method="post" action="/logout">

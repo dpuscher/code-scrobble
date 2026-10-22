@@ -94,6 +94,12 @@ const Scanner = ({ onDetected }: Props) => {
       >
         <video playsInline autoPlay muted />
       </div>
+      {state === 'ready' && (
+        // Sweeping line that shows the camera is reading.
+        <div aria-hidden className="pointer-events-none absolute inset-x-[18%] inset-y-[30%]">
+          <div className="absolute inset-x-0 top-1/2 h-0.5 rounded-full bg-yellow/80 shadow-[0_0_12px_2px_var(--color-yellow)] motion-safe:animate-scan" />
+        </div>
+      )}
     </>
   );
 };
