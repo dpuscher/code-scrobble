@@ -22,3 +22,5 @@ data/
 !.yarn/sdks
 !.yarn/versions
 .mcp.json
+e2e/.auth/
+e2e/.generated/
