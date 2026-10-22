@@ -1,13 +1,18 @@
 .DS_Store
 .env
+.env.*
+!.env.example
 .next/
+next-env.d.ts
+*.tsbuildinfo
 .vscode
-bundles/
-coverage
-log/
+coverage/
 node_modules/
-public/static/service-worker.js
 yarn-error.log
+playwright-report/
+test-results/
+blob-report/
+data/
 
 .pnp.*
 .yarn/*
@@ -16,5 +21,4 @@ yarn-error.log
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
-data
 .mcp.json

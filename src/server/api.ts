@@ -1,0 +1,28 @@
+import type { NextApiHandler, NextApiRequest, NextApiResponse } from 'next';
+import type { User } from './db/schema';
+import { getSessionUser } from './session';
+
+type Method = 'GET' | 'POST' | 'DELETE';
+type Handler = (req: NextApiRequest, res: NextApiResponse, user: User) => unknown;
+
+/**
+ * Wraps authenticated JSON API routes: dispatches on method, rejects
+ * anonymous requests and turns unexpected errors into a 500.
+ */
+export function authenticatedApi(handlers: Partial<Record<Method, Handler>>): NextApiHandler {
+  return async (req, res) => {
+    const handler = handlers[req.method as Method];
+    if (!handler) {
+      res.setHeader('Allow', Object.keys(handlers).join(', '));
+      return res.status(405).json({ error: 'Method not allowed' });
+    }
+    try {
+      const user = await getSessionUser(req, res);
+      if (!user) return res.status(401).json({ error: 'Unauthorized' });
+      return await handler(req, res, user);
+    } catch (error) {
+      console.error(`${req.method} ${req.url} failed`, error);
+      if (!res.headersSent) res.status(500).json({ error: 'Internal server error' });
+    }
+  };
+}
