@@ -100,10 +100,10 @@ jobs:
 
       # The branch tag is what Dokploy pulls; the sha tag allows rolling back
       # to any previous build by pointing Dokploy at it.
-      # shellcheck disable=SC2046 # one argument per digest is intended
       - name: Create and push manifest list
         working-directory: /tmp/digests
         run: |
+          # shellcheck disable=SC2046 # one argument per digest is intended
           docker buildx imagetools create \
             --annotation "index:org.opencontainers.image.title=code-scrobble" \
             --annotation "index:org.opencontainers.image.description=Scrobble CDs and vinyl to Last.fm by scanning the barcode" \
