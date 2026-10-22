@@ -25,6 +25,8 @@ export default class MyDocument extends Document {
       const initialProps = await Document.getInitialProps(ctx);
       return {
         ...initialProps,
+        // Set by src/proxy.ts for the Content-Security-Policy.
+        nonce: ctx.req?.headers['x-nonce'],
         showManifest: !isSafari(ctx.req?.headers['user-agent']),
         styles: [initialProps.styles, sheet.getStyleElement()],
       };
@@ -36,7 +38,7 @@ export default class MyDocument extends Document {
   render() {
     return (
       <Html lang="en">
-        <Head>
+        <Head nonce={this.props.nonce}>
           <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png" />
           <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png" />
           <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png" />
@@ -59,7 +61,7 @@ export default class MyDocument extends Document {
         </Head>
         <body>
           <Main />
-          <NextScript />
+          <NextScript nonce={this.props.nonce} />
         </body>
       </Html>
     );

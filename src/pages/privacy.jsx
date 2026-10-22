@@ -421,4 +421,7 @@ const Index = () => (
   </Wrapper>
 );
 
+// Rendered per request so it gets a CSP nonce (see src/proxy.ts).
+export const getServerSideProps = () => ({ props: {} });
+
 export default Index;

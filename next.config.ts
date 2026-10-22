@@ -3,22 +3,6 @@ import type { NextConfig } from 'next';
 
 const isDev = process.env.NODE_ENV !== 'production';
 
-const contentSecurityPolicy = [
-  "default-src 'self'",
-  `script-src 'self'${isDev ? " 'unsafe-eval' 'unsafe-inline'" : ''}`,
-  // styled-components injects <style> tags at runtime.
-  "style-src 'self' 'unsafe-inline'",
-  // Cover art and avatars come from the Discogs and Last.fm CDNs.
-  "img-src 'self' data: blob: https:",
-  "media-src 'self' blob:",
-  "connect-src 'self'",
-  "worker-src 'self' blob:",
-  "frame-ancestors 'none'",
-  "base-uri 'self'",
-  "form-action 'self'",
-  "object-src 'none'",
-].join('; ');
-
 const nextConfig: NextConfig = {
   output: 'standalone',
   // next/image is not used, so its optional native image library can stay
@@ -45,9 +29,9 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
+        // The Content-Security-Policy is set per request in src/proxy.ts.
         source: '/:path*',
         headers: [
-          { key: 'Content-Security-Policy', value: contentSecurityPolicy },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'X-Frame-Options', value: 'DENY' },
