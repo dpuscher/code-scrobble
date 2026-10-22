@@ -1,0 +1,33 @@
+import { KNOWN_BARCODE, MOCK_USER } from './fixtures.ts';
+import { expect, test } from './support/test.ts';
+
+test('profile lists history and auto-scrobbles', async ({ page }) => {
+  // Scrobble two releases, one with auto-scrobble enabled.
+  await page.request.get(`/api/barcode/${KNOWN_BARCODE}`);
+  await page.request.get('/api/barcode/id:1002');
+  await page.request.post('/api/scrobble', { data: { id: 1002, autoScrobble: false } });
+  await page.request.post('/api/scrobble', { data: { id: 1001, autoScrobble: true } });
+
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Account menu' }).click();
+  await page.getByRole('menuitem', { name: 'Profile' }).click();
+
+  await expect(page.getByRole('heading', { name: MOCK_USER.name })).toBeVisible();
+
+  const history = page.getByRole('list').nth(1);
+  await expect(history.getByRole('link')).toHaveText([
+    /The Testers - Night Drive \(2019\)/, /The Testers - Quiet Hours \(2021\)/,
+  ]);
+
+  const autoScrobbles = page.getByRole('list').first();
+  await expect(autoScrobbles.getByRole('listitem')).toHaveText(['The Testers - Night Drive (2019)']);
+  await autoScrobbles.getByRole('button', { name: 'Remove The Testers - Night Drive' }).click();
+  await expect(autoScrobbles.getByText('No entries found.')).toBeVisible();
+  await page.reload();
+  await expect(page.getByRole('list').first().getByText('No entries found.')).toBeVisible();
+
+  // History entries lead back to the release, by barcode or Discogs id.
+  await page.getByRole('list').nth(1).getByRole('link', { name: /Night Drive/ }).click();
+  await expect(page).toHaveURL(new RegExp(`/detected/${KNOWN_BARCODE}$`));
+  await expect(page.getByRole('button', { name: 'Scrobble' })).toBeVisible();
+});

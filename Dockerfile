@@ -1,41 +1,52 @@
-FROM node:22-alpine AS base
+# syntax=docker/dockerfile:1
+
+FROM node:24-alpine AS base
+WORKDIR /app
+ENV NEXT_TELEMETRY_DISABLED=1
 RUN corepack enable
 
+# Dependencies change far less often than the source, so they get their own
+# layer (plus a BuildKit cache mount for the Yarn download cache).
 FROM base AS deps
-WORKDIR /app
-RUN apk add --no-cache git
 COPY package.json yarn.lock .yarnrc.yml ./
-RUN yarn install --immutable && yarn allow-scripts run
+RUN --mount=type=cache,target=/root/.yarn/berry/cache \
+    yarn install --immutable
 
 FROM base AS builder
-WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-ENV NEXT_TELEMETRY_DISABLED=1
-ENV NODE_OPTIONS=--openssl-legacy-provider
 RUN yarn build
 
-FROM base AS runner
+# The runtime image only carries Next.js' standalone output: the traced
+# subset of node_modules plus the compiled app, no Yarn and no dev tooling.
+FROM node:24-alpine AS runner
 WORKDIR /app
+ENV NODE_ENV=production \
+    NEXT_TELEMETRY_DISABLED=1 \
+    PORT=3000 \
+    HOSTNAME=0.0.0.0
 
-ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
-ENV PORT=3000
-
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs
-
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/server.js ./server.js
-COPY --from=builder /app/config ./config
-COPY --from=builder /app/app ./app
-COPY --from=builder /app/lib ./lib
-COPY package.json ./
+# SQL migrations, applied on startup (see src/instrumentation.ts).
+COPY --from=builder /app/drizzle ./drizzle
 
-USER nextjs
+# Reported by /health so the deploy workflow can tell when the new version
+# is live.
+ARG REVISION=unknown
+ENV APP_REVISION=$REVISION
+
+# Drop root: nothing here needs it. Next.js may write its cache here.
+RUN mkdir -p .next/cache && chown node:node .next/cache
+USER node
 
 EXPOSE 3000
+
+# Probes /health, which also checks the database connection. The long start
+# period covers the one-time MongoDB import on the first boot after the
+# Postgres migration.
+HEALTHCHECK --interval=30s --timeout=5s --start-period=120s --retries=3 \
+  CMD node -e "fetch('http://localhost:'+process.env.PORT+'/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
 
 CMD ["node", "server.js"]

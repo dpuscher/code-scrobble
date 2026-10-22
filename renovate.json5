@@ -1,0 +1,19 @@
+// Dependency automation. The shared policy (schedule, automerge rules,
+// grouping) lives in the stories-wtf workspace repo.
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  extends: ["github>dpuscher/stories-wtf//renovate-presets/base.json5"],
+  baseBranches: ["staging"],
+  packageRules: [
+    {
+      description: "Drizzle ORM and its CLI move together",
+      groupName: "drizzle",
+      matchPackageNames: ["drizzle-orm", "drizzle-kit"],
+    },
+    {
+      description: "Next.js and its companion packages move together",
+      groupName: "next",
+      matchPackageNames: ["next", "eslint-config-next", "@next/{/,}**"],
+    },
+  ],
+}
