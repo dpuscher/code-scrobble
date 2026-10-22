@@ -2,118 +2,55 @@
 
 CodeScrobble is a web application that makes it easy to scrobble your CD or vinyl records to Last.fm by scanning the barcode with your smartphone camera.
 
-## Getting Started
+Next.js 16 (Pages Router) and React 19, Postgres via Drizzle ORM, and styled-components. Barcodes are decoded in the browser with [quagga2](https://github.com/ericblade/quagga2). Release data comes from [Discogs](https://www.discogs.com/developers), scrobbles go to [Last.fm](https://www.last.fm/api).
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+## Development
 
-### Prerequisites
+Requirements: Node.js 24 (`nvm use`), Corepack (`corepack enable`) and Docker for the local database.
 
-In order to run a local version of the application you need to install the following tools:
-
-- [NVM](https://github.com/nvm-sh/nvm) or Node.js (v10.15.1)
-- [Yarn](https://github.com/yarnpkg/yarn) for npm package handling
-- [MongoDB](https://github.com/mongodb/mongo) as Database
-- [Redis](https://github.com/antirez/redis) as key-value store for session handling
-
-### APIs
-
-In addition to the software requirements, you need access to the following APIs:
-
-- [Discogs](https://www.discogs.com/applications/edit) for searching and getting release info
-- [Last.fm](https://www.last.fm/api/account/create) for authentication and scrobbling data
-
-
-### Installing
-
-First you need to clone the repository from github:
-
-```
-git clone git@github.com:dpuscher/code-scrobble.git
-cd code-scrobble
-```
-
-When you are using `nvm` to manage your node installation use these commands to install and use the correct version
-
-```
-nvm install
-nvm use
-```
-
-Afterwards you need to install all dependencies:
-
-```
+```sh
 yarn install
+docker compose up -d        # Postgres on localhost:5432
+cp .env.example .env        # add your Discogs and Last.fm API keys
+yarn dev                    # http://localhost:3000
 ```
 
-### Configuration
+Migrations run automatically on startup. Outside production nothing is sent to Last.fm. Scrobbles are only logged.
 
-To configure your application you need to set some environment variables. To do this easily you can just add a `.env` file in the root directory:
+### Environment
 
-```
-DISCOGS_KEY=...
-DISCOGS_SECRET=...
-LASTFM_KEY=...
-LASTFM_SECRET=...
-MONGODB_URI=mongodb://localhost:27017/codescrobble
-REDISCLOUD_URL=redis://localhost:6379
-SERVER_URL=http://localhost:3000
-SESSION_SECRET=...
-```
+| Variable | Description |
+| --- | --- |
+| `DATABASE_URL` | Postgres connection string |
+| `SERVER_URL` | Public URL; used for the Last.fm callback and secure cookies |
+| `DISCOGS_KEY`, `DISCOGS_SECRET` | [Discogs application](https://www.discogs.com/settings/developers) |
+| `LASTFM_KEY`, `LASTFM_SECRET` | [Last.fm API account](https://www.last.fm/api/account/create) |
+| `MONGODB_URI` | Optional. Imports the CodeScrobble 1.x MongoDB data once on startup (see below) |
 
-Discogs and Last.Fm Keys and Secrets are received from the developer websites mentioned above.
+### Database changes
 
-The session secret is used to sign the session id cookie and can be any string you want.
+Edit `src/server/db/schema.ts`, then generate a migration with `yarn db:generate` and commit the SQL in `drizzle/`.
 
-### Running the application
+## Tests
 
-To run the application with hot-releading you can run it in development mode:
-
-```
-yarn dev
+```sh
+yarn test           # Vitest: server code against in-process PGlite, client units
+yarn test:e2e       # Playwright against the production build
+yarn lint && yarn typecheck
 ```
 
-CodeScrobble is now accessible at http://localhost:3000
-
-You can adjust the port by setting the `PORT` environment variable.
-
-## Running the tests
-
-Jest is used as a test runner in this project:
-
-```
-yarn test
-```
-
-You can also use watch-mode and display the current test coverage:
-```
-yarn test:watch
-yarm test:coverage
-```
-
-### Coding style tests
-
-`ESLint` and `stylelint` are used to check the coding style of the project:
-
-```
-yarn lint
-yarn lint:css
-```
+The end-to-end tests run the standalone server (as in Docker) against Postgres (`E2E_DATABASE_URL`, default: the `codescrobble_e2e` database of the compose Postgres) and a mock of the Last.fm and Discogs APIs (`e2e/mock-server.ts`). Chromium's fake camera plays a generated barcode video, so scanning is tested for real.
 
 ## Deployment
 
-To deploy the project on a live system you just need to check it out on your server, install the dependencies (see "Installation"), add the config file and run the following commands:
+Pushing to `staging` or `production` runs `.github/workflows/deploy.yml`. It runs CI, then builds a multi-arch image (`ghcr.io/dpuscher/code-scrobble:<branch>` and `:<branch>-<sha>`) and deploys it with the Dokploy API. It then waits until `/health` reports the new revision. A successful staging deploy keeps a "Staging to Production" PR open; merging it releases to production.
 
-```
-yarn build
-yarn start
-```
+The GitHub repository needs the `DOKPLOY_API_KEY` secret. On Dokploy, the apps pull the image and need the environment variables above.
 
-## Authors
+### Migrating from CodeScrobble 1.x (MongoDB)
 
-* **Daniel Puscher** - *Initial work* - [dpuscher](https://github.com/dpuscher)
-
-See also the list of [contributors](https://github.com/dpuscher/code-scrobble/contributors) who participated in this project.
+While `MONGODB_URI` is set, the first start copies users, releases, auto-scrobbles and history from MongoDB into Postgres. It runs in a single transaction and is recorded in the `app_meta` table, so it runs exactly once. MongoDB is only read. Duplicate user documents (from an old login race) are merged. Login sessions are not migrated: users log in once more. After verifying the import, remove `MONGODB_URI`, the MongoDB and Redis services, and the `mongodb` dependency.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+MIT, see [LICENSE.md](LICENSE.md).
