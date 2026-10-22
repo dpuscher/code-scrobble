@@ -1,7 +1,7 @@
 import * as redis from "redis";
-import * as Cache from "../cache";
+import * as Cache from "./cache";
 
-vi.mock("redis", async () => import("../__mocks__/redis"));
+vi.mock("redis", async () => import("./__mocks__/redis"));
 
 describe("cache", () => {
   beforeEach(() => {
@@ -47,11 +47,7 @@ describe("cache", () => {
     it("queries data from redis store", async () => {
       const key = "foo";
 
-      try {
-        await Cache.get(key);
-      } catch {
-        // ignore errors
-      }
+      await Cache.get(key);
 
       expect((redis as any)._get.mock.calls.length).toBe(1);
       expect((redis as any)._get.mock.calls[0][0]).toBe(key);
@@ -67,10 +63,10 @@ describe("cache", () => {
       expect(cachedData).toEqual(value);
     });
 
-    it("rejects the promise when no data is stored in redis", async () => {
+    it("returns undefined when no data is stored in redis", async () => {
       const key = "foo";
 
-      await expect(Cache.get(key)).rejects.toBeUndefined();
+      await expect(Cache.get(key)).resolves.toBeUndefined();
     });
   });
 });
