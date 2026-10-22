@@ -7,6 +7,8 @@ name: Build and deploy
 on:
   push:
     branches: [staging, production]
+  # Redeploy the current branch head by hand (Actions tab -> Run workflow).
+  workflow_dispatch:
 
 concurrency:
   group: deploy-${{ github.ref_name }}
@@ -124,7 +126,7 @@ jobs:
       - name: Trigger Dokploy deploy
         env:
           APPLICATION_ID: ${{ github.ref_name == 'production' && 'WcRVaTEkNJ4bhxqU1vFKm' || 'Z3q4dfaFCNVXhltcvAASf' }}
-          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message || format('Manual deploy of {0}', github.ref_name) }}
           COMMIT_SHA: ${{ github.sha }}
         run: |
           curl -sf -X POST "https://admin.daniel.re/api/application.deploy" \
