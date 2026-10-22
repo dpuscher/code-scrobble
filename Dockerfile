@@ -32,6 +32,11 @@ COPY --from=builder /app/public ./public
 # SQL migrations, applied on startup (see src/instrumentation.ts).
 COPY --from=builder /app/drizzle ./drizzle
 
+# Reported by /health so the deploy workflow can tell when the new version
+# is live.
+ARG REVISION=unknown
+ENV APP_REVISION=$REVISION
+
 # Drop root: nothing here needs it. Next.js may write its cache here.
 RUN mkdir -p .next/cache && chown node:node .next/cache
 USER node

@@ -1,0 +1,81 @@
+name: CI
+
+# Runs for pull requests (what Renovate waits for before automerging) and is
+# reused by deploy.yml, so nothing reaches Dokploy without passing it.
+on:
+  pull_request:
+  workflow_call:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # Node 24 is what the runtime image runs (see Dockerfile).
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - run: corepack enable
+
+      # --immutable fails when package.json and yarn.lock disagree.
+      - run: yarn install --immutable
+
+      - run: yarn lint
+      - run: yarn typecheck
+
+      # Server tests run against in-process PGlite, so no services needed.
+      - run: yarn test run
+
+  e2e:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: codescrobble
+          POSTGRES_PASSWORD: codescrobble
+          POSTGRES_DB: codescrobble_e2e
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U codescrobble"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      E2E_DATABASE_URL: postgres://codescrobble:codescrobble@localhost:5432/codescrobble_e2e
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - run: corepack enable
+      - run: yarn install --immutable
+      - run: yarn playwright install --with-deps chromium
+      - run: yarn build
+
+      # Runs the standalone server against Postgres and a mock of the
+      # Last.fm and Discogs APIs (see playwright.config.ts).
+      - run: yarn test:e2e
+        env:
+          E2E_SKIP_BUILD: '1'
+
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7

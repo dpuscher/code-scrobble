@@ -1,0 +1,28 @@
+name: Clean up old GHCR image versions
+
+# Manual only: deletes container images from ghcr.io. Run with dry-run
+# (the default) first to see what it would remove.
+on:
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: "Preview only - log what would be deleted, delete nothing"
+        type: boolean
+        default: true
+
+permissions:
+  packages: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      # Keeps the deployed branch tags and the newest sha tags (for
+      # rollbacks); delete-untagged removes the per-arch digest-only pushes.
+      - uses: dataaxiom/ghcr-cleanup-action@v1
+        with:
+          dry-run: ${{ inputs.dry-run }}
+          keep-n-tagged: 20
+          exclude-tags: staging,production
+          delete-untagged: true
+          validate: true

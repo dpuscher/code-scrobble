@@ -32,7 +32,7 @@ test.describe('anonymous visitors', () => {
 
 test('serves health, security headers and the retired service worker', async ({ request }) => {
   const health = await request.get('/health');
-  expect(await health.json()).toEqual({ status: 'ok' });
+  expect(await health.json()).toEqual({ status: 'ok', revision: 'dev' });
 
   const page = await request.get('/login');
   const headers = page.headers();

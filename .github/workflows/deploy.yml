@@ -1,0 +1,172 @@
+name: Build and deploy
+
+# Images are built here instead of on the Dokploy host, which also runs many
+# unrelated apps; Dokploy only pulls a ready-to-run image.
+#   staging    -> ghcr.io/dpuscher/code-scrobble:staging    -> staging.codescrobble.com
+#   production -> ghcr.io/dpuscher/code-scrobble:production -> www.codescrobble.com
+on:
+  push:
+    branches: [staging, production]
+
+concurrency:
+  group: deploy-${{ github.ref_name }}
+  cancel-in-progress: false
+
+env:
+  IMAGE: ghcr.io/dpuscher/code-scrobble
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+
+  build:
+    needs: ci
+    strategy:
+      matrix:
+        include:
+          - platform: linux/amd64
+            runner: ubuntu-latest
+            arch: amd64
+          - platform: linux/arm64
+            runner: ubuntu-24.04-arm
+            arch: arm64
+    runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: docker/setup-buildx-action@v4
+
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Built natively per architecture, not cross-built via QEMU: QEMU's
+      # user-mode emulation crashes Node under load (SIGILL in V8's JIT).
+      # Each leg pushes by digest only; push-manifest joins them.
+      - name: Build and push by digest
+        id: build
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          platforms: ${{ matrix.platform }}
+          build-args: |
+            REVISION=${{ github.sha }}
+          labels: |
+            org.opencontainers.image.title=code-scrobble
+            org.opencontainers.image.description=Scrobble CDs and vinyl to Last.fm by scanning the barcode
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+          outputs: type=image,name=${{ env.IMAGE }},push-by-digest=true,name-canonical=true,push=true
+          cache-from: type=gha,scope=build-${{ matrix.arch }}
+          cache-to: type=gha,mode=max,scope=build-${{ matrix.arch }}
+
+      - name: Export digest
+        run: |
+          mkdir -p /tmp/digests
+          digest="${{ steps.build.outputs.digest }}"
+          touch "/tmp/digests/${digest#sha256:}"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: digests-${{ github.ref_name }}-${{ matrix.arch }}
+          path: /tmp/digests/*
+          if-no-files-found: error
+          retention-days: 1
+
+  push-manifest:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          path: /tmp/digests
+          pattern: digests-${{ github.ref_name }}-*
+          merge-multiple: true
+
+      - uses: docker/setup-buildx-action@v4
+
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # The branch tag is what Dokploy pulls; the sha tag allows rolling back
+      # to any previous build by pointing Dokploy at it.
+      # shellcheck disable=SC2046 # one argument per digest is intended
+      - name: Create and push manifest list
+        working-directory: /tmp/digests
+        run: |
+          docker buildx imagetools create \
+            --annotation "index:org.opencontainers.image.title=code-scrobble" \
+            --annotation "index:org.opencontainers.image.description=Scrobble CDs and vinyl to Last.fm by scanning the barcode" \
+            --annotation "index:org.opencontainers.image.source=https://github.com/${{ github.repository }}" \
+            --annotation "index:org.opencontainers.image.revision=${{ github.sha }}" \
+            -t "$IMAGE:${{ github.ref_name }}" \
+            -t "$IMAGE:${{ github.ref_name }}-${{ github.sha }}" \
+            $(printf "$IMAGE@sha256:%s " *)
+
+  deploy:
+    needs: push-manifest
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref_name }}
+    steps:
+      # Dokploy pulls the branch tag pushed above. applicationId is an opaque
+      # internal id, not a credential. The commit message is passed via env,
+      # not spliced into the script, so it cannot break out into the shell.
+      - name: Trigger Dokploy deploy
+        env:
+          APPLICATION_ID: ${{ github.ref_name == 'production' && 'WcRVaTEkNJ4bhxqU1vFKm' || 'Z3q4dfaFCNVXhltcvAASf' }}
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+          COMMIT_SHA: ${{ github.sha }}
+        run: |
+          curl -sf -X POST "https://admin.daniel.re/api/application.deploy" \
+            -H "x-api-key: ${{ secrets.DOKPLOY_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d "$(jq -n \
+                  --arg id "$APPLICATION_ID" \
+                  --arg title "${COMMIT_MESSAGE%%$'\n'*}" \
+                  --arg desc "Commit: $COMMIT_SHA" \
+                  '{applicationId: $id, title: $title, description: $desc}')"
+
+      # Dokploy deploys asynchronously. /health reports the revision baked
+      # into the image, so this waits for the new build, not the old one.
+      - name: Wait until the new version is live
+        env:
+          URL: ${{ github.ref_name == 'production' && 'https://www.codescrobble.com' || 'https://staging.codescrobble.com' }}
+          COMMIT_SHA: ${{ github.sha }}
+        run: |
+          for _ in $(seq 1 40); do
+            revision="$(curl -sf "$URL/health" | jq -r .revision || true)"
+            if [ "$revision" = "$COMMIT_SHA" ]; then echo "Live and healthy"; exit 0; fi
+            sleep 15
+          done
+          echo "::error::$URL/health never reported revision $COMMIT_SHA"
+          exit 1
+
+  promote:
+    needs: deploy
+    if: github.ref_name == 'staging'
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+    steps:
+      # Keeps one open "Staging to Production" PR; merging it deploys.
+      - name: Open the release PR if there is none
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          if [ -z "$(gh pr list --base production --head staging --state open --json number --jq '.[].number')" ]; then
+            gh pr create --base production --head staging \
+              --title "Staging to Production" \
+              --body "Deployed to https://staging.codescrobble.com. Merging this PR deploys to production."
+          fi
