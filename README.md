@@ -6,13 +6,27 @@ Next.js 16 (Pages Router) and React 19, Postgres via Drizzle ORM, and Tailwind C
 
 ## Development
 
-Requirements: Node.js 24 (`nvm use`), Corepack (`corepack enable`) and Docker for the local database.
+### Try it in Docker
+
+Needs only Docker:
+
+```sh
+make up       # builds and starts everything, then open http://localhost:3000
+make reset    # delete local data and seed again
+make down     # stop (keeps the database)
+```
+
+This runs the production image against Postgres and a mock of Last.fm and Discogs (`e2e/mock-server.ts`). Logging in goes through the mock and is instant; nothing is sent to the real services. The seed data (`dev/seed.ts`) adds a user with a scrobble history and auto-scrobbles, and the mock knows a dozen made-up records (`dev/catalog.ts`). Their barcodes are at http://localhost:4011/barcodes, to scan with the camera or to open as `/detected/<barcode>`.
+
+### Run from source
+
+Requirements: Node.js 24 (`nvm use`), Corepack (`corepack enable`) and Docker for the database.
 
 ```sh
 yarn install
-docker compose up -d        # Postgres on localhost:5432
-cp .env.example .env        # add your Discogs and Last.fm API keys
-yarn dev                    # http://localhost:3000
+docker compose up -d postgres   # Postgres on localhost:5432
+cp .env.example .env            # add your Discogs and Last.fm API keys
+yarn dev                        # http://localhost:3000
 ```
 
 Migrations run automatically on startup. Outside production nothing is sent to Last.fm. Scrobbles are only logged.

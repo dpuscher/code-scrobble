@@ -21,3 +21,5 @@ playwright*.config.ts
 vitest.config.ts
 src/test
 scripts
+dev
+Makefile

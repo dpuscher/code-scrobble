@@ -1,4 +1,10 @@
-# Local development database. Run `docker compose up -d`, then `yarn dev`.
+# Local stack: `make up` (or `docker compose up --build`) runs the production
+# image at http://localhost:3000 against Postgres and a mock of Last.fm and
+# Discogs, with seed data. Logging in goes through the mock and is instant;
+# nothing reaches the real services.
+#
+# For `yarn dev` and the e2e tests only the database is needed:
+# `docker compose up -d postgres`.
 services:
   postgres:
     image: postgres:18-alpine
@@ -12,9 +18,65 @@ services:
       - postgres:/var/lib/postgresql
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "codescrobble"]
-      interval: 5s
+      interval: 2s
       timeout: 5s
-      retries: 10
+      retries: 15
+
+  # Fake Last.fm and Discogs APIs with the made-up records of dev/catalog.ts.
+  # Published on 4011 so it does not clash with the e2e tests' mock on 4010.
+  mock:
+    build:
+      context: .
+      dockerfile: dev/Dockerfile
+    command: ["node", "e2e/mock-server.ts"]
+    environment:
+      MOCK_CATALOG: dev
+    ports:
+      - "4011:4010"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:4010/__scrobbles').then(r=>process.exit(r.ok?0:1),()=>process.exit(1))"]
+      interval: 2s
+      timeout: 5s
+      retries: 15
+
+  # Adds the seed data once; `make reset` starts over.
+  seed:
+    build:
+      context: .
+      dockerfile: dev/Dockerfile
+    command: ["node", "dev/seed.ts"]
+    environment:
+      DATABASE_URL: postgres://codescrobble:codescrobble@postgres:5432/codescrobble
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  app:
+    build:
+      context: .
+      args:
+        REVISION: local
+    environment:
+      DATABASE_URL: postgres://codescrobble:codescrobble@postgres:5432/codescrobble
+      SERVER_URL: http://localhost:3000
+      LASTFM_KEY: dev
+      LASTFM_SECRET: dev
+      DISCOGS_KEY: dev
+      DISCOGS_SECRET: dev
+      LASTFM_API_URL: http://mock:4010/lastfm/api/
+      DISCOGS_API_URL: http://mock:4010/discogs
+      # Opened by the browser, so it has to be the published port.
+      LASTFM_AUTH_URL: http://localhost:4011/lastfm/auth/
+    ports:
+      - "3000:3000"
+    healthcheck:
+      interval: 2s
+      start_period: 60s
+    depends_on:
+      mock:
+        condition: service_healthy
+      seed:
+        condition: service_completed_successfully
 
 volumes:
   postgres:
