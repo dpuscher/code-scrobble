@@ -1,6 +1,5 @@
 import BackButton from '../components/ui/BackButton';
 import targetBlank from '../lib/targetBlank';
-import { Anchor, Wrapper } from '../styles/legal.styles';
 
 const images = (
   <>
@@ -14,7 +13,7 @@ const images = (
 );
 
 const Index = () => (
-  <Wrapper>
+  <div className="legal-text m-auto w-full max-w-[768px] px-5 pt-[72px] pb-5 leading-[1.4] break-words select-text">
     <BackButton />
     <p>
       <span role="img" aria-label="Deutsch">🇩🇪</span>
@@ -92,7 +91,7 @@ const Index = () => (
 
     <hr />
 
-    <Anchor id="de" />
+    <div id="de" className="relative -top-[75px]" />
     <h1>Impressum</h1>
 
     <h2>Angaben gemäß &sect; 5 TMG</h2>
@@ -169,7 +168,7 @@ const Index = () => (
     <p>
       <i>Quelle: <a href="https://www.e-recht24.de/impressum-generator.html" {...targetBlank}>https://www.e-recht24.de/impressum-generator.html</a></i>
     </p>
-  </Wrapper>
+  </div>
 );
 
 // Rendered per request so it gets a CSP nonce (see src/proxy.ts).

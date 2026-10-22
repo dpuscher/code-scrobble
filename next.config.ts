@@ -13,9 +13,6 @@ const nextConfig: NextConfig = {
   },
   poweredByHeader: false,
   reactStrictMode: true,
-  compiler: {
-    styledComponents: true,
-  },
   async rewrites() {
     // Keep the public URLs of CodeScrobble 1.x (the Last.fm callback URL is
     // registered with Last.fm).

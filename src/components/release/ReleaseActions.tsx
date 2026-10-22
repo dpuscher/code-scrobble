@@ -1,7 +1,6 @@
 import { FaLastfm } from 'react-icons/fa';
 import { MdClose } from 'react-icons/md';
 import type { Release } from '../../lib/types';
-import { Button, Poster, PosterContent } from './styles/ReleaseActions.styles';
 
 type Props = {
   release: Release;
@@ -9,26 +8,31 @@ type Props = {
   onCancel: () => void;
 };
 
+const buttonClass = 'flex grow flex-col items-center py-[12%] [&_svg]:mb-2.5';
+
 /** Cover art with the "Cancel" and "Scrobble" actions. */
 const ReleaseActions = ({ release, onScrobble, onCancel }: Props) => (
-  <Poster $image={release.image}>
-    <PosterContent>
-      <Button type="button" onClick={onCancel}>
+  <div
+    className="absolute top-0 left-0 flex h-full w-full flex-col items-center justify-end bg-cover"
+    style={release.image ? { backgroundImage: `url("${release.image}")` } : undefined}
+  >
+    <div className="flex w-full bg-black/50 px-[20%] text-center backdrop-blur-[10px]">
+      <button type="button" onClick={onCancel} className={buttonClass}>
         <MdClose size="40px" aria-hidden />
         Cancel
-      </Button>
-      <Button type="button" onClick={onScrobble}>
+      </button>
+      <button type="button" onClick={onScrobble} className={buttonClass}>
         <FaLastfm size="40px" aria-hidden />
         Scrobble
-      </Button>
-    </PosterContent>
+      </button>
+    </div>
     {!release.image && (
       <div>
         <b>{release.artist}</b>
         <div>{release.title}</div>
       </div>
     )}
-  </Poster>
+  </div>
 );
 
 export default ReleaseActions;

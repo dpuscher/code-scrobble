@@ -1,17 +1,17 @@
 import { FaRegTrashAlt } from 'react-icons/fa';
 import { useAutoScrobbles } from '../../lib/api';
-import {
-  DeleteButton, Fallback, H3, List, ListCaption, ListItem, Meta,
-} from '../../styles/profile.styles';
 import { InlineSpinner } from '../layout/Spinner';
+import {
+  Fallback, List, ListItem, SectionHeading, SectionMeta,
+} from './ProfileList';
 
 const ProfileAutoScrobbles = () => {
   const { data, isLoading, remove } = useAutoScrobbles();
 
   return (
     <section aria-labelledby="auto-scrobbles">
-      <H3 id="auto-scrobbles">Auto-scrobbles</H3>
-      <Meta>These items are automatically scrobbled the next time they are scanned</Meta>
+      <SectionHeading id="auto-scrobbles">Auto-scrobbles</SectionHeading>
+      <SectionMeta>These items are automatically scrobbled the next time they are scanned</SectionMeta>
       {isLoading ? <InlineSpinner /> : (
         <List>
           {!data?.length && (
@@ -23,13 +23,18 @@ const ProfileAutoScrobbles = () => {
             id, artist, title, year,
           }) => (
             <ListItem key={id}>
-              <ListCaption>
+              <span className="grow py-2.5">
                 {`${artist} - ${title}`}
                 {year && ` (${year})`}
-              </ListCaption>
-              <DeleteButton type="button" onClick={() => remove(id)} aria-label={`Remove ${artist} - ${title}`}>
+              </span>
+              <button
+                type="button"
+                onClick={() => remove(id)}
+                aria-label={`Remove ${artist} - ${title}`}
+                className="relative -right-5 p-[15px]"
+              >
                 <FaRegTrashAlt size={16} aria-hidden />
-              </DeleteButton>
+              </button>
             </ListItem>
           ))}
         </List>

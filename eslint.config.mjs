@@ -17,6 +17,9 @@ export default defineConfig([
     rules: {
       'no-console': ['warn', { allow: ['warn', 'error', 'log'] }],
       'react/prop-types': 'off',
+      // Cover art and avatars are served by the Discogs and Last.fm CDNs;
+      // next/image optimization is disabled (see next.config.ts).
+      '@next/next/no-img-element': 'off',
     },
   },
 ]);

@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useCallback, useState } from 'react';
-import CircleLayout from '../../components/layout/CircleLayout';
+import CircleLayout, { FooterContent } from '../../components/layout/CircleLayout';
 import ErrorMessage from '../../components/layout/ErrorMessage';
 import Loading from '../../components/layout/Loading';
 import ReleaseActions from '../../components/release/ReleaseActions';
@@ -10,7 +10,6 @@ import Scrobble from '../../components/scrobble/Scrobble';
 import Checkbox from '../../components/ui/Checkbox';
 import { useFreshRelease } from '../../lib/api';
 import { requireUser } from '../../server/guard';
-import { FooterContent } from '../../styles/layout.styles';
 
 /** Shows the release for a scanned barcode (or `id:<discogs id>`). */
 const Detected = ({ barcode }: { barcode: string }) => {

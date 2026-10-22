@@ -3,16 +3,16 @@ import { useRef, useState, type FormEvent } from 'react';
 import { IoIosSearch } from 'react-icons/io';
 import { searchReleases } from '../../lib/api';
 import type { SearchResult } from '../../lib/types';
+import LogoIcon from '../icons/LogoIcon';
 import NoResultsIcon from '../icons/NoResultsIcon';
 import Loading from '../layout/Loading';
-import Overlay from '../ui/Overlay';
-import { ToggleButton, ToggleWrapper } from '../ui/styles/Overlay.styles';
-import {
-  FallbackIcon, FallbackWrapper, HeadWrapper, Input, LoadingWrapper, Meta, NoResults, Result,
-  ResultInfo, ResultWrapper, Submit, Thumbnail, ThumbnailWrapper, Title,
-} from './styles/QueryRelease.styles';
+import Overlay, { OverlayToggle } from '../ui/Overlay';
 
 type Search = { status: 'idle' | 'loading' } | { status: 'done'; results: SearchResult[] };
+
+const Fallback = ({ children }: { children: React.ReactNode }) => (
+  <div className="flex flex-1 flex-col items-center justify-center">{children}</div>
+);
 
 /** Search button that opens a Discogs release search, for unreadable barcodes. */
 const QueryRelease = () => {
@@ -45,54 +45,55 @@ const QueryRelease = () => {
     }
   };
 
-  let content = <FallbackWrapper><FallbackIcon color="#F4F4F4" /></FallbackWrapper>;
+  let content = <Fallback><LogoIcon color="#F4F4F4" className="h-auto w-1/2" /></Fallback>;
   if (search.status === 'loading') {
-    content = <FallbackWrapper><LoadingWrapper><Loading /></LoadingWrapper></FallbackWrapper>;
+    content = <Fallback><div className="relative h-0 w-full pb-[100%]"><Loading /></div></Fallback>;
   } else if (search.status === 'done' && search.results.length) {
     content = (
-      <ResultWrapper>
+      <div className="overflow-auto pt-2.5">
         {search.results.map(({
           id, title, thumb, country, year, format,
         }) => (
-          <Result key={id} as={Link} href={`/detected/id:${id}`}>
-            <ThumbnailWrapper>
-              {thumb && <Thumbnail src={thumb} alt="" width={60} height={60} loading="lazy" />}
-            </ThumbnailWrapper>
-            <ResultInfo>
-              <Title>
+          <Link key={id} href={`/detected/id:${id}`} className="mb-2.5 flex w-full text-dark">
+            <div className="mr-2.5 block size-[60px] flex-[0_0_60px]">
+              {thumb && <img src={thumb} alt="" width={60} height={60} loading="lazy" className="size-[60px] object-cover" />}
+            </div>
+            <div className="flex grow flex-col">
+              <div className="max-h-[2.3em] overflow-hidden font-semibold">
                 {title}
                 {year && ` (${year})`}
-              </Title>
-              <Meta>
+              </div>
+              <div className="mt-2 h-[1.15em] overflow-hidden text-[13px]">
                 {[country, format?.join(', ')].filter(Boolean).join(' · ')}
-              </Meta>
-            </ResultInfo>
-          </Result>
+              </div>
+            </div>
+          </Link>
         ))}
-      </ResultWrapper>
+      </div>
     );
   } else if (search.status === 'done') {
     content = (
-      <FallbackWrapper>
-        <NoResults>
-          <NoResultsIcon />
+      <Fallback>
+        <div className="text-center">
+          <NoResultsIcon className="mx-auto mb-5 block" />
           No results were found
           <br />
           for your query
-        </NoResults>
-      </FallbackWrapper>
+        </div>
+      </Fallback>
     );
   }
 
   return (
-    <ToggleWrapper>
-      <ToggleButton type="button" onClick={show} aria-label="Search release">
-        <IoIosSearch aria-hidden />
-      </ToggleButton>
+    <OverlayToggle label="Search release" icon={<IoIosSearch aria-hidden />} onClick={show}>
       {open && (
         <Overlay label="Search release" onClose={close} fullHeight>
-          <HeadWrapper onSubmit={onSubmit} role="search">
-            <Input
+          <form
+            onSubmit={onSubmit}
+            role="search"
+            className="relative -mx-5 -mt-5 h-[38px] flex-[0_0_38px] overflow-hidden border-b border-dark"
+          >
+            <input
               ref={inputRef}
               type="search"
               value={query}
@@ -101,15 +102,16 @@ const QueryRelease = () => {
               aria-label="Search release"
               enterKeyHint="search"
               autoFocus
+              className="w-full rounded-[3px] py-2.5 pr-[45px] pl-2.5 text-center text-base/none font-normal"
             />
-            <Submit type="submit" aria-label="Search">
+            <button type="submit" aria-label="Search" className="absolute top-0 right-0 flex h-[38px] w-[45px] items-center justify-center">
               <IoIosSearch size={30} aria-hidden />
-            </Submit>
-          </HeadWrapper>
+            </button>
+          </form>
           {content}
         </Overlay>
       )}
-    </ToggleWrapper>
+    </OverlayToggle>
   );
 };
 

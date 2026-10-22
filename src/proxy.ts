@@ -12,8 +12,10 @@ export function proxy(request: NextRequest) {
   const policy = [
     "default-src 'self'",
     `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${isDev ? " 'unsafe-eval'" : ''}`,
-    // styled-components injects <style> tags at runtime.
-    "style-src 'self' 'unsafe-inline'",
+    // Stylesheets are files; only style attributes (cover art backgrounds,
+    // Next.js' route announcer, nprogress) are inline.
+    `style-src 'self' 'nonce-${nonce}'`,
+    "style-src-attr 'unsafe-inline'",
     // Cover art and avatars come from the Discogs and Last.fm CDNs.
     "img-src 'self' data: blob: https:",
     "media-src 'self' blob:",

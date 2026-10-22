@@ -1,7 +1,6 @@
 import Document, {
   type DocumentContext, type DocumentInitialProps, Head, Html, Main, NextScript,
 } from 'next/document';
-import { ServerStyleSheet } from 'styled-components';
 
 const isSafari = (userAgent = ''): boolean => /Version\/([0-9._]+).*Safari/.test(userAgent);
 
@@ -16,25 +15,13 @@ type Props = DocumentInitialProps & { nonce?: string; showManifest: boolean };
 
 export default class MyDocument extends Document<Props> {
   static async getInitialProps(ctx: DocumentContext): Promise<Props> {
-    const sheet = new ServerStyleSheet();
-    const originalRenderPage = ctx.renderPage;
-
-    try {
-      ctx.renderPage = () => originalRenderPage({
-        enhanceApp: (App) => (props) => sheet.collectStyles(<App {...props} />),
-      });
-
-      const initialProps = await Document.getInitialProps(ctx);
-      return {
-        ...initialProps,
-        // Set by src/proxy.ts for the Content-Security-Policy.
-        nonce: ctx.req?.headers['x-nonce'] as string | undefined,
-        showManifest: !isSafari(ctx.req?.headers['user-agent']),
-        styles: [initialProps.styles, sheet.getStyleElement()],
-      };
-    } finally {
-      sheet.seal();
-    }
+    const initialProps = await Document.getInitialProps(ctx);
+    return {
+      ...initialProps,
+      // Set by src/proxy.ts for the Content-Security-Policy.
+      nonce: ctx.req?.headers['x-nonce'] as string | undefined,
+      showManifest: !isSafari(ctx.req?.headers['user-agent']),
+    };
   }
 
   render() {

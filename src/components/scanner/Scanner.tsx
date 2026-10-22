@@ -2,7 +2,6 @@ import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import type { QuaggaJSResultObject } from '@ericblade/quagga2';
 import ErrorMessage from '../layout/ErrorMessage';
 import Loading from '../layout/Loading';
-import { Camera } from './styles/Scanner.styles';
 
 type Props = {
   onDetected: (barcode: string) => void;
@@ -87,9 +86,14 @@ const Scanner = ({ onDetected }: Props) => {
           description="Please make sure this website is allowed to use the camera."
         />
       )}
-      <Camera ref={cameraRef} $visible={state === 'ready'}>
+      <div
+        ref={cameraRef}
+        className={`absolute h-full w-full translate-z-0 [&_canvas,&_video]:absolute [&_canvas,&_video]:top-0 [&_canvas,&_video]:left-0 [&_canvas,&_video]:h-full [&_canvas,&_video]:w-full [&_canvas,&_video]:object-cover ${
+          state === 'ready' ? 'visible' : 'invisible'
+        }`}
+      >
         <video playsInline autoPlay muted />
-      </Camera>
+      </div>
     </>
   );
 };

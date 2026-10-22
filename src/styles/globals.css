@@ -1,0 +1,150 @@
+@import 'tailwindcss';
+
+@theme {
+  /* Only the brand palette: keeps the UI to these colors. */
+  --color-*: initial;
+  --color-white: #fff;
+  --color-black: #000;
+  --color-yellow: #feda6a;
+  --color-silver: #d4d4dc;
+  --color-grey: #393f4d;
+  --color-dark: #1d1e22;
+  --color-lastfm: #d51007;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'HelveticaNeue-Light',
+    'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande',
+    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+
+  --animate-spinner: spinner 1s ease-in-out infinite;
+  --animate-pulse-ring: pulse-ring 0.2s ease-in;
+
+  @keyframes spinner {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes pulse-ring {
+    50% {
+      box-shadow: 0 0 0 2px var(--color-yellow);
+    }
+  }
+}
+
+@layer base {
+  html {
+    line-height: 1.15;
+  }
+
+  html,
+  body,
+  #__next {
+    height: 100%;
+  }
+
+  body {
+    background: var(--color-dark);
+    color: var(--color-silver);
+    font-size: 15px;
+    font-weight: 300;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+
+  /* Preflight sets the default cursor; this app always used the pointer. */
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
+  }
+
+  /* The round app shell fills the screen; stops iOS from scrolling the page behind it. */
+  body:has([data-scroll-lock]) {
+    position: fixed;
+    width: 100%;
+    overflow: hidden;
+  }
+}
+
+@layer components {
+  /* Long-form text of the legal notice and privacy policy. */
+  .legal-text {
+    h1 {
+      margin: 0.67em 0;
+      font-size: 2em;
+      font-weight: bold;
+    }
+
+    h2 {
+      margin: 1.5em 0 0.5em;
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+
+    h3 {
+      margin: 1.5em 0 0.5em;
+      font-size: 1.17em;
+      font-weight: bold;
+    }
+
+    h4 {
+      margin: 1.33em 0;
+      font-weight: bold;
+    }
+
+    p,
+    ul,
+    ol {
+      margin: 1em 0;
+    }
+
+    ul,
+    ol {
+      padding-left: 40px;
+    }
+
+    ul {
+      list-style: disc;
+    }
+
+    ol {
+      list-style: decimal;
+    }
+
+    a {
+      text-decoration: underline;
+    }
+
+    hr {
+      margin: 3em 0;
+      border: 1px inset;
+      color: gray;
+    }
+  }
+}
+
+/* Route change progress bar (nprogress). */
+#nprogress {
+  pointer-events: none;
+
+  .bar {
+    position: fixed;
+    z-index: 1031;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--color-yellow);
+  }
+
+  .peg {
+    display: block;
+    position: absolute;
+    right: 0;
+    width: 100px;
+    height: 100%;
+    transform: rotate(3deg) translate(0, -4px);
+    box-shadow:
+      0 0 10px var(--color-yellow),
+      0 0 5px var(--color-yellow);
+  }
+}

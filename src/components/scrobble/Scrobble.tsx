@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { ApiError, scrobbleRelease } from '../../lib/api';
 import type { Release } from '../../lib/types';
 import ErrorMessage from '../layout/ErrorMessage';
-import { Loading, LoadingContent, LoadingWrapper } from './styles/Scrobble.styles';
+import Spinner from '../layout/Spinner';
 
 type Props = {
   release: Release;
@@ -42,10 +42,15 @@ const Scrobble = ({ release, autoScrobble, onScrobbled }: Props) => {
   }
 
   return (
-    <LoadingWrapper $image={release.image}>
-      <Loading />
-      <LoadingContent>Sending data to Last.fm</LoadingContent>
-    </LoadingWrapper>
+    <div
+      className="absolute flex h-full w-full items-center justify-center bg-cover"
+      style={release.image ? { backgroundImage: `url("${release.image}")` } : undefined}
+    >
+      <Spinner className="h-full w-full" />
+      <div className="absolute bottom-0 left-0 w-full bg-black/50 px-[20%] py-[12%] text-center [text-shadow:0_0_3px_black,0_0_3px_black,0_0_3px_black] backdrop-blur-[10px]">
+        Sending data to Last.fm
+      </div>
+    </div>
   );
 };
 

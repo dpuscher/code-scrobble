@@ -1,13 +1,10 @@
 import { useRouter } from 'next/router';
 import { FaCheckCircle } from 'react-icons/fa';
 import { IoMdQrScanner } from 'react-icons/io';
-import CircleLayout from '../../components/layout/CircleLayout';
-import { RetryButton } from '../../components/layout/styles/Error.styles';
+import CircleLayout, { CircleContent } from '../../components/layout/CircleLayout';
+import RoundButton from '../../components/layout/RoundButton';
 import { useRelease } from '../../lib/api';
-import { yellow } from '../../lib/colors';
 import { requireUser } from '../../server/guard';
-import { FlexContent } from '../../styles/layout.styles';
-import { CoverBackground, Message } from '../../styles/scrobbled.styles';
 
 const Scrobbled = ({ barcode }: { barcode: string }) => {
   const router = useRouter();
@@ -15,15 +12,20 @@ const Scrobbled = ({ barcode }: { barcode: string }) => {
 
   return (
     <CircleLayout>
-      <FlexContent role="status">
-        {release?.image && <CoverBackground $image={release.image} />}
-        <FaCheckCircle color={yellow} size="50px" aria-hidden />
-        <Message>Record successfully scrobbled to Last.fm</Message>
-        <RetryButton type="button" onClick={() => router.push('/')}>
+      <CircleContent role="status">
+        {release?.image && (
+          <div
+            className="absolute -z-1 h-full w-full bg-cover opacity-50 blur-[20px]"
+            style={{ backgroundImage: `url("${release.image}")` }}
+          />
+        )}
+        <FaCheckCircle size="50px" aria-hidden className="text-yellow" />
+        <div className="mx-[30px] mt-[30px]">Record successfully scrobbled to Last.fm</div>
+        <RoundButton onClick={() => router.push('/')}>
           <IoMdQrScanner size="30px" aria-hidden />
           Scan another code
-        </RetryButton>
-      </FlexContent>
+        </RoundButton>
+      </CircleContent>
     </CircleLayout>
   );
 };
