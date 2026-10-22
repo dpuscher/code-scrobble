@@ -17,3 +17,7 @@ Dockerfile
 docker-compose.yml
 .claude
 *.md
+playwright.config.ts
+vitest.config.ts
+src/test
+scripts
