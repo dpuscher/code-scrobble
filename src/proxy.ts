@@ -13,13 +13,14 @@ export function proxy(request: NextRequest) {
     "default-src 'self'",
     `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${isDev ? " 'unsafe-eval'" : ''}`,
     // Stylesheets are files; only style attributes (cover art backgrounds,
-    // Next.js' route announcer, nprogress) are inline.
-    `style-src 'self' 'nonce-${nonce}'`,
+    // Next.js' route announcer, nprogress) are inline. The dev server injects
+    // CSS through <style> tags without a nonce.
+    isDev ? "style-src 'self' 'unsafe-inline'" : `style-src 'self' 'nonce-${nonce}'`,
     "style-src-attr 'unsafe-inline'",
     // Cover art and avatars come from the Discogs and Last.fm CDNs.
     "img-src 'self' data: blob: https:",
     "media-src 'self' blob:",
-    `connect-src 'self'${isDev ? ' ws:' : ''}`,
+    `connect-src 'self'${isDev ? ' ws: wss:' : ''}`,
     "worker-src 'self' blob:",
     "frame-ancestors 'none'",
     "base-uri 'self'",
