@@ -1,6 +1,6 @@
 import { discogsRelease, mockFetch } from '@/test/fetch';
 import {
-  convertTimecode, findReleaseIdByBarcode, getMasterVersions, getRelease, normalizeTracklist, searchReleases, splitTitle,
+  cleanArtistName, convertTimecode, findReleaseIdByBarcode, getMasterVersions, getRelease, normalizeTracklist, searchReleases, splitTitle,
 } from './discogs';
 
 const track = (position: string, type_ = 'track') => ({
@@ -60,6 +60,13 @@ describe('getRelease', () => {
     expect(headers['User-Agent']).toMatch(/CodeScrobble/);
   });
 
+  it('drops the number Discogs adds to artists sharing a name', async () => {
+    mockFetch({
+      '/releases/9': () => discogsRelease(9, { artists: [{ name: 'Nirvana (2)' }, { name: 'Area 51 (12)' }, { name: 'Boney M.' }] }),
+    });
+    await expect(getRelease(9)).resolves.toMatchObject({ artist: 'Nirvana, Area 51, Boney M.' });
+  });
+
   it('handles releases without images, year or identifiers', async () => {
     mockFetch({
       '/releases/7': () => discogsRelease(7, { images: undefined, year: 0, identifiers: undefined }),
@@ -93,6 +100,19 @@ describe('findReleaseIdByBarcode', () => {
   it('returns null without results', async () => {
     mockFetch({ '/database/search': () => ({ results: [] }) });
     await expect(findReleaseIdByBarcode('123')).resolves.toBeNull();
+  });
+});
+
+describe('cleanArtistName', () => {
+  it.each([
+    ['Nirvana (2)', 'Nirvana'],
+    ['Simon (3) & Garfunkel (2)', 'Simon & Garfunkel'],
+    ['Artist A (4), Artist B / Artist C (10)', 'Artist A, Artist B / Artist C'],
+    ['Die Ärzte', 'Die Ärzte'],
+    ['Sunn O)))', 'Sunn O)))'],
+    ['Blink (182) Tribute', 'Blink (182) Tribute'],
+  ])('cleans %s', (input, expected) => {
+    expect(cleanArtistName(input)).toBe(expected);
   });
 });
 

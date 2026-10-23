@@ -65,6 +65,13 @@ async function request<T>(path: string, params: Record<string, string> = {}): Pr
   return response.json() as Promise<T>;
 }
 
+/**
+ * Drops the number Discogs adds to artists sharing a name ("Nirvana (2)"),
+ * also inside joined names ("Simon (3) & Garfunkel (2)"). Last.fm knows them
+ * without it.
+ */
+export const cleanArtistName = (name: string) => name.replace(/ \(\d+\)(?=,| [&/]|$)/g, '');
+
 // "1:02:03" -> 3723 seconds. Missing or malformed parts count as 0.
 export function convertTimecode(timecode = '') {
   return timecode
@@ -97,7 +104,7 @@ export async function getRelease(id: number) {
   }));
   return {
     id,
-    artist: (data.artists ?? []).map((a) => a.name).join(', '),
+    artist: (data.artists ?? []).map((a) => cleanArtistName(a.name)).join(', '),
     title: data.title,
     image: data.images?.[0]?.uri ?? null,
     url: data.uri,
@@ -116,15 +123,12 @@ export async function findReleaseIdByBarcode(barcode: string) {
   return best?.id ?? null;
 }
 
-/**
- * Splits a search hit's "Artist - Title" and drops the number Discogs adds to
- * artists sharing a name ("Nirvana (2)").
- */
+/** Splits a search hit's "Artist - Title". */
 export function splitTitle(title: string) {
   const separator = title.indexOf(' - ');
   if (separator < 0) return { artist: '', title };
   return {
-    artist: title.slice(0, separator).replace(/ \(\d+\)(?=,| [&/]|$)/g, ''),
+    artist: cleanArtistName(title.slice(0, separator)),
     title: title.slice(separator + 3),
   };
 }

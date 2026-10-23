@@ -62,6 +62,15 @@ describe('getUserInfo', () => {
 });
 
 describe('buildScrobbles', () => {
+  it('scrobbles artists without the Discogs number', () => {
+    const [scrobble] = buildScrobbles({
+      artist: 'Nirvana (2), Simon (3) & Garfunkel (2)',
+      title: 'Album',
+      tracks: [{ title: 'One', trackNumber: 1, duration: 100 }],
+    });
+    expect(scrobble.artist).toBe('Nirvana, Simon & Garfunkel');
+  });
+
   it('starts now and spaces the tracks by their durations', () => {
     const scrobbles = buildScrobbles({
       artist: 'A',

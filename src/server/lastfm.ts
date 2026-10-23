@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { config } from './config';
 import type { Release } from './db/schema';
+import { cleanArtistName } from './discogs';
 
 type Params = Record<string, string | number>;
 
@@ -82,7 +83,8 @@ export function buildScrobbles(release: Pick<Release, 'artist' | 'title' | 'trac
   let timestamp = Math.floor(now / 1000);
   return release.tracks.map((track) => {
     const scrobble = {
-      artist: release.artist,
+      // Releases cached before names were cleaned may still carry the number.
+      artist: cleanArtistName(release.artist),
       album: release.title,
       track: track.title,
       trackNumber: track.trackNumber,
