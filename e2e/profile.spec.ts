@@ -1,12 +1,10 @@
 import { KNOWN_BARCODE, MOCK_USER } from './fixtures.ts';
-import { expect, test } from './support/test.ts';
+import { expect, scrobbleRelease, test } from './support/test.ts';
 
 test('profile lists history and auto-scrobbles', async ({ page }) => {
   // Scrobble two releases, one with auto-scrobble enabled.
-  await page.request.get(`/api/barcode/${KNOWN_BARCODE}`);
-  await page.request.get('/api/barcode/id:1002');
-  await page.request.post('/api/scrobble', { data: { id: 1002, autoScrobble: false } });
-  await page.request.post('/api/scrobble', { data: { id: 1001, autoScrobble: true } });
+  await scrobbleRelease(page, 'id:1002');
+  await scrobbleRelease(page, KNOWN_BARCODE, { autoScrobble: true });
 
   await page.goto('/');
   await page.getByRole('button', { name: 'Account menu' }).click();

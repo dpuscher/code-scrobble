@@ -1,10 +1,13 @@
 import { and, eq, gt } from 'drizzle-orm';
 import { getDb } from './db';
 import type { SearchFormat } from '../lib/formats';
+import { toSelection } from '../lib/parts';
+import type { Release as ReleaseJSON } from '../lib/types';
 import {
   barcodeLookups, releases, searchCache, versionsCache, type Release,
 } from './db/schema';
 import * as Discogs from './discogs';
+import { findAutoScrobble } from './users';
 
 const DAY = 24 * 60 * 60 * 1000;
 const RELEASE_MAX_AGE = 7 * DAY;
@@ -73,6 +76,13 @@ export async function findByBarcode(rawBarcode: string) {
   return release;
 }
 
+/** A release by scanned barcode or `id:<discogs release id>`, null if there is none. */
+export async function findRelease(code: string) {
+  if (!code.startsWith('id:')) return findByBarcode(code);
+  const id = Number(code.slice(3));
+  return Number.isInteger(id) && id > 0 ? findByDiscogsId(id) : null;
+}
+
 export async function search(rawQuery: string, format: SearchFormat | null = null) {
   const query = rawQuery.trim().toLowerCase();
   if (!query) return [];
@@ -122,3 +132,28 @@ export const toReleaseJSON = (release: Release) => ({
   tracks: release.tracks,
   parts: release.parts ?? [],
 });
+
+/**
+ * The release for a scanned barcode (or `id:<discogs id>`) as the release
+ * page shows it, with the parts the user saved for auto-scrobbling. Null when
+ * there is none, also when Discogs fails.
+ */
+export async function findReleaseFor(code: string, userId: number): Promise<ReleaseJSON | null> {
+  let release;
+  try {
+    release = await findRelease(code);
+  } catch (error) {
+    console.error(`Looking up ${code} failed`, error);
+    return null;
+  }
+  if (!release) return null;
+  const json = toReleaseJSON(release);
+  const autoScrobble = await findAutoScrobble(userId, release.id);
+  // Saved parts the release no longer has are dropped; none left means the default.
+  const instantParts = toSelection(json.parts, autoScrobble?.parts);
+  return {
+    ...json,
+    instantScrobble: Boolean(autoScrobble),
+    instantParts: instantParts?.length ? instantParts : null,
+  };
+}

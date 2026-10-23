@@ -1,7 +1,9 @@
 import path from 'node:path';
 import type { Page } from '@playwright/test';
 import { KNOWN_BARCODE, UNKNOWN_BARCODE } from '../fixtures.ts';
-import { anonymous, MOCK_URL, test } from '../support/test.ts';
+import {
+  anonymous, MOCK_URL, scrobbleRelease, test,
+} from '../support/test.ts';
 
 const dir = process.env.SHOT_DIR ?? 'test-results/screens';
 
@@ -111,7 +113,11 @@ test('not found', async ({ page }, info) => {
 test('scrobbling and scrobbled', async ({ page }, info) => {
   let release!: () => void;
   const held = new Promise<void>((resolve) => { release = resolve; });
-  await page.route('**/api/scrobble', async (route) => { await held; await route.continue(); });
+  // Holds the scrobble (a server action) to show its loading state.
+  await page.route('**/detected/**', async (route) => {
+    if (route.request().headers()['next-action']) await held;
+    await route.continue();
+  });
   await page.goto(`/detected/${KNOWN_BARCODE}`);
   await page.getByRole('button', { name: 'Scrobble' }).click();
   await page.getByText('Sending data to Last.fm').waitFor();
@@ -129,24 +135,21 @@ test('scrobbled a side', async ({ page }, info) => {
   await shot(page, 'scrobbled-side', info.project.name);
 });
 
-test('scrobble failed', async ({ page, request, consoleErrors }, info) => {
+test('scrobble failed', async ({ page, request }, info) => {
   await request.post(`${MOCK_URL}/__fail-scrobbles?count=1`);
   await page.goto(`/detected/${KNOWN_BARCODE}`);
   await page.getByRole('button', { name: 'Scrobble' }).click();
   await page.getByText('An error occurred while sending').waitFor();
   await shot(page, 'scrobble-failed', info.project.name);
-  consoleErrors.length = 0;
 });
 
 test('profile', async ({ page }, info) => {
   await page.goto('/profile');
   await page.getByText('No entries found.').first().waitFor();
   await shot(page, 'profile-empty', info.project.name);
-  await page.request.get(`/api/barcode/${KNOWN_BARCODE}`);
-  await page.request.get('/api/barcode/id:1002');
-  await page.request.post('/api/scrobble', { data: { id: 1002, autoScrobble: false } });
-  await page.request.post('/api/scrobble', { data: { id: 1001, autoScrobble: true } });
-  await page.reload();
+  await scrobbleRelease(page, 'id:1002');
+  await scrobbleRelease(page, KNOWN_BARCODE, { autoScrobble: true });
+  await page.goto('/profile');
   await page.getByRole('link', { name: /Quiet Hours/ }).waitFor();
   await shot(page, 'profile', info.project.name, true);
 });

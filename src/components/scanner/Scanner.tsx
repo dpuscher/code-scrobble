@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { IoFlashlight, IoFlashlightOutline } from 'react-icons/io5';
 import ErrorMessage from '../layout/ErrorMessage';

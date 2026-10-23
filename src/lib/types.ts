@@ -85,12 +85,27 @@ export type MasterVersions = {
   total: number;
 };
 
-/** What Last.fm did with a scrobbled release; empty when scrobbling is off. */
-export type ScrobbleResult = {
-  accepted: number;
-  ignored: number;
-  ignoredCode?: number;
+export type ScrobbleRequest = {
+  /** Discogs release id. */
+  id: number;
+  /** The sides or discs to scrobble, null for the default ones. */
+  parts?: string[] | null;
+  /** Scrobble it right away when it is scanned again. */
+  autoScrobble?: boolean;
+  /** Save which sides were picked, to pick the same ones next time. */
+  remember?: boolean;
+  /** Tracks an earlier attempt already sent. */
+  from?: number;
 };
+
+export type ScrobbleResponse =
+  /** What Last.fm did with the tracks; both 0 when scrobbling is off. */
+  | { status: 'scrobbled'; accepted: number; ignored: number; ignoredCode?: number }
+  /** Last.fm access was revoked: log in again. */
+  | { status: 'login' }
+  /** Last.fm failed after `sent` tracks; a retry starts after them. */
+  | { status: 'failed'; sent: number }
+  | { status: 'invalid'; error: string };
 
 export type HistoryItem = {
   id: number;

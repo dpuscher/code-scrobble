@@ -1,5 +1,7 @@
+'use client';
+
+import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/router';
 import { sendScrobbles, type Ignored } from '../../lib/scrobble';
 import type { Release } from '../../lib/types';
 import ErrorMessage from '../layout/ErrorMessage';
@@ -31,8 +33,8 @@ const Scrobble = ({
 
   const send = useCallback(async () => {
     setFailure(null);
-    const outcome = await sendScrobbles(release.id, {
-      parts, autoScrobble, remember, from: sent.current,
+    const outcome = await sendScrobbles({
+      id: release.id, parts, autoScrobble, remember, from: sent.current,
     });
     if (outcome.status === 'login') {
       router.push('/login');
