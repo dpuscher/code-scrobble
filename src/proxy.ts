@@ -11,7 +11,9 @@ export function proxy(request: NextRequest) {
 
   const policy = [
     "default-src 'self'",
-    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${isDev ? " 'unsafe-eval'" : ''}`,
+    // 'wasm-unsafe-eval' lets the ZXing barcode reader compile its WebAssembly
+    // (it does not allow eval of JavaScript).
+    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' 'wasm-unsafe-eval'${isDev ? " 'unsafe-eval'" : ''}`,
     // Stylesheets are files; only style attributes (cover art backgrounds,
     // Next.js' route announcer, nprogress) are inline. The dev server injects
     // CSS through <style> tags without a nonce.

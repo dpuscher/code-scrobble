@@ -12,6 +12,13 @@ const nextConfig: NextConfig = {
     '*': ['node_modules/sharp/**', 'node_modules/@img/**'],
   },
   poweredByHeader: false,
+  turbopack: {
+    rules: {
+      // zxing-wasm fetches and compiles its WebAssembly itself; importing the
+      // file only has to emit it and return its URL.
+      '*.wasm': { type: 'asset' },
+    },
+  },
   reactStrictMode: true,
   async rewrites() {
     // Keep the public URLs of CodeScrobble 1.x (the Last.fm callback URL is

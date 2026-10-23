@@ -14,8 +14,13 @@ const Fallback = ({ children }: { children: React.ReactNode }) => (
   <div className="flex flex-1 flex-col items-center justify-center">{children}</div>
 );
 
+type Props = {
+  /** Lets the scan page pause the scanner while the search is open. */
+  onOpenChange?: (open: boolean) => void;
+};
+
 /** Search button that opens a Discogs release search, for unreadable barcodes. */
-const QueryRelease = () => {
+const QueryRelease = ({ onOpenChange }: Props) => {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [search, setSearch] = useState<Search>({ status: 'idle' });
@@ -27,11 +32,13 @@ const QueryRelease = () => {
     setQuery('');
     setSearch({ status: 'idle' });
     setOpen(true);
+    onOpenChange?.(true);
   };
 
   const close = () => {
     requestId.current += 1;
     setOpen(false);
+    onOpenChange?.(false);
   };
 
   const onSubmit = async (event: FormEvent) => {

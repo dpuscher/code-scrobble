@@ -2,15 +2,17 @@ import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { IoFlashlight, IoFlashlightOutline } from 'react-icons/io5';
 import ErrorMessage from '../layout/ErrorMessage';
 import Loading from '../layout/Loading';
-import { createNativeDetector, startNativeScanner } from './nativeScanner';
-import { startQuaggaScanner } from './quaggaScanner';
-import type { ScanSession } from './session';
+import { createNativeDetector, startScanner } from './cameraScanner';
+import { startPreview } from './previewCanvas';
+import { ReaderUnavailableError, type ScanSession } from './session';
 
 type Props = {
   onDetected: (barcode: string) => void;
+  /** Keeps the camera running but ignores barcodes, e.g. behind the search. */
+  paused?: boolean;
 };
 
-type State = 'loading' | 'ready' | 'error';
+type State = 'loading' | 'ready' | 'error' | 'unsupported';
 
 const supportsTorch = (track: MediaStreamTrack) => 'getCapabilities' in track && !!track.getCapabilities().torch;
 
@@ -22,21 +24,28 @@ function vibrate() {
 
 /**
  * Live camera preview that reports the first EAN-8/EAN-13 barcode it reads.
- * Uses the browser's built-in barcode reader where there is one, quagga2
- * otherwise.
+ * Uses the browser's built-in barcode reader where there is one, ZXing in a
+ * worker otherwise.
  */
-const Scanner = ({ onDetected }: Props) => {
+const Scanner = ({ onDetected, paused = false }: Props) => {
   const [state, setState] = useState<State>('loading');
   // null while the camera has no torch.
   const [torch, setTorch] = useState<boolean | null>(null);
-  const cameraRef = useRef<HTMLDivElement>(null);
+  // The camera shows before the reader is ready (ZXing loads its WebAssembly).
+  const [reading, setReading] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const trackRef = useRef<MediaStreamTrack | null>(null);
   const reportDetected = useEffectEvent((code: string) => onDetected(code));
+  const pausedRef = useRef(paused);
+  useEffect(() => {
+    pausedRef.current = paused;
+  }, [paused]);
 
   useEffect(() => {
     let active = true;
     let session: ScanSession | undefined;
+    let stopPreview: (() => void) | undefined;
 
     const handleDetected = (code: string) => {
       if (!active) return;
@@ -50,29 +59,43 @@ const Scanner = ({ onDetected }: Props) => {
     const start = async () => {
       if (!navigator.mediaDevices?.getUserMedia) throw new Error('No camera API');
       const video = videoRef.current;
-      const camera = cameraRef.current;
-      if (!video || !camera) return;
-      const detector = await createNativeDetector();
-      if (!active) return;
-      const started = detector
-        ? await startNativeScanner(detector, video, handleDetected)
-        : await startQuaggaScanner(camera, handleDetected);
+      const canvas = canvasRef.current;
+      if (!video || !canvas) return;
+      // The ZXing fallback (and its WebAssembly) is only loaded where needed.
+      const detector = createNativeDetector().then((native) => native
+        ?? import('./zxingDetector').then(({ createZXingDetector }) => createZXingDetector()));
+      const started = await startScanner(detector, video, {
+        onDetected: handleDetected,
+        isPaused: () => pausedRef.current,
+        onReaderReady: () => {
+          if (active) setReading(true);
+        },
+        onReaderError: (error) => {
+          if (!active) return;
+          active = false;
+          stopPreview?.();
+          setTorch(null);
+          setState(error instanceof ReaderUnavailableError ? 'unsupported' : 'error');
+        },
+      });
       if (!active) {
         started.stop();
         return;
       }
       session = started;
+      stopPreview = startPreview(video, canvas);
       trackRef.current = started.track;
       setState('ready');
       if (started.track && supportsTorch(started.track)) setTorch(false);
     };
-    start().catch(() => {
-      if (active) setState('error');
+    start().catch((error: unknown) => {
+      if (active) setState(error instanceof ReaderUnavailableError ? 'unsupported' : 'error');
     });
 
     return () => {
       active = false;
       trackRef.current = null;
+      stopPreview?.();
       session?.stop();
     };
   }, []);
@@ -80,9 +103,11 @@ const Scanner = ({ onDetected }: Props) => {
   const toggleTorch = async () => {
     const track = trackRef.current;
     if (!track || torch === null) return;
+    const on = !torch;
+    // Shows the new state at once: the light itself takes about a second on iOS.
+    setTorch(on);
     try {
-      await track.applyConstraints({ advanced: [{ torch: !torch }] });
-      setTorch(!torch);
+      await track.applyConstraints({ advanced: [{ torch: on }] });
     } catch {
       setTorch(null);
     }
@@ -97,15 +122,19 @@ const Scanner = ({ onDetected }: Props) => {
           description="Please make sure this website is allowed to use the camera."
         />
       )}
-      <div
-        ref={cameraRef}
-        className={`absolute h-full w-full translate-z-0 [&_canvas,&_video]:absolute [&_canvas,&_video]:top-0 [&_canvas,&_video]:left-0 [&_canvas,&_video]:h-full [&_canvas,&_video]:w-full [&_canvas,&_video]:object-cover ${
-          state === 'ready' ? 'visible' : 'invisible'
-        }`}
-      >
-        <video ref={videoRef} playsInline autoPlay muted />
+      {state === 'unsupported' && (
+        <ErrorMessage
+          title="Scanning is not supported"
+          description="This browser can't read barcodes. Please search for the release instead, or update your browser."
+        />
+      )}
+      {/* The camera is shown through the canvas (see previewCanvas.ts); the
+          video only feeds it and the barcode reader. */}
+      <div className={`absolute inset-0 translate-z-0 ${state === 'ready' ? 'visible' : 'invisible'}`}>
+        <video ref={videoRef} playsInline autoPlay muted className="absolute inset-0 h-full w-full opacity-0" />
+        <canvas ref={canvasRef} aria-hidden className="absolute inset-0 h-full w-full" />
       </div>
-      {state === 'ready' && (
+      {state === 'ready' && reading && (
         // Sweeping line that shows the camera is reading. The full-height
         // wrapper moves, so translateY(100%) spans the whole scan area.
         <div aria-hidden className="pointer-events-none absolute inset-x-[18%] inset-y-[30%]">

@@ -41,7 +41,7 @@ E2E needs the compose Postgres (database `codescrobble_e2e`, override with `E2E_
 
 **CSP** is set per request with a nonce in `src/proxy.ts` (Next 16's middleware) and passed to `_document.tsx`. Production allows no inline `<style>`/`<script>` without the nonce; only style attributes are inline. Pages need `getServerSideProps` (even an empty one) so they get a nonce. E2E tests fail on any console error, which includes CSP violations.
 
-**Client.** Data fetching via SWR hooks in `src/lib/api.ts`. The barcode scanner (`src/components/scanner/Scanner.tsx`) lazy-loads quagga2 (EAN-8/EAN-13). `CircleLayout` is the app shell (round content area). The old service worker files in `public/` only unregister themselves.
+**Client.** Data fetching via SWR hooks in `src/lib/api.ts`. The barcode scanner (`src/components/scanner/Scanner.tsx`) uses the browser's `BarcodeDetector` where it reads EAN-13 (Chrome on Android), otherwise ZXing (`zxing-wasm`) in a Web Worker; the `.wasm` is served by the app, hence `'wasm-unsafe-eval'` in the CSP. EAN-8/EAN-13, UPC-A becomes EAN-13 with a leading zero. `CircleLayout` is the app shell (round content area). The old service worker files in `public/` only unregister themselves.
 
 **Styling.** Tailwind utilities inline in the components; the theme in `src/styles/globals.css` is limited to the brand palette (`yellow`, `silver`, `grey`, `dark`, `lastfm`, plus white/black). Default Tailwind colors are disabled. Layout values mostly use exact pixel values from the original design; keep the look when changing styles and compare with `yarn screenshots`.
 

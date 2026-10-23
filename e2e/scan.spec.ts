@@ -19,12 +19,62 @@ test('scans a barcode with the camera and scrobbles the record', async ({ page, 
   expect([second - first, third - second]).toEqual([210, 245]);
 });
 
-test('falls back to quagga2 where the browser has no barcode reader', async ({ page }) => {
+test('falls back to ZXing where the browser has no barcode reader', async ({ page }) => {
   await page.addInitScript(() => {
     delete (window as { BarcodeDetector?: unknown }).BarcodeDetector;
   });
   await page.goto('/');
   await expect(page).toHaveURL(new RegExp(`/detected/${KNOWN_BARCODE}$`), { timeout: 30_000 });
+});
+
+test('shows the camera while ZXing is still loading', async ({ page, context }) => {
+  await page.addInitScript(() => {
+    delete (window as { BarcodeDetector?: unknown }).BarcodeDetector;
+  });
+  let held = false;
+  let release = () => {};
+  const released = new Promise<void>((resolve) => { release = resolve; });
+  await context.route('**/*.wasm', async (route) => {
+    held = true;
+    await released;
+    await route.continue();
+  });
+
+  await page.goto('/');
+  await expect.poll(() => held).toBe(true);
+  await expect(page.locator('canvas')).toBeVisible();
+  await expect(page).toHaveURL(/:\d+\/$/);
+
+  release();
+  await expect(page).toHaveURL(new RegExp(`/detected/${KNOWN_BARCODE}$`), { timeout: 30_000 });
+});
+
+test('scales frames on the page where workers have no OffscreenCanvas (Safari before 16.4)', async ({ page }) => {
+  await page.addInitScript(() => {
+    delete (window as { BarcodeDetector?: unknown }).BarcodeDetector;
+    delete (window as { OffscreenCanvas?: unknown }).OffscreenCanvas;
+    const reads = { count: 0 };
+    Object.assign(window, { pageFrameReads: reads });
+    const { getImageData } = CanvasRenderingContext2D.prototype;
+    CanvasRenderingContext2D.prototype.getImageData = function (...args) {
+      reads.count += 1;
+      return getImageData.apply(this, args);
+    };
+  });
+  await page.goto('/');
+  await expect(page).toHaveURL(new RegExp(`/detected/${KNOWN_BARCODE}$`), { timeout: 30_000 });
+  expect(await page.evaluate(() => (window as unknown as { pageFrameReads: { count: number } }).pageFrameReads.count))
+    .toBeGreaterThan(0);
+});
+
+test('explains when the browser cannot read barcodes', async ({ page }) => {
+  await page.addInitScript(() => {
+    delete (window as { BarcodeDetector?: unknown }).BarcodeDetector;
+    delete (window as { WebAssembly?: unknown }).WebAssembly;
+  });
+  await page.goto('/');
+  await expect(page.getByText('Scanning is not supported')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Search release' })).toBeVisible();
 });
 
 test.describe('built-in barcode reader', () => {
