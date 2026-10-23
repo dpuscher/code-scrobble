@@ -1,0 +1,11 @@
+# Only what dev/Dockerfile copies.
+*
+!package.json
+!yarn.lock
+!.yarnrc.yml
+!drizzle
+!src/server/db/schema.ts
+!e2e/fixtures.ts
+!e2e/mock-server.ts
+!e2e/support/barcode-video.ts
+!dev

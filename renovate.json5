@@ -1,10 +1,145 @@
-// Dependency automation. The shared policy (schedule, automerge rules,
-// grouping) lives in the stories-wtf workspace repo.
+// Dependency automation. Based on the policy of the stories repos, copied here
+// because this repository is public and can't extend a preset from a private one.
 {
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
-  extends: ["github>dpuscher/stories-wtf//renovate-presets/base.json5"],
+  extends: [
+    // config:recommended brings the dependency dashboard, monorepo grouping,
+    // `chore(deps):`-style commit prefixes and the npm/docker/github-actions
+    // managers. config:best-practices is deliberately not used: it also pins
+    // dev dependencies.
+    "config:recommended",
+    // One PR for all @types/* bumps.
+    "group:definitelyTyped",
+    // Workflows reference actions by commit SHA (required in the repo
+    // settings); this keeps the SHAs and their version comments current.
+    "helpers:pinGitHubActionDigests",
+  ],
   baseBranches: ["staging"],
+
+  // No `schedule`: it gates only the creation of new branches/PRs — updates to
+  // existing ones ignore it by default (`updateNotScheduled` is true) — and the
+  // hosted app decides when it runs, so a narrow window mostly parks updates on
+  // the dashboard ("Awaiting Schedule") until a run happens to land inside it.
+  // `prHourlyLimit` below is the brake instead. The timezone is still used by
+  // the monthly lockFileMaintenance slot.
+  timezone: "Europe/Berlin",
+
+  // Commits are Conventional Commits; config:recommended only infers that from
+  // the commit history, so it is set explicitly. The scope stays at its `deps`
+  // default: `chore(deps): update <package> to <version>`.
+  semanticCommits: "enabled",
+  semanticCommitType: "chore",
+
+  // Automerge uses Renovate's own gate rather than GitHub's native auto-merge.
+  // Renovate may bypass the staging ruleset (and with it the required checks),
+  // so with platformAutomerge off it refuses to merge until the branch's status
+  // is green, and a branch with no check runs at all counts as yellow — a
+  // missing CI run blocks the merge instead of waving it through.
+  platformAutomerge: false,
+  ignoreTests: false,
+
+  // Merge commits, the only merge method the repository allows: squashing
+  // would lose the commits of a PR.
+  automergeStrategy: "merge-commit",
+
+  // Keep the PR list short enough to read in one sitting. Ten is Renovate's
+  // default; majors count against the limit too.
+  prConcurrentLimit: 10,
+  prHourlyLimit: 2,
+
+  // Refresh the lockfile completely once a month: that is the update that
+  // picks up transitive bumps the existing ranges already allowed.
+  lockFileMaintenance: {
+    enabled: true,
+    automerge: true,
+    schedule: ["before 6am on the first day of the month"],
+  },
+
   packageRules: [
+    {
+      // Supply-chain cooldown. Malicious releases are usually yanked within
+      // hours, and a three-day-old version is one other people already run.
+      // npm only: docker offers no release timestamp to compare against, and
+      // demanding one there would hold every update forever. With
+      // internalChecksFilter at its `strict` default the cooldown delays the PR
+      // itself, not just the merge; security fixes bypass it entirely. Yarn
+      // enforces the same three days on install (`npmMinimalAgeGate`).
+      description: "Wait 3 days before proposing an npm release",
+      matchManagers: ["npm"],
+      minimumReleaseAge: "3 days",
+    },
+    {
+      // Lock file maintenance can't be age-checked: the package manager picks
+      // the versions, so the stability check never turns green — it is re-armed
+      // on every rebase and the PR is held pending forever. The built-in
+      // security:minimumReleaseAge* presets carve it out for the same reason.
+      description: "Lockfile maintenance is not age-checked",
+      matchUpdateTypes: ["lockFileMaintenance"],
+      minimumReleaseAge: null,
+    },
+    {
+      // Non-major bumps land on their own once CI is green. Majors are
+      // excluded here and caught by the rule below.
+      description: "Auto-merge non-major updates once CI is green",
+      matchUpdateTypes: ["minor", "patch", "digest", "pin", "replacement"],
+      automerge: true,
+    },
+    {
+      // A major needs a changelog read, so it waits for a human. It still opens
+      // a PR; the label is what makes it stand out in the list.
+      description: "Majors always need a human",
+      matchUpdateTypes: ["major"],
+      automerge: false,
+      addLabels: ["major-update"],
+    },
+    {
+      // One PR for the non-major half of npm: Renovate merges at most one
+      // branch per target branch per run, so the number of open branches — not
+      // CI — is what sets how long the queue takes. `@types/*` is excluded so
+      // the group:definitelyTyped preset survives; the groups further down
+      // override this one for their packages, since a later rule's groupName
+      // wins.
+      description: "Group npm non-major updates",
+      groupName: "npm non-major",
+      matchManagers: ["npm"],
+      matchDepTypes: [
+        "dependencies",
+        "devDependencies",
+        "optionalDependencies",
+        "peerDependencies",
+      ],
+      matchUpdateTypes: ["minor", "patch"],
+      matchPackageNames: ["!@types/**"],
+    },
+    {
+      // Lint/type/test tooling moves as a set: one PR instead of several, and
+      // a failure there is nearly always the same fix. Majors stay out so that
+      // one of them cannot hold the whole group back.
+      description: "Group npm dev tooling (minor/patch)",
+      groupName: "dev tooling",
+      matchManagers: ["npm"],
+      matchDepTypes: ["devDependencies"],
+      matchUpdateTypes: ["minor", "patch"],
+      matchPackageNames: [
+        "eslint",
+        "eslint-*",
+        "@eslint/js",
+        "typescript",
+        "vite",
+        "vitest",
+        "@vitest/{/,}**",
+      ],
+    },
+    {
+      // TypeScript 7 is held, not merely left un-automerged: typescript-eslint
+      // (through eslint-config-next) does not support it yet, and `yarn lint`
+      // fails outright. Upstream tracks support for TS >= 7.1
+      // (typescript-eslint#10940); lift this when that lands.
+      description: "Hold TypeScript majors until typescript-eslint supports them",
+      matchPackageNames: ["typescript"],
+      matchUpdateTypes: ["major"],
+      enabled: false,
+    },
     {
       description: "Drizzle ORM and its CLI move together",
       groupName: "drizzle",

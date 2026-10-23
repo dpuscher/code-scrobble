@@ -8,10 +8,21 @@
  *   /__scrobbles    GET: scrobbles received so far, DELETE: reset
  *   /__fail-scrobbles?count=n  POST: make the next n track.scrobble calls fail
  *
- * Run with `node e2e/mock-server.ts` (Node 24 strips the types).
+ * Run with `node e2e/mock-server.ts` (Node 24 strips the types). With
+ * MOCK_CATALOG=dev it also serves the made-up records of dev/catalog.ts and
+ * their barcodes at /barcodes (used by `make up`).
  */
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
-import { fixtures, MOCK_PORT, MOCK_USER } from './fixtures.ts';
+import { barcodesPage } from '../dev/barcodes.ts';
+import { catalog, DEV_USER, toDiscogs } from '../dev/catalog.ts';
+import { fixtures, MOCK_PORT, MOCK_USER as E2E_USER } from './fixtures.ts';
+
+const dev = process.env.MOCK_CATALOG === 'dev';
+const MOCK_USER = dev ? DEV_USER : E2E_USER;
+const releases = { ...fixtures.releases };
+if (dev) {
+  for (const release of catalog) releases[release.id] = toDiscogs(release);
+}
 
 type Scrobble = Record<string, string>;
 let scrobbles: Scrobble[] = [];
@@ -64,13 +75,13 @@ function lastfm(params: URLSearchParams, res: ServerResponse) {
 function discogs(url: URL, res: ServerResponse) {
   const release = /^\/discogs\/releases\/(\d+)$/.exec(url.pathname);
   if (release) {
-    const data = fixtures.releases[Number(release[1])];
+    const data = releases[Number(release[1])];
     return data ? send(res, 200, data) : send(res, 404, { message: 'Release not found.' });
   }
   if (url.pathname === '/discogs/database/search') {
     const barcode = url.searchParams.get('barcode');
     const query = url.searchParams.get('q')?.toLowerCase();
-    const results = Object.values(fixtures.releases)
+    const results = Object.values(releases)
       .filter((r) => (barcode
         ? r.identifiers.some((i) => i.type === 'Barcode' && i.value.replace(/\D/g, '') === barcode)
         : query && `${r.artists[0].name} ${r.title}`.toLowerCase().includes(query)))
@@ -80,7 +91,7 @@ function discogs(url: URL, res: ServerResponse) {
         thumb: r.images[0].uri,
         country: 'Germany',
         year: String(r.year),
-        format: ['Vinyl', 'LP'],
+        format: r.formats ?? ['Vinyl', 'LP'],
         uri: `/release/${r.id}`,
         community: { have: 10, want: 5 },
       }));
@@ -104,6 +115,10 @@ const server = createServer(async (req, res) => {
       return lastfm(params, res);
     }
     if (url.pathname.startsWith('/discogs/')) return discogs(url, res);
+    if (dev && url.pathname === '/barcodes') {
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+      return res.end(barcodesPage());
+    }
     if (url.pathname === '/__scrobbles') {
       if (req.method === 'DELETE') {
         scrobbles = [];

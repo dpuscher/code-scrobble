@@ -57,6 +57,7 @@ export const fixtures = {
     artists: { name: string }[];
     images: { uri: string }[];
     identifiers: { type: string; value: string }[];
+    formats?: string[];
     tracklist: { position: string; title: string; duration: string; type_: string }[];
   }>,
 };

@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
 import { IoIosRefresh } from 'react-icons/io';
-import { yellow } from '../../lib/colors';
-import { FlexContent } from '../../styles/layout.styles';
-import { ErrorDescription, ErrorIcon, RetryButton } from './styles/Error.styles';
+import ErrorIcon from '../icons/ErrorIcon';
+import { CircleContent } from './CircleLayout';
+import RoundButton from './RoundButton';
 
 type Props = {
   title: ReactNode;
@@ -15,17 +15,17 @@ type Props = {
 const ErrorMessage = ({
   title, description, retryLabel = 'Retry', onRetry,
 }: Props) => (
-  <FlexContent role="alert">
-    <ErrorIcon color={yellow} />
+  <CircleContent role="alert">
+    <ErrorIcon color="currentColor" className="mb-[15px] h-auto w-[30%] text-yellow" />
     <b>{title}</b>
-    {description && <ErrorDescription>{description}</ErrorDescription>}
+    {description && <div className="my-2.5">{description}</div>}
     {onRetry && (
-      <RetryButton type="button" onClick={onRetry}>
+      <RoundButton onClick={onRetry}>
         <IoIosRefresh size="30px" aria-hidden />
         {retryLabel}
-      </RetryButton>
+      </RoundButton>
     )}
-  </FlexContent>
+  </CircleContent>
 );
 
 export default ErrorMessage;

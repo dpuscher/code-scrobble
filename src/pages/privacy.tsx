@@ -1,9 +1,8 @@
 import BackButton from '../components/ui/BackButton';
 import targetBlank from '../lib/targetBlank';
-import { Anchor, Wrapper } from '../styles/legal.styles';
 
 const Index = () => (
-  <Wrapper>
+  <div className="legal-text m-auto w-full max-w-[768px] px-5 pt-[calc(72px+env(safe-area-inset-top))] pb-[calc(20px+env(safe-area-inset-bottom))] leading-[1.4] break-words select-text">
     <BackButton />
     <p>
       <span role="img" aria-label="Deutsch">🇩🇪</span>
@@ -204,7 +203,7 @@ const Index = () => (
 
     <hr />
 
-    <Anchor id="de" />
+    <div id="de" className="relative -top-[75px]" />
     <h1>Datenschutzerklärung</h1>
     <p>
       Personenbezogene Daten (nachfolgend zumeist nur „Daten“ genannt) werden von
@@ -416,7 +415,7 @@ const Index = () => (
         </a>
       </i>
     </p>
-  </Wrapper>
+  </div>
 );
 
 // Rendered per request so it gets a CSP nonce (see src/proxy.ts).

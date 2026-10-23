@@ -41,6 +41,7 @@ export type HistoryItem = {
   artist: string;
   title: string;
   year: string | null;
+  image: string | null;
   barcode: string | null;
   discogsId: number;
 };
@@ -50,4 +51,5 @@ export type AutoScrobble = {
   artist: string;
   title: string;
   year: string | null;
+  image: string | null;
 };

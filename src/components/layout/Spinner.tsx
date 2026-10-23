@@ -1,25 +1,17 @@
-import styled, { keyframes } from 'styled-components';
-import { yellow, yellowRGB } from '../../lib/colors';
+type Props = {
+  className?: string;
+};
 
-export const animation = keyframes`
-  to {
-    transform: rotate(360deg);
-  }
-`;
+/** Spinning ring in the accent color. */
+const Spinner = ({ className = '' }: Props) => (
+  <div
+    role="status"
+    aria-label="Loading"
+    className={`inline-block animate-spinner rounded-full border-3 border-yellow/30 border-t-yellow ${className}`}
+  />
+);
 
-const Spinner = styled.div.attrs({ role: 'status', 'aria-label': 'Loading' })<{ $size?: number }>`
-  display: inline-block;
-  width: ${({ $size }) => ($size ? `${$size}px` : 'auto')};
-  height: ${({ $size }) => ($size ? `${$size}px` : 'auto')};
-  animation: ${animation} 1s ease-in-out infinite;
-  border: 3px solid rgba(${yellowRGB}, .3);
-  border-radius: 50%;
-  border-top-color: ${yellow};
-`;
-
-export const InlineSpinner = styled(Spinner).attrs({ $size: 30 })`
-  display: block;
-  margin: 30px auto;
-`;
+/** A small spinner on its own line. */
+export const InlineSpinner = () => <Spinner className="mx-auto my-[30px] block size-[30px]" />;
 
 export default Spinner;

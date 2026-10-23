@@ -1,17 +1,17 @@
 import { FaRegTrashAlt } from 'react-icons/fa';
 import { useAutoScrobbles } from '../../lib/api';
-import {
-  DeleteButton, Fallback, H3, List, ListCaption, ListItem, Meta,
-} from '../../styles/profile.styles';
 import { InlineSpinner } from '../layout/Spinner';
+import {
+  Fallback, List, ListItem, Row, SectionHeading, SectionMeta,
+} from './ProfileList';
 
 const ProfileAutoScrobbles = () => {
   const { data, isLoading, remove } = useAutoScrobbles();
 
   return (
     <section aria-labelledby="auto-scrobbles">
-      <H3 id="auto-scrobbles">Auto-scrobbles</H3>
-      <Meta>These items are automatically scrobbled the next time they are scanned</Meta>
+      <SectionHeading id="auto-scrobbles">Auto-scrobbles</SectionHeading>
+      <SectionMeta>These items are automatically scrobbled the next time they are scanned</SectionMeta>
       {isLoading ? <InlineSpinner /> : (
         <List>
           {!data?.length && (
@@ -20,16 +20,18 @@ const ProfileAutoScrobbles = () => {
             </Fallback>
           )}
           {data?.map(({
-            id, artist, title, year,
+            id, artist, title, year, image,
           }) => (
             <ListItem key={id}>
-              <ListCaption>
-                {`${artist} - ${title}`}
-                {year && ` (${year})`}
-              </ListCaption>
-              <DeleteButton type="button" onClick={() => remove(id)} aria-label={`Remove ${artist} - ${title}`}>
+              <Row image={image} title={title} details={[artist, year].filter(Boolean).join(' · ')} />
+              <button
+                type="button"
+                onClick={() => remove(id)}
+                aria-label={`Remove ${artist} - ${title}`}
+                className="flex-none self-stretch px-5 opacity-60 transition-[opacity,color,scale] hover:text-lastfm hover:opacity-100 active:scale-90"
+              >
                 <FaRegTrashAlt size={16} aria-hidden />
-              </DeleteButton>
+              </button>
             </ListItem>
           ))}
         </List>

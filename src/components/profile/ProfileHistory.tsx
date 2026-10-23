@@ -1,31 +1,41 @@
 import Link from 'next/link';
+import TimeAgo from 'react-timeago';
 import { useHistory } from '../../lib/api';
-import {
-  Fallback, H3, List, ListCaption, ListItem, Meta, Time, TimeCaption,
-} from '../../styles/profile.styles';
 import { InlineSpinner } from '../layout/Spinner';
+import {
+  Fallback, List, ListItem, Row, SectionHeading, SectionMeta,
+} from './ProfileList';
 
 const ProfileHistory = () => {
   const { data, isLoading } = useHistory();
 
   return (
     <section aria-labelledby="history">
-      <H3 id="history">History</H3>
-      <Meta>Your recently scanned items. Tap one to scrobble it again.</Meta>
+      <SectionHeading id="history">History</SectionHeading>
+      <SectionMeta>Your recently scanned items. Tap one to scrobble it again.</SectionMeta>
       {isLoading ? <InlineSpinner /> : (
         <List>
           {!data?.length && <Fallback>No entries found.</Fallback>}
           {data?.map(({
-            id, artist, title, year, barcode, discogsId, time,
+            id, artist, title, year, image, barcode, discogsId, time,
           }) => (
             <ListItem key={id}>
-              <ListCaption as={Link} href={`/detected/${encodeURIComponent(barcode || `id:${discogsId}`)}`}>
-                <TimeCaption>
-                  {`${artist} - ${title}`}
-                  {year && ` (${year})`}
-                </TimeCaption>
-                <Time date={time} />
-              </ListCaption>
+              <Link
+                href={`/detected/${encodeURIComponent(barcode || `id:${discogsId}`)}`}
+                className="flex min-w-0 grow pr-5 transition-colors hover:bg-white/5 active:bg-white/10"
+              >
+                <Row
+                  image={image}
+                  title={title}
+                  details={(
+                    <>
+                      {[artist, year].filter(Boolean).join(' · ')}
+                      {' · '}
+                      <TimeAgo date={time} />
+                    </>
+                  )}
+                />
+              </Link>
             </ListItem>
           ))}
         </List>

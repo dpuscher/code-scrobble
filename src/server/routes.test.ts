@@ -140,7 +140,7 @@ describe('/api/user/autoscrobbles', () => {
 
     const list = await callApi(autoscrobbles, { cookies });
     expect(list.body).toEqual([{
-      id: release.id, artist: 'Artist', title: release.title, year: '1999',
+      id: release.id, artist: 'Artist', title: release.title, year: '1999', image: release.image,
     }]);
 
     const del = await callApi(autoscrobbles, { method: 'DELETE', body: { id: release.id }, cookies });

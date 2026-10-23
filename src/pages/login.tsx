@@ -1,32 +1,29 @@
+import Logo from '../components/assets/Logo';
 import LegalLinks from '../components/ui/LegalLinks';
 import LoginButton from '../components/ui/LoginButton';
-import { Center } from '../styles/layout.styles';
-import {
-  Description, H1, Logo, P, Wrapper,
-} from '../styles/login.styles';
 import { requireAnonymous } from '../server/guard';
 
 const Index = () => (
-  <Center $minHeight>
-    <Wrapper>
+  <div className="flex min-h-full w-full items-center justify-center py-[15px]">
+    <div className="flex flex-col items-center justify-center text-center">
       <header>
-        <H1><Logo role="img" aria-label="CodeScrobble" /></H1>
+        <h1 className="text-[2em]"><Logo role="img" aria-label="CodeScrobble" className="inline h-auto w-[300px] align-baseline" /></h1>
       </header>
       <main>
-        <Description>
-          <P>
+        <div className="max-w-[600px] px-[30px]">
+          <p className="my-[30px]">
             CodeScrobble makes it easy to scrobble your CD or vinyl records to Last.fm.
-          </P>
-          <P>
+          </p>
+          <p className="my-[30px]">
             Just use your smartphone camera to scan the barcode, check the result and you
             are done. We also have an auto-scrobble mode, that makes scrobbling even faster.
-          </P>
-        </Description>
+          </p>
+        </div>
         <LoginButton href="/auth/lastfm" />
       </main>
-    </Wrapper>
+    </div>
     <LegalLinks />
-  </Center>
+  </div>
 );
 
 export const getServerSideProps = requireAnonymous;

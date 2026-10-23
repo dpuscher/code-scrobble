@@ -2,17 +2,31 @@
 
 CodeScrobble is a web application that makes it easy to scrobble your CD or vinyl records to Last.fm by scanning the barcode with your smartphone camera.
 
-Next.js 16 (Pages Router) and React 19, Postgres via Drizzle ORM, and styled-components. Barcodes are decoded in the browser with [quagga2](https://github.com/ericblade/quagga2). Release data comes from [Discogs](https://www.discogs.com/developers), scrobbles go to [Last.fm](https://www.last.fm/api).
+Next.js 16 (Pages Router) and React 19, Postgres via Drizzle ORM, and Tailwind CSS. Barcodes are decoded in the browser, by the built-in [Barcode Detection API](https://developer.mozilla.org/docs/Web/API/Barcode_Detection_API) where available and [ZXing](https://github.com/Sec-ant/zxing-wasm) otherwise. Release data comes from [Discogs](https://www.discogs.com/developers), scrobbles go to [Last.fm](https://www.last.fm/api).
 
 ## Development
 
-Requirements: Node.js 24 (`nvm use`), Corepack (`corepack enable`) and Docker for the local database.
+### Try it in Docker
+
+Needs only Docker:
+
+```sh
+make up       # builds and starts everything, then open http://localhost:3000
+make reset    # delete local data and seed again
+make down     # stop (keeps the database)
+```
+
+This runs the production image against Postgres and a mock of Last.fm and Discogs (`e2e/mock-server.ts`). Logging in goes through the mock and is instant; nothing is sent to the real services. The seed data (`dev/seed.ts`) adds a user with a scrobble history and auto-scrobbles, and the mock knows a dozen made-up records (`dev/catalog.ts`). Their barcodes are at http://localhost:4011/barcodes, to scan with the camera or to open as `/detected/<barcode>`.
+
+### Run from source
+
+Requirements: Node.js 24 (`nvm use`), Corepack (`corepack enable`) and Docker for the database.
 
 ```sh
 yarn install
-docker compose up -d        # Postgres on localhost:5432
-cp .env.example .env        # add your Discogs and Last.fm API keys
-yarn dev                    # http://localhost:3000
+docker compose up -d postgres   # Postgres on localhost:5432
+cp .env.example .env            # add your Discogs and Last.fm API keys
+yarn dev                        # http://localhost:3000
 ```
 
 Migrations run automatically on startup. Outside production nothing is sent to Last.fm. Scrobbles are only logged.
@@ -37,6 +51,7 @@ Edit `src/server/db/schema.ts`, then generate a migration with `yarn db:generate
 yarn test           # Vitest: server code against in-process PGlite, client units
 yarn test:e2e       # Playwright against the production build
 yarn lint && yarn typecheck
+yarn screenshots    # every screen at phone and desktop size, in test-results/screens
 ```
 
 The end-to-end tests run the standalone server (as in Docker) against Postgres (`E2E_DATABASE_URL`, default: the `codescrobble_e2e` database of the compose Postgres) and a mock of the Last.fm and Discogs APIs (`e2e/mock-server.ts`). Chromium's fake camera plays a generated barcode video, so scanning is tested for real.

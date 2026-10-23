@@ -3,23 +3,20 @@ import ProfileHistory from '../components/profile/ProfileHistory';
 import BackButton from '../components/ui/BackButton';
 import { useSession } from '../lib/session';
 import { requireUser } from '../server/guard';
-import {
-  H1, H2, Header, ProfileImg, Wrapper,
-} from '../styles/profile.styles';
 
 const Profile = () => {
   const session = useSession();
   return (
-    <Wrapper>
+    <div className="m-auto w-full max-w-[768px] px-5 pt-[calc(72px+env(safe-area-inset-top))] pb-[calc(20px+env(safe-area-inset-bottom))] leading-[1.4] break-words">
       <BackButton />
-      <H1>Profile</H1>
-      <Header>
-        {session?.imageLarge && <ProfileImg src={session.imageLarge} alt="" />}
-        <H2>{session?.name}</H2>
-      </Header>
+      <h1 className="mb-6 text-[2em] font-bold">Profile</h1>
+      <header className="flex items-center">
+        {session?.imageLarge && <img src={session.imageLarge} alt="" className="size-20 flex-none rounded-full ring-2 ring-white/10" />}
+        <h2 className="min-w-0 truncate pl-5 text-[1.5em] font-bold">{session?.name}</h2>
+      </header>
       <ProfileAutoScrobbles />
       <ProfileHistory />
-    </Wrapper>
+    </div>
   );
 };
 
