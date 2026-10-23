@@ -25,7 +25,9 @@ export function authenticatedApi(handlers: Partial<Record<Method, Handler>>): Ne
       if (!user) return res.status(401).json({ error: 'Unauthorized' });
       return await handler(req, res, user);
     } catch (error) {
-      console.error(`${req.method} ${req.url} failed`, error);
+      // The URL is a parameter, not part of the format string: a `%s` in it
+      // would otherwise pull `error` into the message.
+      console.error('%s %s failed', req.method, req.url, error);
       if (!res.headersSent) res.status(500).json({ error: 'Internal server error' });
     }
   };
