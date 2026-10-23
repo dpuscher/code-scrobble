@@ -10,7 +10,8 @@ type DiscogsRelease = {
   title: string;
   uri: string;
   year?: number;
-  artists?: { name: string }[];
+  // `join` connects an artist to the next one: ",", "&", "Feat.", "/", ...
+  artists?: { name: string; join?: string }[];
   images?: { uri: string }[];
   tracklist?: DiscogsTrack[];
   identifiers?: { type: string; value: string }[];
@@ -72,6 +73,19 @@ async function request<T>(path: string, params: Record<string, string> = {}): Pr
  */
 export const cleanArtistName = (name: string) => name.replace(/ \(\d+\)(?=,| [&/]|$)/g, '');
 
+/**
+ * Joins a release's artists the way Discogs shows them: "Eminem Feat. Nate
+ * Dogg", "Simon & Garfunkel", "Linkin Park, Artsonic". Uses the artists'
+ * canonical names, not the spelling on the cover, since that is what Last.fm knows.
+ */
+export function joinArtists(artists: { name: string; join?: string }[] = []) {
+  return artists.map(({ name, join }, i) => {
+    if (i === artists.length - 1) return cleanArtistName(name);
+    const word = join?.trim() || ',';
+    return `${cleanArtistName(name)}${word.startsWith(',') ? '' : ' '}${word} `;
+  }).join('');
+}
+
 // "1:02:03" -> 3723 seconds. Missing or malformed parts count as 0.
 export function convertTimecode(timecode = '') {
   return timecode
@@ -104,7 +118,7 @@ export async function getRelease(id: number) {
   }));
   return {
     id,
-    artist: (data.artists ?? []).map((a) => cleanArtistName(a.name)).join(', '),
+    artist: joinArtists(data.artists),
     title: data.title,
     image: data.images?.[0]?.uri ?? null,
     url: data.uri,

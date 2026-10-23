@@ -1,6 +1,6 @@
 import { discogsRelease, mockFetch } from '@/test/fetch';
 import {
-  cleanArtistName, convertTimecode, findReleaseIdByBarcode, getMasterVersions, getRelease, normalizeTracklist, searchReleases, splitTitle,
+  cleanArtistName, convertTimecode, findReleaseIdByBarcode, getMasterVersions, joinArtists, getRelease, normalizeTracklist, searchReleases, splitTitle,
 } from './discogs';
 
 const track = (position: string, type_ = 'track') => ({
@@ -113,6 +113,24 @@ describe('cleanArtistName', () => {
     ['Blink (182) Tribute', 'Blink (182) Tribute'],
   ])('cleans %s', (input, expected) => {
     expect(cleanArtistName(input)).toBe(expected);
+  });
+});
+
+describe('joinArtists', () => {
+  const artists = (...pairs: [string, string][]) => pairs.map(([name, join]) => ({ name, join }));
+
+  it.each([
+    [artists(['Eminem', 'Feat.'], ['Nate Dogg', '']), 'Eminem Feat. Nate Dogg'],
+    [artists(['Tony Yayo', 'Feat.'], ['Eminem', 'And'], ['Obie Trice', '']), 'Tony Yayo Feat. Eminem And Obie Trice'],
+    [artists(['Linkin Park', ','], ['Artsonic', '']), 'Linkin Park, Artsonic'],
+    [artists(['Deftones', '/'], ['Linkin Park', '/'], ['Taproot', '']), 'Deftones / Linkin Park / Taproot'],
+    [artists(['Lloyd Banks', ', And Introducing'], ['Ca$his', '']), 'Lloyd Banks, And Introducing Ca$his'],
+    [artists(['Simon (3)', '&'], ['Garfunkel (2)', '']), 'Simon & Garfunkel'],
+    [artists(['Artist A', ''], ['Artist B', '']), 'Artist A, Artist B'],
+    [artists(['The Beatles', '']), 'The Beatles'],
+    [[], ''],
+  ])('joins %j', (input, expected) => {
+    expect(joinArtists(input)).toBe(expected);
   });
 });
 
