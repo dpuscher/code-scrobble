@@ -100,7 +100,14 @@ export const saveSearchFormat = (searchFormat: SearchFormat | null) => (
   api('/api/user/settings', { method: 'POST', body: { searchFormat } })
 );
 
-/** `from` skips tracks an earlier, failed attempt already sent. */
-export const scrobbleRelease = (id: number, autoScrobble: boolean, from = 0) => (
-  api<Partial<ScrobbleResult>>('/api/scrobble', { method: 'POST', body: { id, autoScrobble, from } })
+/**
+ * `parts` are the sides or discs to scrobble, null for the default ones;
+ * `from` skips tracks an earlier, failed attempt already sent.
+ */
+export const scrobbleRelease = (id: number, {
+  parts = null, autoScrobble = false, remember = false, from = 0,
+}: { parts?: string[] | null; autoScrobble?: boolean; remember?: boolean; from?: number } = {}) => (
+  api<Partial<ScrobbleResult>>('/api/scrobble', {
+    method: 'POST', body: { id, autoScrobble, from, ...(parts ? { parts } : {}), ...(remember ? { remember } : {}) },
+  })
 );

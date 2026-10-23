@@ -1,6 +1,7 @@
 // Shapes of the JSON API responses (see src/pages/api).
 
 import type { SearchFormat } from './formats';
+import type { PartsPreference } from './parts';
 
 export type Session = {
   id: number;
@@ -10,6 +11,7 @@ export type Session = {
   imageLarge: string | null;
   imageXLarge: string | null;
   searchFormat: SearchFormat | null;
+  partsPreference: PartsPreference | null;
 };
 
 export type Track = {
@@ -18,6 +20,22 @@ export type Track = {
   duration: number;
   /** Only when it differs from the release artist, e.g. on compilations. */
   artist?: string;
+  /** The side or disc it is on, see `Release.parts`. */
+  part?: string;
+};
+
+/** A side or disc of a release, to scrobble on its own. */
+export type Part = {
+  id: string;
+  /** "A", "2A", "CD", "CD 2", "Record 3". */
+  name: string;
+  kind: 'side' | 'disc';
+  /** The record, tape or disc it is on; sides A and B of a record share it. */
+  item: string;
+  /** "record", "tape", "CD", ... */
+  medium: string;
+  /** On another medium than the main one, e.g. the CD of a vinyl release. Not scrobbled unless picked. */
+  bonus?: boolean;
 };
 
 export type Release = {
@@ -28,7 +46,11 @@ export type Release = {
   url: string | null;
   year: string | null;
   tracks: Track[];
+  /** Sides and discs, when there are several. */
+  parts: Part[];
   instantScrobble: boolean;
+  /** The parts an auto-scrobble scrobbles; null for the default ones. */
+  instantParts: string[] | null;
 };
 
 export type SearchResult = {
@@ -87,4 +109,6 @@ export type AutoScrobble = {
   title: string;
   year: string | null;
   image: string | null;
+  /** What is scrobbled, e.g. "Side A"; null for the whole record. */
+  scope: string | null;
 };

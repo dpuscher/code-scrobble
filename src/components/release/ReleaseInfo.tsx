@@ -1,16 +1,19 @@
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { IoIosInformationCircleOutline } from 'react-icons/io';
 import durationFormat from '../../lib/durationFormat';
 import targetBlank from '../../lib/targetBlank';
-import type { Release } from '../../lib/types';
+import type { Part, Release } from '../../lib/types';
 import Overlay, { OverlayToggle } from '../ui/Overlay';
 
-/** Info button that opens the tracklist of the detected release. */
+const heading = ({ kind, name, bonus }: Part) => `${kind === 'side' ? `Side ${name}` : name}${bonus ? ' · Bonus' : ''}`;
+
+/** Info button that opens the tracklist of the detected release, by side or disc. */
 const ReleaseInfo = ({ release }: { release: Release }) => {
   const [open, setOpen] = useState(false);
   const {
-    image, title, year, artist, tracks, url,
+    image, title, year, artist, tracks, parts, url,
   } = release;
+  const partOf = (id?: string) => (parts.length > 1 ? parts.find((part) => part.id === id) : undefined);
 
   return (
     <OverlayToggle label="Release info" icon={<IoIosInformationCircleOutline aria-hidden />} onClick={() => setOpen(true)}>
@@ -30,17 +33,29 @@ const ReleaseInfo = ({ release }: { release: Release }) => {
             <table className="w-full border-collapse tabular-nums">
               <tbody>
                 {tracks.map(({
-                  trackNumber, title: trackTitle, duration, artist: trackArtist,
-                }) => (
-                  <tr key={trackNumber} className="border-b border-black/5 last:border-0">
-                    <td className="w-0 py-1.5 pr-3 text-right align-top whitespace-nowrap text-dark/50">{trackNumber}</td>
-                    <td className="w-full py-1.5">
-                      {trackTitle}
-                      {trackArtist && <span className="block text-[13px] text-dark/60">{trackArtist}</span>}
-                    </td>
-                    <td className="w-0 py-1.5 pl-3 align-top whitespace-nowrap text-dark/50">{durationFormat(duration)}</td>
-                  </tr>
-                ))}
+                  trackNumber, title: trackTitle, duration, artist: trackArtist, part: partId,
+                }, i) => {
+                  const part = partOf(partId);
+                  return (
+                    <Fragment key={trackNumber}>
+                      {part && partId !== tracks[i - 1]?.part && (
+                        <tr>
+                          <th colSpan={3} scope="colgroup" className={`pb-1 text-left text-[13px] font-normal tracking-wide text-dark/50 uppercase ${i ? 'pt-4' : 'pt-1'}`}>
+                            {heading(part)}
+                          </th>
+                        </tr>
+                      )}
+                      <tr className="border-b border-black/5 last:border-0">
+                        <td className="w-0 py-1.5 pr-3 text-right align-top whitespace-nowrap text-dark/50">{trackNumber}</td>
+                        <td className="w-full py-1.5">
+                          {trackTitle}
+                          {trackArtist && <span className="block text-[13px] text-dark/60">{trackArtist}</span>}
+                        </td>
+                        <td className="w-0 py-1.5 pl-3 align-top whitespace-nowrap text-dark/50">{durationFormat(duration)}</td>
+                      </tr>
+                    </Fragment>
+                  );
+                })}
               </tbody>
             </table>
           </div>

@@ -1,7 +1,10 @@
 import {
-  and, asc, desc, eq, notInArray,
+  and, asc, desc, eq, notInArray, sql,
 } from 'drizzle-orm';
 import type { SearchFormat } from '../lib/formats';
+import {
+  describeSelection, type PartScope, type PartsPreference, toSelection,
+} from '../lib/parts';
 import { getDb } from './db';
 import {
   autoScrobbles, releases, scrobbles, users, type User,
@@ -33,21 +36,30 @@ export const toSessionJSON = (user: User) => ({
   imageLarge: user.imageLarge,
   imageXLarge: user.imageXLarge,
   searchFormat: user.searchFormat,
+  partsPreference: user.partsPreference,
 });
+
+/** Remembers the scope picked for records and tapes or for discs. */
+export async function setPartsPreference(userId: number, key: keyof PartsPreference, scope: PartScope) {
+  await getDb().update(users)
+    .set({ partsPreference: sql`coalesce(${users.partsPreference}, '{}'::jsonb) || ${JSON.stringify({ [key]: scope })}::jsonb` })
+    .where(eq(users.id, userId));
+}
 
 export async function setSearchFormat(userId: number, searchFormat: SearchFormat | null) {
   await getDb().update(users).set({ searchFormat }).where(eq(users.id, userId));
 }
 
-export async function isAutoScrobble(userId: number, releaseId: number) {
-  const row = await getDb().query.autoScrobbles.findFirst({
+export function findAutoScrobble(userId: number, releaseId: number) {
+  return getDb().query.autoScrobbles.findFirst({
     where: and(eq(autoScrobbles.userId, userId), eq(autoScrobbles.releaseId, releaseId)),
   });
-  return Boolean(row);
 }
 
-export async function addAutoScrobble(userId: number, releaseId: number) {
-  await getDb().insert(autoScrobbles).values({ userId, releaseId }).onConflictDoNothing();
+/** `parts` are the ids of the parts to scrobble, null for the default ones. */
+export async function addAutoScrobble(userId: number, releaseId: number, parts: string[] | null = null) {
+  await getDb().insert(autoScrobbles).values({ userId, releaseId, parts })
+    .onConflictDoUpdate({ target: [autoScrobbles.userId, autoScrobbles.releaseId], set: { parts } });
 }
 
 export async function removeAutoScrobble(userId: number, releaseId: number) {
@@ -55,15 +67,25 @@ export async function removeAutoScrobble(userId: number, releaseId: number) {
     .where(and(eq(autoScrobbles.userId, userId), eq(autoScrobbles.releaseId, releaseId)));
 }
 
-export function listAutoScrobbles(userId: number) {
-  return getDb()
+export async function listAutoScrobbles(userId: number) {
+  const rows = await getDb()
     .select({
-      id: releases.id, artist: releases.artist, title: releases.title, year: releases.year, image: releases.image,
+      id: releases.id,
+      artist: releases.artist,
+      title: releases.title,
+      year: releases.year,
+      image: releases.image,
+      releaseParts: releases.parts,
+      parts: autoScrobbles.parts,
     })
     .from(autoScrobbles)
     .innerJoin(releases, eq(releases.id, autoScrobbles.releaseId))
     .where(eq(autoScrobbles.userId, userId))
     .orderBy(asc(releases.artist), asc(releases.title));
+  return rows.map(({ releaseParts, parts, ...row }) => ({
+    ...row,
+    scope: describeSelection(releaseParts ?? [], toSelection(releaseParts ?? [], parts)),
+  }));
 }
 
 /** Records a scrobble and keeps only the latest HISTORY_LENGTH entries. */
