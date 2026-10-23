@@ -106,9 +106,12 @@ const Scanner = ({ onDetected }: Props) => {
         <video ref={videoRef} playsInline autoPlay muted />
       </div>
       {state === 'ready' && (
-        // Sweeping line that shows the camera is reading.
+        // Sweeping line that shows the camera is reading. The full-height
+        // wrapper moves, so translateY(100%) spans the whole scan area.
         <div aria-hidden className="pointer-events-none absolute inset-x-[18%] inset-y-[30%]">
-          <div className="absolute inset-x-0 top-1/2 h-0.5 rounded-full bg-yellow/80 shadow-[0_0_12px_2px_var(--color-yellow)] motion-safe:animate-scan" />
+          <div className="absolute inset-0 motion-safe:animate-scan motion-reduce:translate-y-1/2">
+            <div className="h-0.5 rounded-full bg-yellow/80 shadow-[0_0_12px_2px_var(--color-yellow)]" />
+          </div>
         </div>
       )}
       {state === 'ready' && torch !== null && (
