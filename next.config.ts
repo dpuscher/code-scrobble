@@ -12,6 +12,10 @@ const nextConfig: NextConfig = {
     '*': ['node_modules/sharp/**', 'node_modules/@img/**'],
   },
   poweredByHeader: false,
+  // Cloudflare (in front of staging and production) compresses with zstd or
+  // Brotli, but passes gzip from the origin through unchanged, so Next.js
+  // must not gzip. Direct access to the container is uncompressed.
+  compress: false,
   turbopack: {
     rules: {
       // zxing-wasm fetches and compiles its WebAssembly itself; importing the
