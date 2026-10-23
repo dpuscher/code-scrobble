@@ -4,9 +4,10 @@
  *
  *   /lastfm/auth/   Last.fm web auth page; approves immediately
  *   /lastfm/api/    Last.fm web service (auth.getSession, user.getInfo, track.scrobble)
- *   /discogs/...    Discogs database search and release endpoints
+ *   /discogs/...    Discogs database search, release and master versions endpoints
  *   /__scrobbles    GET: scrobbles received so far, DELETE: reset
  *   /__fail-scrobbles?count=n  POST: make the next n track.scrobble calls fail
+ *   /__ignore-scrobbles?count=n&code=c  POST: ignore the next n tracks with ignoredMessage code c
  *
  * Run with `node e2e/mock-server.ts` (Node 24 strips the types). With
  * MOCK_CATALOG=dev it also serves the made-up records of dev/catalog.ts and
@@ -27,6 +28,7 @@ if (dev) {
 type Scrobble = Record<string, string>;
 let scrobbles: Scrobble[] = [];
 let failNextScrobbles = 0;
+let ignoreNextTracks = { count: 0, code: 5 };
 
 function send(res: ServerResponse, status: number, body: unknown) {
   res.writeHead(status, { 'Content-Type': 'application/json' });
@@ -64,13 +66,29 @@ function lastfm(params: URLSearchParams, res: ServerResponse) {
         if (match) (batch[Number(match[2])] ??= {})[match[1]] = value;
       });
       const received = Object.values(batch);
-      scrobbles.push(...received);
-      return send(res, 200, { scrobbles: { '@attr': { accepted: received.length, ignored: 0 } } });
+      const echoes = received.map((scrobble) => {
+        const ignored = ignoreNextTracks.count > 0;
+        if (ignored) ignoreNextTracks.count -= 1;
+        else scrobbles.push(scrobble);
+        return { track: { '#text': scrobble.track }, ignoredMessage: { code: ignored ? String(ignoreNextTracks.code) : '0', '#text': '' } };
+      });
+      const ignored = echoes.filter((echo) => echo.ignoredMessage.code !== '0').length;
+      return send(res, 200, {
+        scrobbles: {
+          '@attr': { accepted: received.length - ignored, ignored },
+          scrobble: echoes.length === 1 ? echoes[0] : echoes,
+        },
+      });
     }
     default:
       return send(res, 200, { error: 3, message: 'Invalid method' });
   }
 }
+
+// Name and descriptions, as search results list them: ['Vinyl', 'LP', 'Album'].
+const formatsOf = (r: typeof releases[number]) => (
+  r.formats?.length ? [r.formats[0].name, ...(r.formats[0].descriptions ?? [])] : ['Vinyl', 'LP']
+);
 
 function discogs(url: URL, res: ServerResponse) {
   const release = /^\/discogs\/releases\/(\d+)$/.exec(url.pathname);
@@ -78,22 +96,47 @@ function discogs(url: URL, res: ServerResponse) {
     const data = releases[Number(release[1])];
     return data ? send(res, 200, data) : send(res, 404, { message: 'Release not found.' });
   }
+  const versions = /^\/discogs\/masters\/(\d+)\/versions$/.exec(url.pathname);
+  if (versions) {
+    const format = url.searchParams.get('format');
+    const matches = Object.values(releases)
+      .filter((r) => r.master_id === Number(versions[1]))
+      .filter((r) => !format || formatsOf(r)[0] === format);
+    return send(res, 200, {
+      pagination: { page: 1, pages: 1, items: matches.length },
+      versions: matches.map((r) => ({
+        id: r.id,
+        title: r.title,
+        thumb: r.images[0].uri,
+        major_formats: [formatsOf(r)[0]],
+        format: formatsOf(r).slice(1).join(', '),
+        label: r.label ?? 'Test Records',
+        catno: r.catno ?? `TR ${r.id}`,
+        country: r.country ?? 'Germany',
+        released: String(r.year),
+        stats: { community: { in_collection: r.collected ?? 10, in_wantlist: 5 } },
+      })),
+    });
+  }
   if (url.pathname === '/discogs/database/search') {
     const barcode = url.searchParams.get('barcode');
     const query = url.searchParams.get('q')?.toLowerCase();
+    const format = url.searchParams.get('format');
     const results = Object.values(releases)
       .filter((r) => (barcode
         ? r.identifiers.some((i) => i.type === 'Barcode' && i.value.replace(/\D/g, '') === barcode)
         : query && `${r.artists[0].name} ${r.title}`.toLowerCase().includes(query)))
+      .filter((r) => !format || formatsOf(r).includes(format))
       .map((r) => ({
         id: r.id,
+        master_id: r.master_id ?? 0,
         title: `${r.artists[0].name} - ${r.title}`,
         thumb: r.images[0].uri,
-        country: 'Germany',
+        country: r.country ?? 'Germany',
         year: String(r.year),
-        format: r.formats ?? ['Vinyl', 'LP'],
+        format: formatsOf(r),
         uri: `/release/${r.id}`,
-        community: { have: 10, want: 5 },
+        community: { have: r.collected ?? 10, want: 5 },
       }));
     return send(res, 200, { results });
   }
@@ -123,8 +166,13 @@ const server = createServer(async (req, res) => {
       if (req.method === 'DELETE') {
         scrobbles = [];
         failNextScrobbles = 0;
+        ignoreNextTracks = { count: 0, code: 5 };
       }
       return send(res, 200, scrobbles);
+    }
+    if (url.pathname === '/__ignore-scrobbles' && req.method === 'POST') {
+      ignoreNextTracks = { count: Number(url.searchParams.get('count') ?? 1), code: Number(url.searchParams.get('code') ?? 5) };
+      return send(res, 200, ignoreNextTracks);
     }
     if (url.pathname === '/__fail-scrobbles' && req.method === 'POST') {
       failNextScrobbles = Number(url.searchParams.get('count') ?? 1);

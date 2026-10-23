@@ -38,7 +38,7 @@ try {
 
   if (reset) {
     await db.execute(sql`
-      truncate users, releases, barcode_lookups, search_cache, auto_scrobbles, scrobbles, sessions
+      truncate users, releases, barcode_lookups, search_cache, versions_cache, auto_scrobbles, scrobbles, sessions
       restart identity cascade
     `);
   } else if ((await db.select().from(users).where(eq(users.name, DEV_USER.name))).length) {

@@ -1,6 +1,9 @@
 import { and, eq, gt } from 'drizzle-orm';
 import { getDb } from './db';
-import { barcodeLookups, releases, searchCache, type Release } from './db/schema';
+import type { SearchFormat } from '../lib/formats';
+import {
+  barcodeLookups, releases, searchCache, versionsCache, type Release,
+} from './db/schema';
 import * as Discogs from './discogs';
 
 const DAY = 24 * 60 * 60 * 1000;
@@ -69,21 +72,43 @@ export async function findByBarcode(rawBarcode: string) {
   return release;
 }
 
-export async function search(rawQuery: string) {
+export async function search(rawQuery: string, format: SearchFormat | null = null) {
   const query = rawQuery.trim().toLowerCase();
   if (!query) return [];
   const db = getDb();
+  const key = `${format ?? ''}|${query}`;
 
   const cached = await db.query.searchCache.findFirst({
-    where: and(eq(searchCache.query, query), gt(searchCache.expiresAt, new Date())),
+    where: and(eq(searchCache.query, key), gt(searchCache.expiresAt, new Date())),
   });
   if (cached) return cached.results;
 
-  const results = await Discogs.searchReleases(query);
-  const value = { query, results, expiresAt: new Date(Date.now() + SEARCH_TTL) };
+  const results = await Discogs.searchReleases(query, format ?? undefined);
+  const value = { query: key, results, expiresAt: new Date(Date.now() + SEARCH_TTL) };
   await db.insert(searchCache).values(value)
     .onConflictDoUpdate({ target: searchCache.query, set: value });
   return results;
+}
+
+/** Versions of a Discogs master release, cached like searches. */
+export async function findVersions(masterId: number, format: SearchFormat | null = null) {
+  const db = getDb();
+  const key = { masterId, format: format ?? '' };
+
+  const cached = await db.query.versionsCache.findFirst({
+    where: and(
+      eq(versionsCache.masterId, masterId),
+      eq(versionsCache.format, key.format),
+      gt(versionsCache.expiresAt, new Date()),
+    ),
+  });
+  if (cached) return cached.data;
+
+  const data = await Discogs.getMasterVersions(masterId, format ?? undefined);
+  const value = { ...key, data, expiresAt: new Date(Date.now() + SEARCH_TTL) };
+  await db.insert(versionsCache).values(value)
+    .onConflictDoUpdate({ target: [versionsCache.masterId, versionsCache.format], set: value });
+  return data;
 }
 
 export const toReleaseJSON = (release: Release) => ({

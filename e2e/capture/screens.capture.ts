@@ -70,8 +70,12 @@ test('scan', async ({ page }, info) => {
   await shot(page, 'search-empty', info.project.name);
   await page.getByRole('searchbox').fill('testers');
   await page.keyboard.press('Enter');
-  await page.getByRole('link', { name: /Night Drive/ }).waitFor();
+  await page.getByRole('button', { name: /Night Drive/ }).waitFor();
   await shot(page, 'search-results', info.project.name);
+  await page.getByRole('button', { name: /Night Drive/ }).click();
+  await page.getByText('Most collected').waitFor();
+  await shot(page, 'search-versions', info.project.name);
+  await page.getByRole('button', { name: 'Back to results' }).click();
   await page.getByRole('searchbox').fill('nothing');
   await page.keyboard.press('Enter');
   await page.getByText('No results were found').waitFor();

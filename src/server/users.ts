@@ -1,6 +1,7 @@
 import {
   and, asc, desc, eq, notInArray,
 } from 'drizzle-orm';
+import type { SearchFormat } from '../lib/formats';
 import { getDb } from './db';
 import {
   autoScrobbles, releases, scrobbles, users, type User,
@@ -31,7 +32,12 @@ export const toSessionJSON = (user: User) => ({
   image: user.image,
   imageLarge: user.imageLarge,
   imageXLarge: user.imageXLarge,
+  searchFormat: user.searchFormat,
 });
+
+export async function setSearchFormat(userId: number, searchFormat: SearchFormat | null) {
+  await getDb().update(users).set({ searchFormat }).where(eq(users.id, userId));
+}
 
 export async function isAutoScrobble(userId: number, releaseId: number) {
   const row = await getDb().query.autoScrobbles.findFirst({

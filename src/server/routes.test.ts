@@ -12,14 +12,17 @@ import logout from '@/pages/api/logout';
 import scrobble from '@/pages/api/scrobble';
 import search from '@/pages/api/search/[query]';
 import session from '@/pages/api/session';
+import versions from '@/pages/api/masters/[id]/versions';
 import autoscrobbles from '@/pages/api/user/autoscrobbles';
 import history from '@/pages/api/user/history';
+import settings from '@/pages/api/user/settings';
 
 describe('authenticated API routes', () => {
   it.each([
-    ['session', session], ['barcode', barcode], ['search', search], ['history', history], ['autoscrobbles', autoscrobbles],
+    ['session', session], ['barcode', barcode], ['search', search], ['versions', versions],
+    ['history', history], ['autoscrobbles', autoscrobbles], ['settings', settings],
   ])('%s rejects anonymous requests', async (_, handler) => {
-    const res = await callApi(handler, { query: { id: '1', query: 'x' } });
+    const res = await callApi(handler, { method: handler === settings ? 'POST' : 'GET', query: { id: '1', query: 'x' } });
     expect(res).toMatchObject({ status: 401, body: { error: 'Unauthorized' } });
   });
 
@@ -59,8 +62,60 @@ describe('GET /api/session', () => {
     const { user, cookies } = await loggedInUser({ name: 'jane', image: 'img' });
     const res = await callApi(session, { cookies });
     expect(res.body).toEqual({
-      id: user.id, name: 'jane', url: null, image: 'img', imageLarge: null, imageXLarge: null,
+      id: user.id, name: 'jane', url: null, image: 'img', imageLarge: null, imageXLarge: null, searchFormat: null,
     });
+  });
+});
+
+describe('GET /api/search/:query', () => {
+  it('passes a known format on and ignores others', async () => {
+    const { cookies } = await loggedInUser();
+    const fetch = mockFetch({ '/database/search': () => ({ results: [] }) });
+
+    await callApi(search, { query: { query: 'abbey road', format: 'Vinyl' }, cookies });
+    await callApi(search, { query: { query: 'abbey road', format: 'Shellac' }, cookies });
+    const formats = fetch.mock.calls.map(([url]) => new URL(String(url)).searchParams.get('format'));
+    expect(formats).toEqual(['Vinyl', null]);
+  });
+});
+
+describe('GET /api/masters/:id/versions', () => {
+  it('returns the versions of a master', async () => {
+    const { cookies } = await loggedInUser();
+    mockFetch({ '/masters/7/versions': () => ({ pagination: { items: 1 }, versions: [{ id: 3, title: 'A' }] }) });
+
+    const res = await callApi(versions, { query: { id: '7', format: 'CD' }, cookies });
+    expect(res.body).toMatchObject({ total: 1, versions: [{ id: 3, title: 'A', collected: 0 }] });
+  });
+
+  it('rejects invalid ids', async () => {
+    const { cookies } = await loggedInUser();
+    const res = await callApi(versions, { query: { id: 'abc' }, cookies });
+    expect(res.status).toBe(400);
+  });
+});
+
+describe('POST /api/user/settings', () => {
+  const post = (cookies: Record<string, string>, body: unknown) => callApi(settings, {
+    method: 'POST', body, cookies, headers: { origin: 'https://codescrobble.test', host: 'codescrobble.test' },
+  });
+  const storedFormat = async (id: number) => (await testDb().query.users.findFirst({ where: eq(users.id, id) }))?.searchFormat;
+
+  it('saves and clears the search format', async () => {
+    const { user, cookies } = await loggedInUser();
+
+    expect((await post(cookies, { searchFormat: 'Vinyl' })).status).toBe(204);
+    expect(await storedFormat(user.id)).toBe('Vinyl');
+    expect((await callApi(session, { cookies })).body).toMatchObject({ searchFormat: 'Vinyl' });
+
+    await post(cookies, { searchFormat: null });
+    expect(await storedFormat(user.id)).toBeNull();
+  });
+
+  it('rejects unknown formats', async () => {
+    const { user, cookies } = await loggedInUser();
+    expect((await post(cookies, { searchFormat: 'Shellac' })).status).toBe(400);
+    expect(await storedFormat(user.id)).toBeNull();
   });
 });
 
@@ -122,6 +177,7 @@ describe('POST /api/scrobble', () => {
     const res = await callApi(scrobble, { method: 'POST', body: { id: release.id }, cookies });
     expect(res).toMatchObject({ status: 200, body: {} });
     expect(fetch).not.toHaveBeenCalled();
+    expect(await testDb().select().from(scrobbles)).toHaveLength(1);
     expect(await testDb().select().from(autoScrobbles)).toHaveLength(0);
   });
 
@@ -220,12 +276,58 @@ describe('POST /api/scrobble failures', () => {
     vi.spyOn(console, 'error').mockImplementation(() => {});
   });
 
-  it('answers 502 when Last.fm fails', async () => {
+  it('answers 502 when Last.fm fails, without recording the scrobble', async () => {
     const { cookies } = await loggedInUser();
     const release = await createRelease();
     mockFetch({ '/2.0/': () => ({ error: 16, message: 'Temporarily unavailable' }) });
+    const res = await callApi(scrobble, { method: 'POST', body: { id: release.id, autoScrobble: true }, cookies });
+    expect(res).toMatchObject({ status: 502, body: { error: 'Last.fm request failed', sent: 0 } });
+    expect(await testDb().select().from(scrobbles)).toHaveLength(0);
+    expect(await testDb().select().from(autoScrobbles)).toHaveLength(0);
+  });
+
+  it('answers 502 on network errors too', async () => {
+    const { cookies } = await loggedInUser();
+    const release = await createRelease();
+    mockFetch({ '/2.0/': () => { throw new TypeError('fetch failed'); } });
     const res = await callApi(scrobble, { method: 'POST', body: { id: release.id }, cookies });
-    expect(res).toMatchObject({ status: 502, body: { error: 'Last.fm request failed' } });
+    expect(res.status).toBe(502);
+  });
+
+  it('continues after the tracks an earlier attempt sent', async () => {
+    const { user, cookies } = await loggedInUser();
+    const release = await createRelease({
+      tracks: Array.from({ length: 60 }, (_, i) => ({ title: `T${i}`, trackNumber: i + 1, duration: 10 })),
+    });
+    let calls = 0;
+    const bodies: URLSearchParams[] = [];
+    mockFetch({
+      '/2.0/': (_url, init) => {
+        calls += 1;
+        bodies.push(new URLSearchParams(String(init?.body)));
+        return calls === 2 ? { error: 16, message: 'Unavailable' } : { scrobbles: { '@attr': { accepted: 50 } } };
+      },
+    });
+
+    const failed = await callApi(scrobble, { method: 'POST', body: { id: release.id }, cookies });
+    expect(failed).toMatchObject({ status: 502, body: { sent: 50 } });
+    const retry = await callApi(scrobble, { method: 'POST', body: { id: release.id, from: 50 }, cookies });
+
+    expect(retry.status).toBe(200);
+    expect(bodies[2].get('track[0]')).toBe('T50');
+    expect(bodies[2].get('trackNumber[0]')).toBe('51');
+    expect(await testDb().select().from(scrobbles).where(eq(scrobbles.userId, user.id))).toHaveLength(1);
+  });
+
+  it('does not record a release Last.fm ignored completely', async () => {
+    const { cookies } = await loggedInUser();
+    const release = await createRelease();
+    mockFetch({
+      '/2.0/': () => ({ scrobbles: { '@attr': { accepted: 0, ignored: 1 }, scrobble: { ignoredMessage: { code: '5' } } } }),
+    });
+    const res = await callApi(scrobble, { method: 'POST', body: { id: release.id }, cookies });
+    expect(res.body).toEqual({ accepted: 0, ignored: 1, ignoredCode: 5 });
+    expect(await testDb().select().from(scrobbles)).toHaveLength(0);
   });
 
   it('logs the user out when Last.fm rejects the session key', async () => {

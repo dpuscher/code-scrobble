@@ -22,8 +22,10 @@ export const fixtures = {
   releases: {
     1001: {
       id: 1001,
+      master_id: 501,
       title: 'Night Drive',
       year: 2019,
+      collected: 30,
       uri: 'https://www.discogs.com/release/1001-Night-Drive',
       artists: [{ name: 'The Testers' }],
       images: [{ uri: svg('#feda6a') }],
@@ -49,15 +51,38 @@ export const fixtures = {
         track('2', 'Noon', ''),
       ],
     },
+    // The CD version of Night Drive.
+    1003: {
+      id: 1003,
+      master_id: 501,
+      title: 'Night Drive',
+      year: 2020,
+      uri: 'https://www.discogs.com/release/1003-Night-Drive',
+      artists: [{ name: 'The Testers' }],
+      images: [{ uri: svg('#d4d4dc') }],
+      identifiers: [{ type: 'Barcode', value: '4 006381 333948' }],
+      formats: [{ name: 'CD', qty: '1', descriptions: ['Album'] }],
+      collected: 12,
+      tracklist: [
+        track('1', 'Headlights', '3:30'),
+        track('2', 'Overpass', '4:05'),
+        track('3', 'Last Exit', '5:00'),
+      ],
+    },
   } as Record<number, {
     id: number;
+    master_id?: number;
+    country?: string;
+    label?: string;
+    catno?: string;
+    collected?: number;
     title: string;
     year: number;
     uri: string;
     artists: { name: string }[];
     images: { uri: string }[];
     identifiers: { type: string; value: string }[];
-    formats?: string[];
+    formats?: { name: string; qty: string; descriptions?: string[] }[];
     tracklist: { position: string; title: string; duration: string; type_: string }[];
   }>,
 };

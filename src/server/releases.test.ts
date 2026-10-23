@@ -4,7 +4,7 @@ import { createRelease } from '@/test/factories';
 import { discogsRelease, mockFetch } from '@/test/fetch';
 import { barcodeLookups, releases } from './db/schema';
 import {
-  findByBarcode, findByDiscogsId, normalizeBarcode, search,
+  findByBarcode, findByDiscogsId, findVersions, normalizeBarcode, search,
 } from './releases';
 
 const DAY = 24 * 60 * 60 * 1000;
@@ -97,13 +97,39 @@ describe('search', () => {
   it('caches results per normalized query', async () => {
     const fetch = mockFetch({ '/database/search': () => ({ results: [{ id: 1, title: 'A' }] }) });
 
-    await expect(search('  Abbey Road ')).resolves.toEqual([{ id: 1, title: 'A' }]);
+    await expect(search('  Abbey Road ')).resolves.toMatchObject([{ id: 1, title: 'A' }]);
     await search('abbey road');
     expect(fetch).toHaveBeenCalledTimes(1);
     expect(new URL(String(fetch.mock.calls[0][0])).searchParams.get('q')).toBe('abbey road');
   });
 
+  it('caches each format separately', async () => {
+    const fetch = mockFetch({ '/database/search': (url) => ({ results: [{ id: 1, title: url.searchParams.get('format') ?? 'all' }] }) });
+
+    await expect(search('abbey road', 'Vinyl')).resolves.toMatchObject([{ title: 'Vinyl' }]);
+    await expect(search('abbey road')).resolves.toMatchObject([{ title: 'all' }]);
+    await expect(search('abbey road', 'Vinyl')).resolves.toMatchObject([{ title: 'Vinyl' }]);
+    expect(fetch).toHaveBeenCalledTimes(2);
+  });
+
   it('returns nothing for blank queries', async () => {
     await expect(search('   ')).resolves.toEqual([]);
+  });
+});
+
+describe('findVersions', () => {
+  it('caches versions per master and format', async () => {
+    const fetch = mockFetch({
+      '/masters/7/versions': (url) => ({
+        pagination: { items: 1 },
+        versions: [{ id: url.searchParams.has('format') ? 2 : 1, title: 'A' }],
+      }),
+    });
+
+    await expect(findVersions(7)).resolves.toMatchObject({ total: 1, versions: [{ id: 1 }] });
+    await expect(findVersions(7, 'CD')).resolves.toMatchObject({ versions: [{ id: 2 }] });
+    await findVersions(7);
+    await findVersions(7, 'CD');
+    expect(fetch).toHaveBeenCalledTimes(2);
   });
 });

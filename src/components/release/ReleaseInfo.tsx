@@ -29,11 +29,16 @@ const ReleaseInfo = ({ release }: { release: Release }) => {
           <div className="overflow-auto pt-2.5">
             <table className="w-full border-collapse tabular-nums">
               <tbody>
-                {tracks.map(({ trackNumber, title: trackTitle, duration }) => (
+                {tracks.map(({
+                  trackNumber, title: trackTitle, duration, artist: trackArtist,
+                }) => (
                   <tr key={trackNumber} className="border-b border-black/5 last:border-0">
-                    <td className="w-0 py-1.5 pr-3 text-right whitespace-nowrap text-dark/50">{trackNumber}</td>
-                    <td className="w-full py-1.5">{trackTitle}</td>
-                    <td className="w-0 py-1.5 pl-3 whitespace-nowrap text-dark/50">{durationFormat(duration)}</td>
+                    <td className="w-0 py-1.5 pr-3 text-right align-top whitespace-nowrap text-dark/50">{trackNumber}</td>
+                    <td className="w-full py-1.5">
+                      {trackTitle}
+                      {trackArtist && <span className="block text-[13px] text-dark/60">{trackArtist}</span>}
+                    </td>
+                    <td className="w-0 py-1.5 pl-3 align-top whitespace-nowrap text-dark/50">{durationFormat(duration)}</td>
                   </tr>
                 ))}
               </tbody>

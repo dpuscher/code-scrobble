@@ -141,6 +141,20 @@ test('auto-scrobbles a record when it is scanned again', async ({ page, request 
   await expect(page).toHaveURL(new RegExp(`/scrobbled/${KNOWN_BARCODE}$`));
 });
 
+test('going back after an auto-scrobble does not scrobble again', async ({ page, request }) => {
+  // Not the scanner: it would read the fake camera's barcode again.
+  await page.goto('/profile');
+  await page.goto(`/detected/${KNOWN_BARCODE}`);
+  await page.getByText('Auto-scrobble on next scan').click();
+  await page.getByRole('button', { name: 'Scrobble' }).click();
+  await expect(page.getByText('Record successfully scrobbled to Last.fm')).toBeVisible();
+
+  await page.goBack();
+  await expect(page).toHaveURL(/\/profile$/);
+  await page.waitForTimeout(1000);
+  expect(await receivedScrobbles(request)).toHaveLength(3);
+});
+
 test('offers a retry when Last.fm fails', async ({ page, request, consoleErrors }) => {
   await request.post(`${MOCK_URL}/__fail-scrobbles?count=1`);
   await page.goto(`/detected/${KNOWN_BARCODE}`);
@@ -155,6 +169,27 @@ test('offers a retry when Last.fm fails', async ({ page, request, consoleErrors 
   await page.getByRole('button', { name: 'Retry' }).click();
   await expect(page.getByText('Record successfully scrobbled to Last.fm')).toBeVisible();
   expect(await receivedScrobbles(request)).toHaveLength(3);
+});
+
+test('says when Last.fm ignored some tracks', async ({ page, request }) => {
+  await request.post(`${MOCK_URL}/__ignore-scrobbles?count=1&code=5`);
+  await page.goto(`/detected/${KNOWN_BARCODE}`);
+  await page.getByRole('button', { name: 'Scrobble' }).click();
+
+  await expect(page.getByText('Record scrobbled to Last.fm')).toBeVisible();
+  await expect(page.getByText('Last.fm ignored 1 track. Your daily scrobble limit on Last.fm is reached.')).toBeVisible();
+  expect(await receivedScrobbles(request)).toHaveLength(2);
+});
+
+test('does not record a release Last.fm ignored completely', async ({ page, request }) => {
+  await request.post(`${MOCK_URL}/__ignore-scrobbles?count=3&code=5`);
+  await page.goto(`/detected/${KNOWN_BARCODE}`);
+  await page.getByRole('button', { name: 'Scrobble' }).click();
+
+  await expect(page.getByText('Last.fm ignored this record')).toBeVisible();
+  await expect(page.getByText('Your daily scrobble limit on Last.fm is reached.')).toBeVisible();
+  await page.goto('/profile');
+  await expect(page.getByText('Night Drive')).toHaveCount(0);
 });
 
 test.describe('detected release', () => {
