@@ -1,4 +1,5 @@
-// Shapes of the JSON API responses (see src/pages/api).
+// Shapes shared by the server and the client: stored as JSON in the
+// database (schema.ts) and passed to pages and the API.
 
 import type { SearchFormat } from './formats';
 import type { PartsPreference } from './parts';
@@ -26,13 +27,14 @@ export type Track = {
 
 /** A side or disc of a release, to scrobble on its own. */
 export type Part = {
+  /** Stable key, also used in URLs: "A", "2-A", "CD-B", "D2", "CD1". */
   id: string;
-  /** "A", "2A", "CD", "CD 2", "Record 3". */
+  /** Short name: "A", "2A" (side A of the second record), "CD", "CD 2", "Record 3". */
   name: string;
   kind: 'side' | 'disc';
   /** The record, tape or disc it is on; sides A and B of a record share it. */
   item: string;
-  /** "record", "tape", "CD", ... */
+  /** What the item is: "record", "tape", "CD", "SACD", "MiniDisc" or "disc". */
   medium: string;
   /** On another medium than the main one, e.g. the CD of a vinyl release. Not scrobbled unless picked. */
   bonus?: boolean;
@@ -53,6 +55,10 @@ export type Release = {
   instantParts: string[] | null;
 };
 
+/**
+ * A release search hit. Versions of the same album are grouped under their
+ * Discogs master release.
+ */
 export type SearchResult = {
   /** Release to open: the release itself, or the most collected version of the album. */
   id: number;
@@ -61,7 +67,9 @@ export type SearchResult = {
   artist: string;
   title: string;
   thumb?: string;
+  /** Earliest year among the matching versions. */
   year?: string;
+  /** Only for releases without a master. */
   country?: string;
   /** An album's formats (Vinyl, CD, ...), or a release's format details. */
   format: string[];
@@ -71,17 +79,22 @@ export type Version = {
   id: number;
   title: string;
   thumb?: string;
+  /** Major formats, e.g. ["Vinyl"]. */
   formats: string[];
+  /** Format details, e.g. `2xLP, Album, Reissue`. */
   format?: string;
   year?: string;
   country?: string;
   label?: string;
   catno?: string;
+  /** How many Discogs users have it in their collection. */
   collected: number;
 };
 
+/** Versions of a master release, most collected first. */
 export type MasterVersions = {
   versions: Version[];
+  /** All versions on Discogs; `versions` holds at most the first page. */
   total: number;
 };
 
