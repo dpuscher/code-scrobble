@@ -85,7 +85,10 @@ function lastfm(params: URLSearchParams, res: ServerResponse) {
   }
 }
 
-const formatsOf = (r: typeof releases[number]) => r.formats ?? ['Vinyl', 'LP'];
+// Name and descriptions, as search results list them: ['Vinyl', 'LP', 'Album'].
+const formatsOf = (r: typeof releases[number]) => (
+  r.formats?.length ? [r.formats[0].name, ...(r.formats[0].descriptions ?? [])] : ['Vinyl', 'LP']
+);
 
 function discogs(url: URL, res: ServerResponse) {
   const release = /^\/discogs\/releases\/(\d+)$/.exec(url.pathname);

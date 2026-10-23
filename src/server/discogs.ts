@@ -1,18 +1,10 @@
 import { config } from './config';
+import {
+  selectTracks, type DiscogsArtist, type DiscogsFormat, type DiscogsTrack,
+} from './tracklist';
 import type {
   MasterVersions, SearchResult, Track, Version,
 } from './db/schema';
-
-type DiscogsArtist = { name: string; join?: string };
-
-export type DiscogsTrack = {
-  position: string;
-  type_: string;
-  title: string;
-  duration: string;
-  // Set on compilations and splits, where tracks have their own artists.
-  artists?: DiscogsArtist[];
-};
 
 type DiscogsRelease = {
   id: number;
@@ -23,6 +15,7 @@ type DiscogsRelease = {
   artists?: DiscogsArtist[];
   images?: { uri: string }[];
   tracklist?: DiscogsTrack[];
+  formats?: DiscogsFormat[];
   identifiers?: { type: string; value: string }[];
 };
 
@@ -95,38 +88,15 @@ export function joinArtists(artists: DiscogsArtist[] = []) {
   }).join('');
 }
 
-// "1:02:03" -> 3723 seconds. Missing or malformed parts count as 0.
-export function convertTimecode(timecode = '') {
-  return timecode
-    .split(':')
-    .map((n) => parseInt(n, 10) || 0)
-    .reverse()
-    .reduce((total, n, i) => total + n * (60 ** i), 0);
-}
-
-export function normalizeTracklist(tracks: DiscogsTrack[] = []) {
-  const vinylPositionRegex = /^[A-Z]-?[0-9]+$/;
-  let tracklist = tracks
-    .filter((track) => track.type_ === 'track')
-    .filter((track) => !/video/i.test(track.position));
-
-  // Remove bonus CDs from vinyl releases.
-  if (tracklist.length && vinylPositionRegex.test(tracklist[0].position)) {
-    tracklist = tracklist.filter((track) => vinylPositionRegex.test(track.position));
-  }
-
-  return tracklist;
-}
-
 export async function getRelease(id: number) {
   const data = await request<DiscogsRelease>(`/releases/${id}`);
   const artist = joinArtists(data.artists);
-  const tracks: Track[] = normalizeTracklist(data.tracklist).map((track, index) => {
+  const tracks: Track[] = selectTracks(data.tracklist, data.formats).map((track, index) => {
     const trackArtist = track.artists?.length ? joinArtists(track.artists) : artist;
     return {
       title: track.title,
       trackNumber: index + 1,
-      duration: convertTimecode(track.duration),
+      duration: track.duration,
       ...(trackArtist !== artist ? { artist: trackArtist } : {}),
     };
   });

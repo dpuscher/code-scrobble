@@ -1,42 +1,7 @@
 import { discogsRelease, mockFetch } from '@/test/fetch';
 import {
-  cleanArtistName, convertTimecode, findReleaseIdByBarcode, getMasterVersions, joinArtists, getRelease, normalizeTracklist, searchReleases, splitTitle,
+  cleanArtistName, findReleaseIdByBarcode, getMasterVersions, joinArtists, getRelease, searchReleases, splitTitle,
 } from './discogs';
-
-const track = (position: string, type_ = 'track') => ({
-  position, type_, title: position, duration: '',
-});
-
-describe('convertTimecode', () => {
-  it.each([
-    ['3:30', 210],
-    ['1:02:03', 3723],
-    ['45', 45],
-    ['', 0],
-    ['x:10', 10],
-    [undefined, 0],
-  ])('converts %s to %i seconds', (input, expected) => {
-    expect(convertTimecode(input)).toBe(expected);
-  });
-});
-
-describe('normalizeTracklist', () => {
-  it('drops headings, index tracks and video tracks', () => {
-    const result = normalizeTracklist([
-      track('1'), track('', 'heading'), track('2', 'index'), track('Video 1'), track('3'),
-    ]);
-    expect(result.map((t) => t.position)).toEqual(['1', '3']);
-  });
-
-  it('removes bonus CD tracks from vinyl releases', () => {
-    const result = normalizeTracklist([track('A1'), track('B-2'), track('CD1'), track('1')]);
-    expect(result.map((t) => t.position)).toEqual(['A1', 'B-2']);
-  });
-
-  it('keeps all tracks of non-vinyl releases', () => {
-    expect(normalizeTracklist([track('1'), track('A1')])).toHaveLength(2);
-  });
-});
 
 describe('getRelease', () => {
   it('maps a Discogs release and authenticates the request', async () => {

@@ -61,7 +61,7 @@ export const fixtures = {
       artists: [{ name: 'The Testers' }],
       images: [{ uri: svg('#d4d4dc') }],
       identifiers: [{ type: 'Barcode', value: '4 006381 333948' }],
-      formats: ['CD', 'Album'],
+      formats: [{ name: 'CD', qty: '1', descriptions: ['Album'] }],
       collected: 12,
       tracklist: [
         track('1', 'Headlights', '3:30'),
@@ -82,7 +82,7 @@ export const fixtures = {
     artists: { name: string }[];
     images: { uri: string }[];
     identifiers: { type: string; value: string }[];
-    formats?: string[];
+    formats?: { name: string; qty: string; descriptions?: string[] }[];
     tracklist: { position: string; title: string; duration: string; type_: string }[];
   }>,
 };

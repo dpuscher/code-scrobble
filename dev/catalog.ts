@@ -168,7 +168,7 @@ export function toDiscogs(r: CatalogRelease) {
     artists: [{ name: r.artist }],
     images: [{ uri: coverImage(r) }],
     identifiers: [{ type: 'Barcode', value: r.barcode }],
-    formats: r.format,
+    formats: [{ name: r.format[0], qty: '1', descriptions: r.format.slice(1) }],
     master_id: r.master,
     country: r.country,
     label: r.label,
