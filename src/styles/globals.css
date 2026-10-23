@@ -193,3 +193,41 @@
     }
   }
 }
+
+/*
+ * View transitions between screens (React's <ViewTransition>, see
+ * CircleLayout): the circle crossfades its content in place, header and
+ * footer content fade.
+ */
+::view-transition-old(.circle),
+::view-transition-new(.circle) {
+  animation-duration: 220ms;
+}
+
+::view-transition-old(.fade) {
+  animation: 120ms ease-out both view-fade-out;
+}
+
+::view-transition-new(.fade) {
+  animation: 200ms ease-out 60ms both view-fade-in;
+}
+
+@keyframes view-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes view-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

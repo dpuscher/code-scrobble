@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import type { ReactNode } from 'react';
+import { type ReactNode, ViewTransition } from 'react';
 import LogoSmall from '../assets/LogoSmall';
 import Session from '../session/Session';
 import LegalLinks from '../ui/LegalLinks';
@@ -10,7 +10,11 @@ type Props = {
   footer?: ReactNode;
 };
 
-/** The app shell: logo and session on top, the round content area, footer. */
+/**
+ * The app shell: logo and session on top, the round content area, footer.
+ * Between screens the circle stays in place and its content crossfades;
+ * header and footer content fade (styles in globals.css).
+ */
 const CircleLayout = ({ children, header, footer }: Props) => (
   <div data-scroll-lock className="flex h-full w-full items-center justify-center pt-[calc(15px+env(safe-area-inset-top))] pb-[calc(15px+env(safe-area-inset-bottom))]">
     <div className="flex h-full w-full flex-col justify-around">
@@ -23,16 +27,18 @@ const CircleLayout = ({ children, header, footer }: Props) => (
             <LogoSmall className="h-full w-auto" />
           </Link>
         </div>
-        {header}
+        {header && <ViewTransition enter="fade" exit="fade" default="none">{header}</ViewTransition>}
       </div>
-      <div className="relative mx-auto w-[500px] max-w-[80%] flex-none overflow-hidden rounded-full bg-grey shadow-[0_0_0_1px_rgb(255_255_255/0.06),0_20px_60px_-20px_rgb(0_0_0/0.8)] [mask-image:radial-gradient(white,black)]">
-        <div className="h-0 w-full pb-[100%]">
-          {children}
+      <ViewTransition name="circle" share="circle" update="circle" default="none">
+        <div className="relative mx-auto w-[500px] max-w-[80%] flex-none overflow-hidden rounded-full bg-grey shadow-[0_0_0_1px_rgb(255_255_255/0.06),0_20px_60px_-20px_rgb(0_0_0/0.8)] [mask-image:radial-gradient(white,black)]">
+          <div className="h-0 w-full pb-[100%]">
+            {children}
+          </div>
         </div>
-      </div>
+      </ViewTransition>
       <div className="flex flex-1 flex-col items-center justify-start">
         <LegalLinks />
-        {footer}
+        {footer && <ViewTransition enter="fade" exit="fade" default="none">{footer}</ViewTransition>}
       </div>
     </div>
   </div>
