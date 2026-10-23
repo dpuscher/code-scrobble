@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 import useSWR, { useSWRConfig } from 'swr';
 import type { SearchFormat } from './formats';
 import type {
-  AutoScrobble, HistoryItem, MasterVersions, Release, SearchResult,
+  AutoScrobble, HistoryItem, MasterVersions, Release, ScrobbleResult, SearchResult,
 } from './types';
 
 export class ApiError extends Error {
-  constructor(public status: number) {
+  constructor(public status: number, public body?: unknown) {
     super(`Request failed with status ${status}`);
   }
 }
@@ -17,7 +17,7 @@ export async function api<T>(url: string, { method = 'GET', body }: { method?: s
     headers: body === undefined ? undefined : { 'Content-Type': 'application/json' },
     body: body === undefined ? undefined : JSON.stringify(body),
   });
-  if (!response.ok) throw new ApiError(response.status);
+  if (!response.ok) throw new ApiError(response.status, await response.json().catch(() => undefined));
   return (response.status === 204 ? undefined : await response.json()) as T;
 }
 
@@ -100,6 +100,7 @@ export const saveSearchFormat = (searchFormat: SearchFormat | null) => (
   api('/api/user/settings', { method: 'POST', body: { searchFormat } })
 );
 
-export const scrobbleRelease = (id: number, autoScrobble: boolean) => (
-  api('/api/scrobble', { method: 'POST', body: { id, autoScrobble } })
+/** `from` skips tracks an earlier, failed attempt already sent. */
+export const scrobbleRelease = (id: number, autoScrobble: boolean, from = 0) => (
+  api<Partial<ScrobbleResult>>('/api/scrobble', { method: 'POST', body: { id, autoScrobble, from } })
 );

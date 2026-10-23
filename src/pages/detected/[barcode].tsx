@@ -6,7 +6,7 @@ import ErrorMessage from '../../components/layout/ErrorMessage';
 import Loading from '../../components/layout/Loading';
 import ReleaseActions from '../../components/release/ReleaseActions';
 import ReleaseInfo from '../../components/release/ReleaseInfo';
-import Scrobble from '../../components/scrobble/Scrobble';
+import Scrobble, { type Ignored } from '../../components/scrobble/Scrobble';
 import Checkbox from '../../components/ui/Checkbox';
 import { useFreshRelease } from '../../lib/api';
 import { requireUser } from '../../server/guard';
@@ -23,8 +23,9 @@ const Detected = ({ barcode }: { barcode: string }) => {
   const rescan = () => router.push('/');
   // Replaces this page in the history: going back to it would scrobble an
   // auto-scrobble release again.
-  const onScrobbled = useCallback(() => {
-    router.replace(`/scrobbled/${encodeURIComponent(barcode)}`);
+  const onScrobbled = useCallback((ignored?: Ignored) => {
+    const query = ignored ? `?${new URLSearchParams({ ignored: String(ignored.count), reason: String(ignored.code ?? '') })}` : '';
+    router.replace(`/scrobbled/${encodeURIComponent(barcode)}${query}`);
   }, [router, barcode]);
 
   const showRelease = release && !scrobbling;

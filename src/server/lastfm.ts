@@ -101,11 +101,46 @@ export function buildScrobbles(release: Pick<Release, 'artist' | 'title' | 'trac
   });
 }
 
+/** What Last.fm did with the scrobbles of one request or a whole release. */
+export type ScrobbleResult = {
+  accepted: number;
+  ignored: number;
+  /** Why the first ignored track was ignored (Last.fm's ignoredMessage code). */
+  ignoredCode?: number;
+};
+
+type ScrobbleResponse = {
+  scrobbles?: {
+    '@attr'?: { accepted?: number | string; ignored?: number | string };
+    // A single scrobble comes back as an object rather than an array.
+    scrobble?: ScrobbleEcho | ScrobbleEcho[];
+  };
+};
+type ScrobbleEcho = { ignoredMessage?: { code?: number | string } };
+
+export function readScrobbleResponse(response: ScrobbleResponse): ScrobbleResult {
+  const attr = response.scrobbles?.['@attr'];
+  const echoes = ([] as ScrobbleEcho[]).concat(response.scrobbles?.scrobble ?? []);
+  const ignoredCode = echoes.map((echo) => Number(echo.ignoredMessage?.code)).find((code) => code > 0);
+  return {
+    accepted: Number(attr?.accepted ?? 0),
+    ignored: Number(attr?.ignored ?? 0),
+    ...(ignoredCode ? { ignoredCode } : {}),
+  };
+}
+
+/** Thrown when a batch fails; `sent` tracks were scrobbled before it. */
+export class ScrobbleError extends Error {
+  constructor(public sent: number, public cause: unknown) {
+    super(`Scrobbling failed after ${sent} tracks`);
+  }
+}
+
 // track.scrobble accepts at most 50 tracks per request.
 const BATCH_SIZE = 50;
 
-export async function scrobbleTracks(sessionKey: string, scrobbles: Scrobble[]) {
-  const responses = [];
+export async function scrobbleTracks(sessionKey: string, scrobbles: Scrobble[]): Promise<ScrobbleResult> {
+  const result: ScrobbleResult = { accepted: 0, ignored: 0 };
   for (let offset = 0; offset < scrobbles.length; offset += BATCH_SIZE) {
     const params: Params = { sk: sessionKey };
     scrobbles.slice(offset, offset + BATCH_SIZE).forEach((scrobble, i) => {
@@ -113,7 +148,15 @@ export async function scrobbleTracks(sessionKey: string, scrobbles: Scrobble[]) 
         if (value !== undefined) params[`${key}[${i}]`] = value;
       });
     });
-    responses.push(await call<{ scrobbles: unknown }>('track.scrobble', params, { signed: true, post: true }));
+    let batch: ScrobbleResult;
+    try {
+      batch = readScrobbleResponse(await call<ScrobbleResponse>('track.scrobble', params, { signed: true, post: true }));
+    } catch (error) {
+      throw new ScrobbleError(offset, error);
+    }
+    result.accepted += batch.accepted;
+    result.ignored += batch.ignored;
+    result.ignoredCode ??= batch.ignoredCode;
   }
-  return responses;
+  return result;
 }

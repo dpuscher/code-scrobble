@@ -177,6 +177,7 @@ describe('POST /api/scrobble', () => {
     const res = await callApi(scrobble, { method: 'POST', body: { id: release.id }, cookies });
     expect(res).toMatchObject({ status: 200, body: {} });
     expect(fetch).not.toHaveBeenCalled();
+    expect(await testDb().select().from(scrobbles)).toHaveLength(1);
     expect(await testDb().select().from(autoScrobbles)).toHaveLength(0);
   });
 
@@ -275,12 +276,58 @@ describe('POST /api/scrobble failures', () => {
     vi.spyOn(console, 'error').mockImplementation(() => {});
   });
 
-  it('answers 502 when Last.fm fails', async () => {
+  it('answers 502 when Last.fm fails, without recording the scrobble', async () => {
     const { cookies } = await loggedInUser();
     const release = await createRelease();
     mockFetch({ '/2.0/': () => ({ error: 16, message: 'Temporarily unavailable' }) });
+    const res = await callApi(scrobble, { method: 'POST', body: { id: release.id, autoScrobble: true }, cookies });
+    expect(res).toMatchObject({ status: 502, body: { error: 'Last.fm request failed', sent: 0 } });
+    expect(await testDb().select().from(scrobbles)).toHaveLength(0);
+    expect(await testDb().select().from(autoScrobbles)).toHaveLength(0);
+  });
+
+  it('answers 502 on network errors too', async () => {
+    const { cookies } = await loggedInUser();
+    const release = await createRelease();
+    mockFetch({ '/2.0/': () => { throw new TypeError('fetch failed'); } });
     const res = await callApi(scrobble, { method: 'POST', body: { id: release.id }, cookies });
-    expect(res).toMatchObject({ status: 502, body: { error: 'Last.fm request failed' } });
+    expect(res.status).toBe(502);
+  });
+
+  it('continues after the tracks an earlier attempt sent', async () => {
+    const { user, cookies } = await loggedInUser();
+    const release = await createRelease({
+      tracks: Array.from({ length: 60 }, (_, i) => ({ title: `T${i}`, trackNumber: i + 1, duration: 10 })),
+    });
+    let calls = 0;
+    const bodies: URLSearchParams[] = [];
+    mockFetch({
+      '/2.0/': (_url, init) => {
+        calls += 1;
+        bodies.push(new URLSearchParams(String(init?.body)));
+        return calls === 2 ? { error: 16, message: 'Unavailable' } : { scrobbles: { '@attr': { accepted: 50 } } };
+      },
+    });
+
+    const failed = await callApi(scrobble, { method: 'POST', body: { id: release.id }, cookies });
+    expect(failed).toMatchObject({ status: 502, body: { sent: 50 } });
+    const retry = await callApi(scrobble, { method: 'POST', body: { id: release.id, from: 50 }, cookies });
+
+    expect(retry.status).toBe(200);
+    expect(bodies[2].get('track[0]')).toBe('T50');
+    expect(bodies[2].get('trackNumber[0]')).toBe('51');
+    expect(await testDb().select().from(scrobbles).where(eq(scrobbles.userId, user.id))).toHaveLength(1);
+  });
+
+  it('does not record a release Last.fm ignored completely', async () => {
+    const { cookies } = await loggedInUser();
+    const release = await createRelease();
+    mockFetch({
+      '/2.0/': () => ({ scrobbles: { '@attr': { accepted: 0, ignored: 1 }, scrobble: { ignoredMessage: { code: '5' } } } }),
+    });
+    const res = await callApi(scrobble, { method: 'POST', body: { id: release.id }, cookies });
+    expect(res.body).toEqual({ accepted: 0, ignored: 1, ignoredCode: 5 });
+    expect(await testDb().select().from(scrobbles)).toHaveLength(0);
   });
 
   it('logs the user out when Last.fm rejects the session key', async () => {

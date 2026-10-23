@@ -63,6 +63,13 @@ export type MasterVersions = {
   total: number;
 };
 
+/** What Last.fm did with a scrobbled release; empty when scrobbling is off. */
+export type ScrobbleResult = {
+  accepted: number;
+  ignored: number;
+  ignoredCode?: number;
+};
+
 export type HistoryItem = {
   id: number;
   time: string;

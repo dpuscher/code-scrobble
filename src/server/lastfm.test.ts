@@ -1,6 +1,6 @@
 import { mockFetch } from '@/test/fetch';
 import {
-  buildScrobbles, getAuthUrl, getSession, getUserInfo, LastFmError, scrobbleTracks, signParams,
+  buildScrobbles, getAuthUrl, getSession, getUserInfo, LastFmError, readScrobbleResponse, ScrobbleError, scrobbleTracks, signParams,
 } from './lastfm';
 
 describe('signParams', () => {
@@ -128,5 +128,51 @@ describe('scrobbleTracks', () => {
     expect(bodies[1].get('sk')).toBe('sk');
     expect(bodies[1].get('method')).toBe('track.scrobble');
     expect(bodies[1].get('api_sig')).toMatch(/^[0-9a-f]{32}$/);
+  });
+});
+
+describe('readScrobbleResponse', () => {
+  it('counts accepted and ignored tracks and keeps the first reason', () => {
+    expect(readScrobbleResponse({
+      scrobbles: {
+        '@attr': { accepted: '1', ignored: '2' },
+        scrobble: [
+          { ignoredMessage: { code: '0' } }, { ignoredMessage: { code: '5' } }, { ignoredMessage: { code: '3' } },
+        ],
+      },
+    })).toEqual({ accepted: 1, ignored: 2, ignoredCode: 5 });
+  });
+
+  it('reads a single scrobble, which Last.fm sends as an object', () => {
+    expect(readScrobbleResponse({
+      scrobbles: { '@attr': { accepted: 0, ignored: 1 }, scrobble: { ignoredMessage: { code: 1 } } },
+    })).toEqual({ accepted: 0, ignored: 1, ignoredCode: 1 });
+    expect(readScrobbleResponse({})).toEqual({ accepted: 0, ignored: 0 });
+  });
+});
+
+describe('scrobbleTracks results', () => {
+  const tracks = (count: number) => Array.from({ length: count }, (_, i) => ({
+    artist: 'A', album: 'B', track: `T${i}`, trackNumber: i + 1, timestamp: i,
+  }));
+
+  it('adds up the batches', async () => {
+    mockFetch({
+      '/2.0/': () => ({ scrobbles: { '@attr': { accepted: 40, ignored: 10 }, scrobble: [{ ignoredMessage: { code: 5 } }] } }),
+    });
+    await expect(scrobbleTracks('sk', tracks(60))).resolves.toEqual({ accepted: 80, ignored: 20, ignoredCode: 5 });
+  });
+
+  it('tells how many tracks were sent before a batch failed', async () => {
+    let calls = 0;
+    mockFetch({
+      '/2.0/': () => {
+        calls += 1;
+        return calls === 1 ? { scrobbles: { '@attr': { accepted: 50 } } } : { error: 16, message: 'Unavailable' };
+      },
+    });
+    const error = await scrobbleTracks('sk', tracks(60)).catch((e: unknown) => e);
+    expect(error).toBeInstanceOf(ScrobbleError);
+    expect(error).toMatchObject({ sent: 50, cause: expect.any(LastFmError) });
   });
 });

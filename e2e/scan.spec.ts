@@ -171,6 +171,27 @@ test('offers a retry when Last.fm fails', async ({ page, request, consoleErrors 
   expect(await receivedScrobbles(request)).toHaveLength(3);
 });
 
+test('says when Last.fm ignored some tracks', async ({ page, request }) => {
+  await request.post(`${MOCK_URL}/__ignore-scrobbles?count=1&code=5`);
+  await page.goto(`/detected/${KNOWN_BARCODE}`);
+  await page.getByRole('button', { name: 'Scrobble' }).click();
+
+  await expect(page.getByText('Record scrobbled to Last.fm')).toBeVisible();
+  await expect(page.getByText('Last.fm ignored 1 track. Your daily scrobble limit on Last.fm is reached.')).toBeVisible();
+  expect(await receivedScrobbles(request)).toHaveLength(2);
+});
+
+test('does not record a release Last.fm ignored completely', async ({ page, request }) => {
+  await request.post(`${MOCK_URL}/__ignore-scrobbles?count=3&code=5`);
+  await page.goto(`/detected/${KNOWN_BARCODE}`);
+  await page.getByRole('button', { name: 'Scrobble' }).click();
+
+  await expect(page.getByText('Last.fm ignored this record')).toBeVisible();
+  await expect(page.getByText('Your daily scrobble limit on Last.fm is reached.')).toBeVisible();
+  await page.goto('/profile');
+  await expect(page.getByText('Night Drive')).toHaveCount(0);
+});
+
 test.describe('detected release', () => {
   test('shows the tracklist and links to Discogs', async ({ page }) => {
     await page.goto(`/detected/${KNOWN_BARCODE}`);

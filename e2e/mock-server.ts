@@ -7,6 +7,7 @@
  *   /discogs/...    Discogs database search, release and master versions endpoints
  *   /__scrobbles    GET: scrobbles received so far, DELETE: reset
  *   /__fail-scrobbles?count=n  POST: make the next n track.scrobble calls fail
+ *   /__ignore-scrobbles?count=n&code=c  POST: ignore the next n tracks with ignoredMessage code c
  *
  * Run with `node e2e/mock-server.ts` (Node 24 strips the types). With
  * MOCK_CATALOG=dev it also serves the made-up records of dev/catalog.ts and
@@ -27,6 +28,7 @@ if (dev) {
 type Scrobble = Record<string, string>;
 let scrobbles: Scrobble[] = [];
 let failNextScrobbles = 0;
+let ignoreNextTracks = { count: 0, code: 5 };
 
 function send(res: ServerResponse, status: number, body: unknown) {
   res.writeHead(status, { 'Content-Type': 'application/json' });
@@ -64,8 +66,19 @@ function lastfm(params: URLSearchParams, res: ServerResponse) {
         if (match) (batch[Number(match[2])] ??= {})[match[1]] = value;
       });
       const received = Object.values(batch);
-      scrobbles.push(...received);
-      return send(res, 200, { scrobbles: { '@attr': { accepted: received.length, ignored: 0 } } });
+      const echoes = received.map((scrobble) => {
+        const ignored = ignoreNextTracks.count > 0;
+        if (ignored) ignoreNextTracks.count -= 1;
+        else scrobbles.push(scrobble);
+        return { track: { '#text': scrobble.track }, ignoredMessage: { code: ignored ? String(ignoreNextTracks.code) : '0', '#text': '' } };
+      });
+      const ignored = echoes.filter((echo) => echo.ignoredMessage.code !== '0').length;
+      return send(res, 200, {
+        scrobbles: {
+          '@attr': { accepted: received.length - ignored, ignored },
+          scrobble: echoes.length === 1 ? echoes[0] : echoes,
+        },
+      });
     }
     default:
       return send(res, 200, { error: 3, message: 'Invalid method' });
@@ -150,8 +163,13 @@ const server = createServer(async (req, res) => {
       if (req.method === 'DELETE') {
         scrobbles = [];
         failNextScrobbles = 0;
+        ignoreNextTracks = { count: 0, code: 5 };
       }
       return send(res, 200, scrobbles);
+    }
+    if (url.pathname === '/__ignore-scrobbles' && req.method === 'POST') {
+      ignoreNextTracks = { count: Number(url.searchParams.get('count') ?? 1), code: Number(url.searchParams.get('code') ?? 5) };
+      return send(res, 200, ignoreNextTracks);
     }
     if (url.pathname === '/__fail-scrobbles' && req.method === 'POST') {
       failNextScrobbles = Number(url.searchParams.get('count') ?? 1);
