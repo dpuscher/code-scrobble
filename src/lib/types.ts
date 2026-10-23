@@ -16,6 +16,8 @@ export type Track = {
   title: string;
   trackNumber: number;
   duration: number;
+  /** Only when it differs from the release artist, e.g. on compilations. */
+  artist?: string;
 };
 
 export type Release = {

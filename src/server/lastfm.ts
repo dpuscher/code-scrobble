@@ -72,11 +72,16 @@ export async function getUserInfo(user: string) {
 
 export type Scrobble = {
   artist: string;
+  /** Only when the track's artist differs from the release's, e.g. on compilations. */
+  albumArtist?: string;
   album: string;
   track: string;
   trackNumber: number;
   timestamp: number;
 };
+
+// Last.fm's name for compilations; Discogs calls them "Various".
+const toAlbumArtist = (artist: string) => (artist === 'Various' ? 'Various Artists' : cleanArtistName(artist));
 
 /** One scrobble per track, starting now and spaced by the track durations. */
 export function buildScrobbles(release: Pick<Release, 'artist' | 'title' | 'tracks'>, now = Date.now()): Scrobble[] {
@@ -84,7 +89,8 @@ export function buildScrobbles(release: Pick<Release, 'artist' | 'title' | 'trac
   return release.tracks.map((track) => {
     const scrobble = {
       // Releases cached before names were cleaned may still carry the number.
-      artist: cleanArtistName(release.artist),
+      artist: track.artist ?? cleanArtistName(release.artist),
+      albumArtist: track.artist ? toAlbumArtist(release.artist) : undefined,
       album: release.title,
       track: track.title,
       trackNumber: track.trackNumber,
@@ -103,7 +109,9 @@ export async function scrobbleTracks(sessionKey: string, scrobbles: Scrobble[]) 
   for (let offset = 0; offset < scrobbles.length; offset += BATCH_SIZE) {
     const params: Params = { sk: sessionKey };
     scrobbles.slice(offset, offset + BATCH_SIZE).forEach((scrobble, i) => {
-      Object.entries(scrobble).forEach(([key, value]) => { params[`${key}[${i}]`] = value; });
+      Object.entries(scrobble).forEach(([key, value]) => {
+        if (value !== undefined) params[`${key}[${i}]`] = value;
+      });
     });
     responses.push(await call<{ scrobbles: unknown }>('track.scrobble', params, { signed: true, post: true }));
   }

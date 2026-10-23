@@ -60,6 +60,28 @@ describe('getRelease', () => {
     expect(headers['User-Agent']).toMatch(/CodeScrobble/);
   });
 
+  it('keeps the artists of tracks on compilations', async () => {
+    mockFetch({
+      '/releases/8': () => discogsRelease(8, {
+        artists: [{ name: 'Various', join: ',' }],
+        tracklist: [
+          {
+            position: '1', type_: 'track', title: 'One', duration: '3:00', artists: [{ name: 'Eminem', join: 'Feat.' }, { name: 'Nate Dogg (2)', join: '' }],
+          },
+          {
+            position: '2', type_: 'track', title: 'Two', duration: '', artists: [{ name: 'Various', join: '' }],
+          },
+          {
+            position: '3', type_: 'track', title: 'Three', duration: '',
+          },
+        ],
+      }),
+    });
+    const { artist, tracks } = await getRelease(8);
+    expect(artist).toBe('Various');
+    expect(tracks.map((t) => t.artist)).toEqual(['Eminem Feat. Nate Dogg', undefined, undefined]);
+  });
+
   it('drops the number Discogs adds to artists sharing a name', async () => {
     mockFetch({
       '/releases/9': () => discogsRelease(9, { artists: [{ name: 'Nirvana (2)' }, { name: 'Area 51 (12)' }, { name: 'Boney M.' }] }),

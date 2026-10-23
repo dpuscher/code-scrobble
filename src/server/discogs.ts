@@ -3,7 +3,16 @@ import type {
   MasterVersions, SearchResult, Track, Version,
 } from './db/schema';
 
-export type DiscogsTrack = { position: string; type_: string; title: string; duration: string };
+type DiscogsArtist = { name: string; join?: string };
+
+export type DiscogsTrack = {
+  position: string;
+  type_: string;
+  title: string;
+  duration: string;
+  // Set on compilations and splits, where tracks have their own artists.
+  artists?: DiscogsArtist[];
+};
 
 type DiscogsRelease = {
   id: number;
@@ -11,7 +20,7 @@ type DiscogsRelease = {
   uri: string;
   year?: number;
   // `join` connects an artist to the next one: ",", "&", "Feat.", "/", ...
-  artists?: { name: string; join?: string }[];
+  artists?: DiscogsArtist[];
   images?: { uri: string }[];
   tracklist?: DiscogsTrack[];
   identifiers?: { type: string; value: string }[];
@@ -78,7 +87,7 @@ export const cleanArtistName = (name: string) => name.replace(/ \(\d+\)(?=,| [&/
  * Dogg", "Simon & Garfunkel", "Linkin Park, Artsonic". Uses the artists'
  * canonical names, not the spelling on the cover, since that is what Last.fm knows.
  */
-export function joinArtists(artists: { name: string; join?: string }[] = []) {
+export function joinArtists(artists: DiscogsArtist[] = []) {
   return artists.map(({ name, join }, i) => {
     if (i === artists.length - 1) return cleanArtistName(name);
     const word = join?.trim() || ',';
@@ -111,14 +120,19 @@ export function normalizeTracklist(tracks: DiscogsTrack[] = []) {
 
 export async function getRelease(id: number) {
   const data = await request<DiscogsRelease>(`/releases/${id}`);
-  const tracks: Track[] = normalizeTracklist(data.tracklist).map((track, index) => ({
-    title: track.title,
-    trackNumber: index + 1,
-    duration: convertTimecode(track.duration),
-  }));
+  const artist = joinArtists(data.artists);
+  const tracks: Track[] = normalizeTracklist(data.tracklist).map((track, index) => {
+    const trackArtist = track.artists?.length ? joinArtists(track.artists) : artist;
+    return {
+      title: track.title,
+      trackNumber: index + 1,
+      duration: convertTimecode(track.duration),
+      ...(trackArtist !== artist ? { artist: trackArtist } : {}),
+    };
+  });
   return {
     id,
-    artist: joinArtists(data.artists),
+    artist,
     title: data.title,
     image: data.images?.[0]?.uri ?? null,
     url: data.uri,

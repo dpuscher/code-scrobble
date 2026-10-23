@@ -62,6 +62,21 @@ describe('getUserInfo', () => {
 });
 
 describe('buildScrobbles', () => {
+  it('scrobbles compilation tracks by their own artist', () => {
+    const [own, shared] = buildScrobbles({
+      artist: 'Various',
+      title: 'Hits',
+      tracks: [
+        {
+          title: 'One', trackNumber: 1, duration: 100, artist: 'Eminem',
+        },
+        { title: 'Two', trackNumber: 2, duration: 100 },
+      ],
+    });
+    expect(own).toMatchObject({ artist: 'Eminem', albumArtist: 'Various Artists', album: 'Hits' });
+    expect(shared).toMatchObject({ artist: 'Various', albumArtist: undefined });
+  });
+
   it('scrobbles artists without the Discogs number', () => {
     const [scrobble] = buildScrobbles({
       artist: 'Nirvana (2), Simon (3) & Garfunkel (2)',
@@ -100,7 +115,7 @@ describe('scrobbleTracks', () => {
       },
     });
     const scrobbles = Array.from({ length: 51 }, (_, i) => ({
-      artist: 'A', album: 'B', track: `T${i}`, trackNumber: i + 1, timestamp: i,
+      artist: 'A', albumArtist: undefined, album: 'B', track: `T${i}`, trackNumber: i + 1, timestamp: i,
     }));
 
     await scrobbleTracks('sk', scrobbles);
@@ -108,6 +123,7 @@ describe('scrobbleTracks', () => {
     expect(bodies).toHaveLength(2);
     expect(bodies[0].get('track[49]')).toBe('T49');
     expect(bodies[0].has('track[50]')).toBe(false);
+    expect(bodies[0].has('albumArtist[0]')).toBe(false);
     expect(bodies[1].get('track[0]')).toBe('T50');
     expect(bodies[1].get('sk')).toBe('sk');
     expect(bodies[1].get('method')).toBe('track.scrobble');
