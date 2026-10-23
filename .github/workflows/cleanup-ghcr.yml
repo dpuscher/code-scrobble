@@ -19,7 +19,7 @@ jobs:
     steps:
       # Keeps the deployed branch tags and the newest sha tags (for
       # rollbacks); delete-untagged removes the per-arch digest-only pushes.
-      - uses: dataaxiom/ghcr-cleanup-action@v1
+      - uses: dataaxiom/ghcr-cleanup-action@d52806a0dc70b430571a37da1fde39733ffd640f # v1.2.2
         with:
           dry-run: ${{ inputs.dry-run }}
           keep-n-tagged: 20
