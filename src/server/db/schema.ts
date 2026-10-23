@@ -1,6 +1,7 @@
 import {
   index, integer, jsonb, pgTable, primaryKey, text, timestamp,
 } from 'drizzle-orm/pg-core';
+import type { SearchFormat } from '../../lib/formats';
 
 export type Track = {
   title: string;
@@ -21,6 +22,8 @@ export const users = pgTable('users', {
   image: text(),
   imageLarge: text(),
   imageXLarge: text(),
+  // Format the release search is narrowed to; null searches all formats.
+  searchFormat: text().$type<SearchFormat>(),
   createdAt: createdAt(),
   updatedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
 });
@@ -50,21 +53,64 @@ export const barcodeLookups = pgTable('barcode_lookups', {
   checkedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
 });
 
+/**
+ * A release search hit. Versions of the same album are grouped under their
+ * Discogs master release.
+ */
 export type SearchResult = {
+  /** Release to open: the release itself, or the most collected version of the album. */
   id: number;
+  masterId: number | null;
+  artist: string;
   title: string;
   thumb?: string;
-  country?: string;
+  /** Earliest year among the matching versions. */
   year?: string;
-  format?: string[];
-  uri?: string;
+  /** Only for releases without a master. */
+  country?: string;
+  /** An album's formats (Vinyl, CD, ...), or a release's format details. */
+  format: string[];
 };
 
+// Keyed by `<format>|<normalized query>`, format empty for all formats.
 export const searchCache = pgTable('search_cache', {
   query: text().primaryKey(),
   results: jsonb().$type<SearchResult[]>().notNull(),
   expiresAt: timestamp({ withTimezone: true }).notNull(),
 });
+
+export type Version = {
+  id: number;
+  title: string;
+  thumb?: string;
+  /** Major formats, e.g. ["Vinyl"]. */
+  formats: string[];
+  /** Format details, e.g. `2xLP, Album, Reissue`. */
+  format?: string;
+  year?: string;
+  country?: string;
+  label?: string;
+  catno?: string;
+  /** How many Discogs users have it in their collection. */
+  collected: number;
+};
+
+/** Versions of a master release, most collected first. */
+export type MasterVersions = {
+  versions: Version[];
+  /** All versions on Discogs; `versions` holds at most the first page. */
+  total: number;
+};
+
+export const versionsCache = pgTable('versions_cache', {
+  masterId: integer().notNull(),
+  // Empty for all formats.
+  format: text().notNull(),
+  data: jsonb().$type<MasterVersions>().notNull(),
+  expiresAt: timestamp({ withTimezone: true }).notNull(),
+}, (t) => [
+  primaryKey({ columns: [t.masterId, t.format] }),
+]);
 
 export const autoScrobbles = pgTable('auto_scrobbles', {
   userId: integer().notNull().references(() => users.id, { onDelete: 'cascade' }),

@@ -1,6 +1,6 @@
 import { discogsRelease, mockFetch } from '@/test/fetch';
 import {
-  convertTimecode, findReleaseIdByBarcode, getRelease, normalizeTracklist, searchReleases,
+  convertTimecode, findReleaseIdByBarcode, getMasterVersions, getRelease, normalizeTracklist, searchReleases, splitTitle,
 } from './discogs';
 
 const track = (position: string, type_ = 'track') => ({
@@ -96,17 +96,81 @@ describe('findReleaseIdByBarcode', () => {
   });
 });
 
+describe('splitTitle', () => {
+  it.each([
+    ['Die Ärzte - Die Bestie In Menschengestalt', 'Die Ärzte', 'Die Bestie In Menschengestalt'],
+    ['Nirvana (2) - Nevermind', 'Nirvana', 'Nevermind'],
+    ['Simon (3) & Garfunkel (2) - Live - 1969', 'Simon & Garfunkel', 'Live - 1969'],
+    ['Untitled', '', 'Untitled'],
+  ])('splits %s', (input, artist, title) => {
+    expect(splitTitle(input)).toEqual({ artist, title });
+  });
+});
+
 describe('searchReleases', () => {
-  it('returns only the fields the client needs', async () => {
-    mockFetch({
+  const hit = (id: number, overrides: Record<string, unknown> = {}) => ({
+    id, title: 'Band - Album', thumb: `th${id}`, country: 'DE', year: '1999', format: ['CD', 'Album'], community: { have: id }, ...overrides,
+  });
+
+  it('groups versions by master in relevance order and opens the most collected one', async () => {
+    const fetch = mockFetch({
       '/database/search': () => ({
-        results: [{
-          id: 1, title: 'T', thumb: 'th', country: 'DE', year: '1999', format: ['CD'], uri: '/r/1', community: {}, extra: 1,
-        }],
+        results: [
+          hit(1, { master_id: 7, year: '2007', format: ['CD'] }),
+          hit(2, { master_id: 0, title: 'Band - Single', format: ['Vinyl', 'LP', 'Vinyl', 'LP', 'Single'] }),
+          hit(5, { master_id: 7, year: '1993', format: ['Vinyl', 'LP'] }),
+          hit(3, { master_id: 7, year: '0', format: ['CD'] }),
+        ],
       }),
     });
-    await expect(searchReleases('x')).resolves.toEqual([{
-      id: 1, title: 'T', thumb: 'th', country: 'DE', year: '1999', format: ['CD'], uri: '/r/1',
-    }]);
+
+    await expect(searchReleases('band')).resolves.toEqual([
+      {
+        id: 5, masterId: 7, artist: 'Band', title: 'Album', thumb: 'th5', year: '1993', format: ['Vinyl', 'CD'],
+      },
+      {
+        id: 2, masterId: null, artist: 'Band', title: 'Single', thumb: 'th2', year: '1999', country: 'DE', format: ['Vinyl', 'LP', 'Single'],
+      },
+    ]);
+    const url = new URL(String(fetch.mock.calls[0][0]));
+    expect(Object.fromEntries(url.searchParams)).toEqual({ q: 'band', type: 'release', per_page: '100' });
+  });
+
+  it('narrows the search to a format', async () => {
+    const fetch = mockFetch({ '/database/search': () => ({ results: [] }) });
+    await searchReleases('band', 'Vinyl');
+    expect(new URL(String(fetch.mock.calls[0][0])).searchParams.get('format')).toBe('Vinyl');
+  });
+});
+
+describe('getMasterVersions', () => {
+  it('maps versions, most collected first', async () => {
+    const fetch = mockFetch({
+      '/masters/7/versions': () => ({
+        pagination: { items: 140 },
+        versions: [
+          {
+            id: 1, title: 'Album', thumb: '', major_formats: ['CD'], format: 'Album', label: 'L', catno: 'none', country: 'DE', released: '1993-05-01', stats: { community: { in_collection: 3 } },
+          },
+          {
+            id: 2, title: 'Album', thumb: 't2', major_formats: ['Vinyl'], format: '2×LP', label: 'L', catno: 'L 1', country: 'UK', released: '0', stats: { community: { in_collection: 9 } },
+          },
+        ],
+      }),
+    });
+
+    await expect(getMasterVersions(7, 'Vinyl')).resolves.toEqual({
+      total: 140,
+      versions: [
+        {
+          id: 2, title: 'Album', thumb: 't2', formats: ['Vinyl'], format: '2×LP', label: 'L', catno: 'L 1', country: 'UK', year: undefined, collected: 9,
+        },
+        {
+          id: 1, title: 'Album', thumb: undefined, formats: ['CD'], format: 'Album', label: 'L', catno: undefined, country: 'DE', year: '1993', collected: 3,
+        },
+      ],
+    });
+    const url = new URL(String(fetch.mock.calls[0][0]));
+    expect(Object.fromEntries(url.searchParams)).toEqual({ per_page: '100', format: 'Vinyl' });
   });
 });

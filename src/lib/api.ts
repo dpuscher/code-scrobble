@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import useSWR, { useSWRConfig } from 'swr';
+import type { SearchFormat } from './formats';
 import type {
-  AutoScrobble, HistoryItem, Release, SearchResult,
+  AutoScrobble, HistoryItem, MasterVersions, Release, SearchResult,
 } from './types';
 
 export class ApiError extends Error {
@@ -77,8 +78,26 @@ export function useAutoScrobbles() {
   return { ...swr, remove };
 }
 
-export const searchReleases = (query: string) => (
-  api<SearchResult[]>(`/api/search/${encodeURIComponent(query)}`)
+const withFormat = (path: string, format: SearchFormat | null) => (
+  format ? `${path}?format=${encodeURIComponent(format)}` : path
+);
+
+/** Release search; `query` null until one is submitted. */
+export const useSearch = (query: string | null, format: SearchFormat | null) => useSWR<SearchResult[]>(
+  query ? withFormat(`/api/search/${encodeURIComponent(query)}`, format) : null,
+  fetcher,
+  // Keeps showing the last results while a changed filter loads.
+  { ...stable, keepPreviousData: true },
+);
+
+export const useVersions = (masterId: number, format: SearchFormat | null) => useSWR<MasterVersions>(
+  withFormat(`/api/masters/${masterId}/versions`, format),
+  fetcher,
+  { ...stable, keepPreviousData: true },
+);
+
+export const saveSearchFormat = (searchFormat: SearchFormat | null) => (
+  api('/api/user/settings', { method: 'POST', body: { searchFormat } })
 );
 
 export const scrobbleRelease = (id: number, autoScrobble: boolean) => (

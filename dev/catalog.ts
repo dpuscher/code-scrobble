@@ -14,6 +14,13 @@ export type CatalogRelease = {
   /** Cover gradient. */
   colors: [string, string];
   tracks: [title: string, duration: string][];
+  /** Discogs master grouping versions of the same album. */
+  master?: number;
+  country?: string;
+  label?: string;
+  catno?: string;
+  /** Discogs users who have it in their collection. */
+  collected?: number;
 };
 
 /** The Last.fm account the mock logs you in as during development. */
@@ -44,17 +51,68 @@ const release = (
   id, artist, title, year, colors, tracks, format, barcode: ean13(`40099${String(id).padStart(7, '0')}`),
 });
 
-export const catalog: CatalogRelease[] = [
-  release(2001, 'Velvet Static', 'Neon Harbour', 1998, ['#ff6b6b', '#5f27cd'], [
+/** Another version of an album, e.g. a CD or a reissue: same master, new id and barcode. */
+const version = (
+  of: CatalogRelease,
+  id: number,
+  changes: Partial<Omit<CatalogRelease, 'id' | 'barcode'>>,
+): CatalogRelease => ({
+  ...of, ...changes, id, barcode: ean13(`40099${String(id).padStart(7, '0')}`),
+});
+
+const neonHarbour: CatalogRelease = {
+  ...release(2001, 'Velvet Static', 'Neon Harbour', 1998, ['#ff6b6b', '#5f27cd'], [
     ['Low Tide', '4:12'], ['Harbour Lights', '3:48'], ['Signal Fire', '5:01'], ['Saltwater Radio', '3:22'],
     ['Breakwater', '4:40'], ['Last Ferry', '6:05'],
   ]),
+  master: 9001,
+  country: 'Germany',
+  label: 'Static Records',
+  catno: 'SR 0042-1',
+  collected: 1520,
+};
+
+const rueckspulen: CatalogRelease = {
+  ...release(2003, 'Die Kassettenkinder', 'Rückspulen', 1994, ['#feca57', '#e15f41'], [
+    ['Rückspulen', '3:05'], ['Bandsalat', '2:58'], ['Seite B', '4:10'], ['Walkman', '3:44'], ['Chromdioxid', '5:20'],
+  ], ['CD', 'Album']),
+  master: 9002,
+  country: 'Germany',
+  label: 'Spulwerk',
+  catno: 'SPW 7-2',
+  collected: 640,
+};
+
+export const catalog: CatalogRelease[] = [
+  neonHarbour,
+  version(neonHarbour, 2013, {
+    format: ['CD', 'Album'], catno: 'SR 0042-2', collected: 812,
+  }),
+  version(neonHarbour, 2014, {
+    year: 2018, format: ['Vinyl', '2×LP', 'Album', 'Reissue', 'Remastered'], country: 'Europe', label: 'Harbour Lights Music', catno: 'HLM 018', collected: 233,
+  }),
+  version(neonHarbour, 2015, {
+    format: ['Cassette', 'Album'], catno: 'SR 0042-4', collected: 41,
+  }),
+  version(neonHarbour, 2016, {
+    year: 2008,
+    format: ['CD', 'Album', 'Reissue', 'Remastered'],
+    country: 'UK',
+    label: 'Static Records',
+    catno: 'SRUK 108',
+    collected: 120,
+    tracks: [...neonHarbour.tracks, ['Low Tide (Demo)', '4:30']],
+  }),
+  version(neonHarbour, 2017, {
+    year: 2001, format: ['CD', 'Album', 'Club Edition'], country: 'Germany', label: 'Bertelsmann Club', catno: '45 211 7', collected: 18,
+  }),
   release(2002, 'Velvet Static', 'Paper Satellites', 2003, ['#48dbfb', '#0a3d62'], [
     ['Orbit', '3:31'], ['Paper Satellites', '4:02'], ['Gravity Well', '4:55'], ['Moonlit Static', '3:17'],
   ], ['CD', 'Album']),
-  release(2003, 'Die Kassettenkinder', 'Rückspulen', 1994, ['#feca57', '#e15f41'], [
-    ['Rückspulen', '3:05'], ['Bandsalat', '2:58'], ['Seite B', '4:10'], ['Walkman', '3:44'], ['Chromdioxid', '5:20'],
-  ], ['CD', 'Album']),
+  rueckspulen,
+  version(rueckspulen, 2018, {
+    year: 2019, format: ['Vinyl', 'LP', 'Album', 'Reissue'], label: 'Spulwerk', catno: 'SPW 7-1', collected: 95,
+  }),
   release(2004, 'Marlow & The Tides', 'Coastline Sessions', 2011, ['#1dd1a1', '#10ac84'], [
     ['Morning Swim', '2:49'], ['Coastline', '3:56'], ['Driftwood', '4:21'], ['Gulls', '1:58'], ['Undertow', '5:33'],
     ['Sandbar', '3:12'], ['Evening Swim', '4:45'],
@@ -111,6 +169,11 @@ export function toDiscogs(r: CatalogRelease) {
     images: [{ uri: coverImage(r) }],
     identifiers: [{ type: 'Barcode', value: r.barcode }],
     formats: r.format,
+    master_id: r.master,
+    country: r.country,
+    label: r.label,
+    catno: r.catno,
+    collected: r.collected,
     tracklist: r.tracks.map(([title, duration], i) => ({
       position: String(i + 1), title, duration, type_: 'track',
     })),
