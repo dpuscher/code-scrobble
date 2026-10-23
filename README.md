@@ -2,7 +2,7 @@
 
 CodeScrobble is a web application that makes it easy to scrobble your CD or vinyl records to Last.fm by scanning the barcode with your smartphone camera.
 
-Next.js 16 (Pages Router) and React 19, Postgres via Drizzle ORM, and Tailwind CSS. Barcodes are decoded in the browser with [quagga2](https://github.com/ericblade/quagga2). Release data comes from [Discogs](https://www.discogs.com/developers), scrobbles go to [Last.fm](https://www.last.fm/api).
+Next.js 16 (Pages Router) and React 19, Postgres via Drizzle ORM, and Tailwind CSS. Barcodes are decoded in the browser, by the built-in [Barcode Detection API](https://developer.mozilla.org/docs/Web/API/Barcode_Detection_API) where available and [ZXing](https://github.com/Sec-ant/zxing-wasm) otherwise. Release data comes from [Discogs](https://www.discogs.com/developers), scrobbles go to [Last.fm](https://www.last.fm/api).
 
 ## Development
 

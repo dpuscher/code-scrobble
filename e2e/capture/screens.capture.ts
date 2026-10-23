@@ -27,7 +27,12 @@ const fakeCamera = () => {
     };
     draw();
     setInterval(draw, 100);
-    return canvas.captureStream(10);
+    const stream = canvas.captureStream(10);
+    // Pretend the camera has a torch, so the flashlight button shows up.
+    const [track] = stream.getVideoTracks();
+    const capabilities = track.getCapabilities();
+    track.getCapabilities = () => ({ ...capabilities, torch: true });
+    return stream;
   };
 };
 const brokenCamera = () => {

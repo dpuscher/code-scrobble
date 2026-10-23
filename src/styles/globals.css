@@ -37,12 +37,13 @@
     }
   }
 
+  /* Transform only, so it runs on the compositor while the decoder keeps the main thread busy. */
   @keyframes scan {
     from {
-      top: 0;
+      transform: translateY(0);
     }
     to {
-      top: 100%;
+      transform: translateY(100%);
     }
   }
 
