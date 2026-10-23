@@ -11,10 +11,12 @@
  * - Positions tell the media apart: sides (A1, B2, AA1) for records and
  *   tapes, numbers (1, 1-1) for discs, prefixes for the rest of a set
  *   (CD1-1, DVD1, Video 1, MPG1).
- * - Only one kind of medium is scrobbled: a vinyl release with a bonus CD of
- *   the same songs would otherwise be scrobbled twice. Video content (DVDs,
- *   Blu-rays, enhanced CD videos) and download files are left out whenever
- *   there is audio on a disc, record or tape.
+ * - Only one kind of medium is scrobbled by default: a vinyl release with a
+ *   bonus CD of the same songs would otherwise be scrobbled twice. The other
+ *   media stay available as bonus parts. Video content (DVDs, Blu-rays,
+ *   enhanced CD videos) and download files are left out whenever there is
+ *   audio on a disc, record or tape.
+ * - The sides and discs become parts that can be scrobbled on their own.
  */
 
 export type DiscogsArtist = { name: string; join?: string };
@@ -38,12 +40,34 @@ export type PlayableTrack = {
   artists?: DiscogsArtist[];
 };
 
+/** A side or disc of a release, to scrobble on its own. */
+export type Part = {
+  /** Stable key, also used in URLs: "A", "2-A", "CD-B", "D2", "CD1". */
+  id: string;
+  /** Short name: "A", "2A" (side A of the second record), "CD", "CD 2", "Record 3". */
+  name: string;
+  kind: 'side' | 'disc';
+  /** The record, tape or disc it is on; sides A and B of a record share it. */
+  item: string;
+  /** What the item is: "record", "tape", "CD", "SACD", "MiniDisc" or "disc". */
+  medium: string;
+  /** On another medium than the main one, e.g. the CD of a vinyl release. Not scrobbled unless picked. */
+  bonus?: boolean;
+};
+
+export type GroupedTrack = PlayableTrack & { part?: string };
+
 type Kind = 'sides' | 'disc' | 'video' | 'file' | 'unknown';
 
-/** What a track is on: the kind of medium, and the prefix that names its item in a set. */
-type Medium = { kind: Kind; prefix: string };
+/**
+ * What a track is on: the kind of medium, the prefix that names its item in a
+ * set, and the rest of the position after the prefix ("2-A1" of "LP2-A1").
+ */
+type Medium = { kind: Kind; prefix: string; rest: string };
 
 type Entry = PlayableTrack & { medium: Medium };
+
+type Spot = Omit<Part, 'name' | 'bonus'> & { prefix: string; side?: string; number: number };
 
 // "1:02:03" -> 3723 seconds. Discogs also allows a period in place of the
 // colon ("3.45"). Missing or malformed parts count as 0.
@@ -80,6 +104,16 @@ const PREFIXES: [Kind, RegExp][] = [
   ['sides', /^(cass|cassette|tape|vinyl|side|face|lado|seite|kant)(?!\p{L})/iu],
   ['sides', /^(LP|EP|MC|CS|\d{1,2}")(?!\p{L})/u],
 ];
+// Names of formats and prefixes for what a part is on.
+const NOUNS: [RegExp, string][] = [
+  [/^(cd|cdr|hdcd|shm-?cd)$/i, 'CD'],
+  [/^sacd$/i, 'SACD'],
+  [/^dvd-?audio$/i, 'DVD-Audio'],
+  [/^(minidisc|md)$/i, 'MiniDisc'],
+  [/^(vinyl|acetate|lathe cut|flexi-disc|shellac|lp|ep|\d{1,2}")$/i, 'record'],
+  [/^(cassette|microcassette|reel-to-reel|cass|tape|mc|cs)$/i, 'tape'],
+];
+const nounOf = (name = '') => NOUNS.find(([pattern]) => pattern.test(name))?.[1];
 const VIDEO_HEADING = /\b(dvd|blu-?ray|video|vhs)\b/i;
 // Bracketed, so that songs called "Silence" or "Empty" stay.
 const NO_AUDIO = /^([([]\s*(no audio|silence|silent|blank|empty|data( track)?)\s*[)\]]|no audio|data track|blank track|silent track)$/i;
@@ -104,19 +138,91 @@ const samePrefix = (prefix: string) => prefix.toUpperCase().replace(/-/g, '')
 function mediumOf(position: string, media: string[], videoSection: boolean): Medium {
   for (const [kind, pattern] of PREFIXES) {
     const prefix = pattern.exec(position)?.[1];
-    if (prefix) return { kind, prefix: samePrefix(prefix) };
+    if (prefix) {
+      return { kind, prefix: samePrefix(prefix), rest: position.slice(prefix.length).replace(/^[-.:\s]+/, '') };
+    }
   }
-  if (videoSection) return { kind: 'video', prefix: '' };
+  const medium = (kind: Kind): Medium => ({ kind, prefix: '', rest: position });
+  if (videoSection) return medium('video');
   if (/^\d/.test(position)) {
     // 2-5 is the fifth track of the second item, which may be a DVD.
     const item = /^(\d+)-\d/.exec(position);
-    if (item && VIDEO_FORMATS.test(media[Number(item[1]) - 1] ?? '')) return { kind: 'video', prefix: '' };
-    return { kind: 'disc', prefix: '' };
+    if (item && VIDEO_FORMATS.test(media[Number(item[1]) - 1] ?? '')) return medium('video');
+    return medium('disc');
   }
-  // A1, B12, A.1, A-1, a1, AA (double A side), AB1 (second groove of side A).
-  if (/^(\p{L}|\p{Lu}{2})([\d.\- ]|$)/u.test(position)) return { kind: 'sides', prefix: '' };
-  return { kind: 'unknown', prefix: '' };
+  // A1, B12, A.1, A-1, a1, AA (double A side), AB1 (second groove of side A),
+  // AIII (third track of side A).
+  if (/^(\p{L}|\p{Lu}{2})([\d.\- ]|$)|^\p{Lu}[IVX]+$/u.test(position)) return medium('sides');
+  return medium('unknown');
 }
+
+/**
+ * The side or disc a track is on. Sides are A1 or, with the number of the
+ * record, 2-A1 and LP2-A1; sides A and B are on the first record, C and D on
+ * the second. Discs are 1 or 2-5, prefixed in sets of several media (CD2-5).
+ * `nouns` names the items that positions do not name.
+ */
+function spotOf({ kind, prefix, rest }: Medium, nouns: { sides: string; discs: string; items: string[] }): Spot | undefined {
+  if (kind !== 'sides' && kind !== 'disc') return undefined;
+  // 2-A1 and 2A1 are sides of the second record, 2A is part A of track 2.
+  const side = kind === 'sides' || (!prefix && /^\d+(?:[-. ]+\p{L}(?=\d|$)|\p{L}(?=\d))/u.test(rest))
+    ? /^(?:(\d+)[-. ]*)?((?![IVX])\p{L}(?=[IVX]+$)|\p{L}{1,2}(?!\p{L}))/u.exec(rest) ?? (kind === 'sides' && !prefix ? /^()(\d+)/.exec(rest) : null)
+    : null;
+  if (side) {
+    const [, record, name] = side;
+    const letter = name.toUpperCase();
+    // A and B are sides 1 and 2; "Seite 1" and "Seite 2" too.
+    const index = /^\d+$/.test(letter) ? Number(letter) - 1 : Math.max(letter.charCodeAt(0) - 65, 0) * Number(letter.length === 1);
+    const number = record ? Number(record) : Math.floor(index / 2) + 1;
+    return {
+      id: [prefix, record, letter].filter(Boolean).join('-'),
+      prefix,
+      kind: 'side',
+      item: `${prefix}${record ? '' : '~'}${number}`,
+      medium: nounOf(prefix) ?? nouns.sides,
+      side: letter,
+      number,
+    };
+  }
+  const number = Number(/^(\d+)[-.]\d/.exec(rest)?.[1] ?? 1);
+  const id = `${prefix || 'D'}${number}`;
+  return {
+    id,
+    prefix,
+    kind: 'disc',
+    item: id,
+    medium: (prefix ? nounOf(prefix) ?? 'disc' : nounOf(nouns.items[number - 1]) ?? nouns.discs),
+    number,
+  };
+}
+
+const capitalize = (word: string) => word[0].toUpperCase() + word.slice(1);
+
+/**
+ * Names the parts: sides by their letter, discs by their medium, numbered
+ * when there are several. When letters repeat, sides get the number of their
+ * record (1A, 2A) or their prefix (7" A).
+ */
+function namePart(spot: Spot, spots: Spot[]): string {
+  if (spot.kind === 'side') {
+    const sides = spots.filter(({ kind }) => kind === 'side');
+    const repeats = (group: Spot[]) => new Set(group.map(({ side }) => side)).size < group.length;
+    if (!repeats(sides)) return spot.side!;
+    return repeats(sides.filter(({ prefix }) => prefix === spot.prefix)) || !spot.prefix
+      ? `${spot.number}${spot.side}`
+      : `${spot.prefix} ${spot.side}`;
+  }
+  const discs = spots.filter(({ kind, medium }) => kind === 'disc' && medium === spot.medium);
+  if (discs.length < 2) return capitalize(spot.medium);
+  // Count them when their numbers say nothing (a CD-1 and a 1).
+  const numbers = new Set(discs.map(({ number }) => number));
+  return `${capitalize(spot.medium)} ${numbers.size === discs.length ? spot.number : discs.indexOf(spot) + 1}`;
+}
+
+// Movements numbered I, II, III, IV (or ll, lV): parts of a work, not sides.
+const roman = (position: string) => position.toUpperCase().replace(/L/g, 'I');
+const ROMAN = /^[IVX]+$/;
+const isRomanList = (positions: string[]) => positions.some((position) => /^(II|III|IV|VI|VII|VIII|IX)$/.test(roman(position)));
 
 /** Index tracks become one track or one per part, see above. */
 function flatten(tracklist: DiscogsTrack[]) {
@@ -166,33 +272,83 @@ const toTrack = ({ title, duration, artists }: PlayableTrack): PlayableTrack => 
   { title, duration, ...(artists ? { artists } : {}) }
 );
 
-export function selectTracks(tracklist: DiscogsTrack[] = [], formats: DiscogsFormat[] = []): PlayableTrack[] {
+/**
+ * The tracks to scrobble, with the parts (sides, discs) they are on. Parts
+ * are only set when there are at least two.
+ */
+export function groupTracks(tracklist: DiscogsTrack[] = [], formats: DiscogsFormat[] = []): { tracks: GroupedTrack[]; parts: Part[] } {
   const tracks = flatten(tracklist).filter((track) => !NO_AUDIO.test(track.title.trim()));
   const media = mediaOf(formats);
   const isVideo = (name: string) => VIDEO_FORMATS.test(name);
   // A video-only release (a concert DVD) is all video: nothing to tell apart.
-  if (media.length && media.every(isVideo)) return tracks.map(toTrack);
+  if (media.length && media.every(isVideo)) return { tracks: tracks.map(toTrack), parts: [] };
 
   // Item numbers only say which format they are when the tracklist numbers
   // every item; a VHS left out of the tracklist would shift them.
   const items = new Set(tracks.map(({ position }) => /^(\d+)-\d/.exec(position)?.[1]).filter(Boolean));
   const numbered = items.size === media.length ? media : [];
   const hasVideo = media.some(isVideo);
+  // Unless the set has records or tapes, whose sides may be numbered so.
+  const romans = !media.some((name) => /^(record|tape)$/.test(nounOf(name) ?? ''))
+    && isRomanList(tracks.map(({ position }) => position));
   const entries: Entry[] = tracks.map(({ heading, position, ...track }) => ({
     ...track,
-    // Headings may only mark video sections when the set has a video item.
-    medium: mediumOf(position, numbered, hasVideo && VIDEO_HEADING.test(heading)),
+    medium: romans && ROMAN.test(roman(position))
+      ? { kind: 'unknown', prefix: '', rest: position }
+      // Headings may only mark video sections when the set has a video item.
+      : mediumOf(position, numbered, hasVideo && VIDEO_HEADING.test(heading)),
   }));
 
   const audio = entries.filter(({ medium }) => medium.kind !== 'video' && medium.kind !== 'file');
   // Nothing but video or files, e.g. a concert DVD: keep it all.
-  if (!audio.length) return entries.map(toTrack);
+  if (!audio.length) return { tracks: entries.map(toTrack), parts: [] };
 
-  // One kind of item of the set, whichever comes first: the records, the
-  // tapes or the discs. Tracks whose position names no medium stay.
+  // One kind of item of the set is the main one, whichever comes first: the
+  // records, the tapes or the discs. The others are bonus parts.
   const first = audio.find(({ medium }) => medium.kind !== 'unknown')?.medium;
-  return audio
-    .filter(({ medium }) => !first || medium.kind === 'unknown'
-      || (medium.kind === first.kind && medium.prefix === first.prefix))
-    .map(toTrack);
+  const isBonus = (medium: Medium) => Boolean(first) && medium.kind !== 'unknown'
+    && (medium.kind !== first!.kind || medium.prefix !== first!.prefix);
+
+  // Positions like A1 and 1 name no medium; the formats of the set do.
+  const audioNouns = media.filter((name) => !isVideo(name)).map(nounOf);
+  const isSides = (noun?: string) => noun === 'record' || noun === 'tape';
+  const nouns = {
+    sides: audioNouns.find(isSides) ?? 'record',
+    // A vinyl release numbered 1-1, 2-1 has records; a vinyl and CD set, a CD.
+    discs: audioNouns.find((noun) => noun && !isSides(noun))
+      ?? (audioNouns.length && audioNouns.every(isSides) ? audioNouns[0]! : 'disc'),
+    items: numbered,
+  };
+  const spots = new Map<string, Spot & { bonus: boolean }>();
+  const placed = audio.map((entry) => {
+    const spot = spotOf(entry.medium, nouns);
+    if (spot && !spots.has(spot.id)) spots.set(spot.id, { ...spot, bonus: isBonus(entry.medium) });
+    return { track: toTrack(entry), part: spot?.id };
+  });
+  // Tracks whose position names no medium go with the track before them, or
+  // the first one after them.
+  placed.forEach((entry, i) => {
+    if (entry.part) return;
+    entry.part = placed.slice(0, i).findLast((other) => other.part)?.part
+      ?? placed.slice(i + 1).find((other) => other.part)?.part;
+  });
+
+  if (spots.size < 2) return { tracks: placed.filter(({ part }) => !part || !spots.get(part)?.bonus).map(({ track }) => track), parts: [] };
+  const all = [...spots.values()];
+  const parts = all.map((spot): Part => ({
+    id: spot.id,
+    name: namePart(spot, all),
+    kind: spot.kind,
+    item: spot.item,
+    medium: spot.medium,
+    ...(spot.bonus ? { bonus: true } : {}),
+  }));
+  return { tracks: placed.map(({ track, part }) => ({ ...track, part })), parts };
+}
+
+/** The tracks scrobbled by default: all but the bonus parts. */
+export function selectTracks(tracklist: DiscogsTrack[] = [], formats: DiscogsFormat[] = []): PlayableTrack[] {
+  const { tracks, parts } = groupTracks(tracklist, formats);
+  const bonus = new Set(parts.filter((part) => part.bonus).map(({ id }) => id));
+  return tracks.filter(({ part }) => !part || !bonus.has(part)).map(toTrack);
 }
