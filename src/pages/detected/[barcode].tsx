@@ -21,8 +21,10 @@ const Detected = ({ barcode }: { barcode: string }) => {
   const scrobbling = confirmed || Boolean(release?.instantScrobble);
 
   const rescan = () => router.push('/');
+  // Replaces this page in the history: going back to it would scrobble an
+  // auto-scrobble release again.
   const onScrobbled = useCallback(() => {
-    router.push(`/scrobbled/${encodeURIComponent(barcode)}`);
+    router.replace(`/scrobbled/${encodeURIComponent(barcode)}`);
   }, [router, barcode]);
 
   const showRelease = release && !scrobbling;

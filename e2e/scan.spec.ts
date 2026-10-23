@@ -141,6 +141,20 @@ test('auto-scrobbles a record when it is scanned again', async ({ page, request 
   await expect(page).toHaveURL(new RegExp(`/scrobbled/${KNOWN_BARCODE}$`));
 });
 
+test('going back after an auto-scrobble does not scrobble again', async ({ page, request }) => {
+  // Not the scanner: it would read the fake camera's barcode again.
+  await page.goto('/profile');
+  await page.goto(`/detected/${KNOWN_BARCODE}`);
+  await page.getByText('Auto-scrobble on next scan').click();
+  await page.getByRole('button', { name: 'Scrobble' }).click();
+  await expect(page.getByText('Record successfully scrobbled to Last.fm')).toBeVisible();
+
+  await page.goBack();
+  await expect(page).toHaveURL(/\/profile$/);
+  await page.waitForTimeout(1000);
+  expect(await receivedScrobbles(request)).toHaveLength(3);
+});
+
 test('offers a retry when Last.fm fails', async ({ page, request, consoleErrors }) => {
   await request.post(`${MOCK_URL}/__fail-scrobbles?count=1`);
   await page.goto(`/detected/${KNOWN_BARCODE}`);
