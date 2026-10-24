@@ -317,9 +317,9 @@ __metadata:
   linkType: hard
 
 "@electric-sql/pglite@npm:^0.5.0":
-  version: 0.5.10
-  resolution: "@electric-sql/pglite@npm:0.5.10"
-  checksum: 10c0/634e8431d9c3d85d5bebdcf55255290669e10dff0da3d9fc6439321debd28db6f87279ff3c445f77945aceb293690a2f16175a3dd72192b1d37f03b4f81f70b2
+  version: 0.5.11
+  resolution: "@electric-sql/pglite@npm:0.5.11"
+  checksum: 10c0/e865146c503cbe9fac4e6ee53f0f75df683aeaaa68743358bd9e7b12372b183d0a23eb51d4189c59499db8ab320fb1ac4b5baf1addb95a757af79add24aa74e0
   languageName: node
   linkType: hard
 
@@ -5696,7 +5696,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.5.16, postcss@npm:^8.5.29":
+"postcss@npm:^8.5.16, postcss@npm:^8.5.30":
   version: 8.5.31
   resolution: "postcss@npm:8.5.31"
   dependencies:
@@ -5914,7 +5914,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rolldown@npm:~1.2.12":
+"rolldown@npm:~1.2.14":
   version: 1.2.14
   resolution: "rolldown@npm:1.2.14"
   dependencies:
@@ -6865,18 +6865,18 @@ __metadata:
   linkType: hard
 
 "vite@npm:^8":
-  version: 8.3.4
-  resolution: "vite@npm:8.3.4"
+  version: 8.3.5
+  resolution: "vite@npm:8.3.5"
   dependencies:
     fsevents: "npm:~2.3.3"
     lightningcss: "npm:^1.33.0"
     picomatch: "npm:^4.0.7"
-    postcss: "npm:^8.5.29"
-    rolldown: "npm:~1.2.12"
+    postcss: "npm:^8.5.30"
+    rolldown: "npm:~1.2.14"
     tinyglobby: "npm:^0.2.17"
   peerDependencies:
     "@types/node": ^20.19.0 || >=22.12.0
-    "@vitejs/devtools": ^0.7.1
+    "@vitejs/devtools": ^0.7.1 || ^0.8.0
     esbuild: ^0.27.0 || ^0.28.0
     jiti: ">=1.21.0"
     less: ^4.0.0
@@ -6917,7 +6917,7 @@ __metadata:
       optional: true
   bin:
     vite: bin/vite.js
-  checksum: 10c0/63d7351fa21580fb646f0b594c64e97a56cdf15c55a57372a7adefe6287995fa7384cb5ddca14695ff7dca738ba00e0a3352fc24df711d9c501c5576f40f0867
+  checksum: 10c0/33991600925b6717429c14a2c2907554aed077489ee6ff7815f9f49d5de559f5173ccb0472f2b3f9eef2a49e2e014f6cb624db8d4adebb37baad3a8cbc15065a
   languageName: node
   linkType: hard
 
