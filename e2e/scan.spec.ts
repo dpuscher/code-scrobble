@@ -199,7 +199,10 @@ test.describe('detected release', () => {
 
     await expect(page.getByText('Night Drive', { exact: true })).toBeVisible();
     const rows = page.getByRole('row');
-    await expect(rows).toHaveText([/1\s*Headlights\s*3:30/, /2\s*Overpass\s*4:05/, /3\s*Last Exit\s*5:00/]);
+    await expect(rows).toHaveText([
+      'Side A', /1\s*Headlights\s*3:30/, /2\s*Overpass\s*4:05/, 'Side B', /3\s*Last Exit\s*5:00/,
+      'CD · Bonus', /4\s*Bonus Demo\s*2:00/,
+    ]);
     await expect(page.getByRole('link', { name: 'Show on Discogs' }))
       .toHaveAttribute('href', 'https://www.discogs.com/release/1001-Night-Drive');
 

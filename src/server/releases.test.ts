@@ -72,6 +72,13 @@ describe('findByDiscogsId', () => {
     expect(row.title).toBe('New title');
   });
 
+  it('refreshes releases fetched before they had parts', async () => {
+    await createRelease({ id: 42, title: 'Old title', parts: null });
+    mockFetch({ '/releases/42': () => discogsRelease(42, { title: 'New title' }) });
+
+    await expect(findByDiscogsId(42)).resolves.toMatchObject({ title: 'New title', parts: [] });
+  });
+
   it('keeps serving stale data when Discogs fails', async () => {
     vi.spyOn(console, 'warn').mockImplementation(() => {});
     await createRelease({ id: 42, title: 'Old title', fetchedAt: new Date(Date.now() - 8 * DAY) });

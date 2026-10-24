@@ -95,6 +95,8 @@ test('detected', async ({ page }, info) => {
   await shot(page, 'detected', info.project.name);
   await page.getByText('Auto-scrobble on next scan').click();
   await shot(page, 'detected-checked', info.project.name);
+  await page.getByRole('button', { name: 'Side B' }).click();
+  await shot(page, 'detected-side', info.project.name);
   await page.getByRole('button', { name: 'Release info' }).click();
   await page.getByRole('dialog').waitFor();
   await shot(page, 'release-info', info.project.name);
@@ -117,6 +119,14 @@ test('scrobbling and scrobbled', async ({ page }, info) => {
   release();
   await page.getByText('Record successfully scrobbled').waitFor();
   await shot(page, 'scrobbled', info.project.name);
+});
+
+test('scrobbled a side', async ({ page }, info) => {
+  await page.goto(`/detected/${KNOWN_BARCODE}`);
+  await page.getByRole('button', { name: 'Side B' }).click();
+  await page.getByRole('button', { name: 'Scrobble', exact: true }).click();
+  await page.getByText('Side A scrobbled').waitFor();
+  await shot(page, 'scrobbled-side', info.project.name);
 });
 
 test('scrobble failed', async ({ page, request, consoleErrors }, info) => {
