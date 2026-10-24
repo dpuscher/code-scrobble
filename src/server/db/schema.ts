@@ -3,19 +3,13 @@ import {
 } from 'drizzle-orm/pg-core';
 import type { SearchFormat } from '../../lib/formats';
 import type { PartsPreference } from '../../lib/parts';
-import type { Part } from '../tracklist';
+import type {
+  MasterVersions, Part, SearchResult, Track,
+} from '../../lib/types';
 
-export type { Part };
-
-export type Track = {
-  title: string;
-  trackNumber: number;
-  duration: number;
-  /** Only when it differs from the release artist, e.g. on compilations. */
-  artist?: string;
-  /** The side or disc it is on, see `Release.parts`. */
-  part?: string;
-};
+export type {
+  MasterVersions, Part, SearchResult, Track, Version,
+} from '../../lib/types';
 
 const createdAt = () => timestamp({ withTimezone: true }).notNull().defaultNow();
 
@@ -66,54 +60,12 @@ export const barcodeLookups = pgTable('barcode_lookups', {
   checkedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
 });
 
-/**
- * A release search hit. Versions of the same album are grouped under their
- * Discogs master release.
- */
-export type SearchResult = {
-  /** Release to open: the release itself, or the most collected version of the album. */
-  id: number;
-  masterId: number | null;
-  artist: string;
-  title: string;
-  thumb?: string;
-  /** Earliest year among the matching versions. */
-  year?: string;
-  /** Only for releases without a master. */
-  country?: string;
-  /** An album's formats (Vinyl, CD, ...), or a release's format details. */
-  format: string[];
-};
-
 // Keyed by `<format>|<normalized query>`, format empty for all formats.
 export const searchCache = pgTable('search_cache', {
   query: text().primaryKey(),
   results: jsonb().$type<SearchResult[]>().notNull(),
   expiresAt: timestamp({ withTimezone: true }).notNull(),
 });
-
-export type Version = {
-  id: number;
-  title: string;
-  thumb?: string;
-  /** Major formats, e.g. ["Vinyl"]. */
-  formats: string[];
-  /** Format details, e.g. `2xLP, Album, Reissue`. */
-  format?: string;
-  year?: string;
-  country?: string;
-  label?: string;
-  catno?: string;
-  /** How many Discogs users have it in their collection. */
-  collected: number;
-};
-
-/** Versions of a master release, most collected first. */
-export type MasterVersions = {
-  versions: Version[];
-  /** All versions on Discogs; `versions` holds at most the first page. */
-  total: number;
-};
 
 export const versionsCache = pgTable('versions_cache', {
   masterId: integer().notNull(),

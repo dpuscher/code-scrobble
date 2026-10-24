@@ -1,6 +1,8 @@
+'use client';
+
 import { useState } from 'react';
 import { IoIosSearch } from 'react-icons/io';
-import { saveSearchFormat } from '../../lib/api';
+import { saveSearchFormat } from '../../app/actions';
 import type { SearchFormat } from '../../lib/formats';
 import { useSession } from '../../lib/session';
 import Overlay, { OverlayToggle } from '../ui/Overlay';

@@ -32,3 +32,16 @@ export async function receivedScrobbles(request: import('@playwright/test').APIR
 }
 
 export const anonymous = { storageState: { cookies: [], origins: [] } };
+
+/** Scrobbles a release through the release page, by barcode or `id:<discogs id>`. */
+export async function scrobbleRelease(page: import('@playwright/test').Page, code: string, { autoScrobble = false } = {}) {
+  await page.goto(`/detected/${code}`);
+  if (autoScrobble) await page.getByText(/^Auto-scrobble/).click();
+  await page.getByRole('button', { name: 'Scrobble', exact: true }).click();
+  await page.waitForURL(/\/scrobbled\//);
+}
+
+/** Waits for the response to the next server action call. */
+export const serverAction = (page: import('@playwright/test').Page) => page.waitForResponse(
+  (response) => response.request().method() === 'POST' && Boolean(response.request().headers()['next-action']),
+);

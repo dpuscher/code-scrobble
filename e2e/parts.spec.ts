@@ -86,7 +86,7 @@ test('preselects as much of the next record as was scrobbled last time', async (
   await expect(parts.getByRole('button', { name: 'Side B' })).toHaveAttribute('aria-pressed', 'true');
 });
 
-test('says when the next side could not be sent, and sends it on retry', async ({ page, request, consoleErrors }) => {
+test('says when the next side could not be sent, and sends it on retry', async ({ page, request }) => {
   await page.goto(`/detected/${KNOWN_BARCODE}`);
   await page.getByRole('group', { name: 'Sides and discs to scrobble' }).getByRole('button', { name: 'Side B' }).click();
   await page.getByRole('button', { name: 'Scrobble', exact: true }).click();
@@ -96,9 +96,6 @@ test('says when the next side could not be sent, and sends it on retry', async (
   await page.getByRole('button', { name: 'Next side (B)' }).click();
   await expect(page.getByText('An error occurred while sending data to Last.fm.')).toBeVisible();
   await expect(page.getByText('Side A scrobbled to Last.fm')).toBeVisible();
-  // The failed request is expected to show up in the console.
-  expect(consoleErrors).toEqual([expect.stringContaining('502')]);
-  consoleErrors.length = 0;
 
   await page.getByRole('button', { name: 'Next side (B)' }).click();
   await expect(page.getByText('Side B scrobbled to Last.fm')).toBeVisible();

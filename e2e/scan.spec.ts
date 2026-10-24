@@ -155,16 +155,13 @@ test('going back after an auto-scrobble does not scrobble again', async ({ page,
   expect(await receivedScrobbles(request)).toHaveLength(3);
 });
 
-test('offers a retry when Last.fm fails', async ({ page, request, consoleErrors }) => {
+test('offers a retry when Last.fm fails', async ({ page, request }) => {
   await request.post(`${MOCK_URL}/__fail-scrobbles?count=1`);
   await page.goto(`/detected/${KNOWN_BARCODE}`);
   await page.getByRole('button', { name: 'Scrobble' }).click();
 
   await expect(page.getByText('An error occurred while sending data to Last.fm')).toBeVisible();
   expect(await receivedScrobbles(request)).toHaveLength(0);
-  // The failed request is expected to show up in the console.
-  expect(consoleErrors).toEqual([expect.stringContaining('502')]);
-  consoleErrors.length = 0;
 
   await page.getByRole('button', { name: 'Retry' }).click();
   await expect(page.getByText('Record successfully scrobbled to Last.fm')).toBeVisible();

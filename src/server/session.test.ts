@@ -1,90 +1,87 @@
-import type { IncomingMessage, ServerResponse } from 'node:http';
 import { testDb } from '@/test/db';
 import { createUser } from '@/test/factories';
+import { setCookies, startRequest } from '@/test/next';
 import { sessions } from './db/schema';
-import { createSession, destroySession, getSessionUser } from './session';
+import {
+  createSession, currentUser, findSessionUser, logIn, logOut, requireUser,
+} from './session';
 
 const DAY = 24 * 60 * 60 * 1000;
 
-function fakeResponse() {
-  const cookies: string[] = [];
-  const res = { appendHeader: (_: string, value: string) => { cookies.push(value); } };
-  return { res: res as unknown as ServerResponse, cookies };
-}
-
-const requestWith = (cookie?: string) => ({
-  headers: cookie ? { cookie: `other=1; ${cookie}` } : {},
-}) as IncomingMessage;
-
-async function login() {
-  const user = await createUser();
-  const { res, cookies } = fakeResponse();
-  await createSession(res, user.id);
-  const cookie = cookies[0].split(';')[0];
-  return { user, cookie, header: cookies[0] };
-}
-
 describe('sessions', () => {
   it('sets an HttpOnly, SameSite cookie and stores only a token hash', async () => {
-    const { cookie, header } = await login();
-    expect(header).toMatch(/HttpOnly; SameSite=Lax; Max-Age=2592000/);
-    expect(header).not.toMatch(/Secure/);
+    const user = await createUser();
+    await logIn(user.id);
+    expect(setCookies).toEqual([expect.objectContaining({
+      name: 'sid', httpOnly: true, sameSite: 'lax', path: '/', maxAge: 2592000, secure: false,
+    })]);
 
     const [row] = await testDb().select().from(sessions);
     expect(row.id).toMatch(/^[0-9a-f]{64}$/);
-    expect(cookie).not.toContain(row.id);
+    expect(setCookies[0].value).not.toContain(row.id);
   });
 
-  it('resolves the user from the cookie', async () => {
-    const { user, cookie } = await login();
-    await expect(getSessionUser(requestWith(cookie))).resolves.toMatchObject({ id: user.id });
-    await expect(getSessionUser(requestWith('sid=forged'))).resolves.toBeNull();
-    await expect(getSessionUser(requestWith())).resolves.toBeNull();
+  it('sets Secure cookies when served over HTTPS', async () => {
+    vi.stubEnv('SERVER_URL', 'https://www.codescrobble.test');
+    await logIn((await createUser()).id);
+    expect(setCookies[0]).toMatchObject({ secure: true });
   });
 
-  it('prefers parsed cookies when Next.js provides them', async () => {
-    const { user, cookie } = await login();
-    const req = { headers: {}, cookies: { sid: cookie.slice(4) } } as unknown as IncomingMessage;
-    await expect(getSessionUser(req)).resolves.toMatchObject({ id: user.id });
+  it('resolves the user from the token', async () => {
+    const user = await createUser();
+    const token = await createSession(user.id);
+    await expect(findSessionUser(token)).resolves.toMatchObject({ id: user.id });
+    await expect(findSessionUser('forged')).resolves.toBeNull();
+    await expect(findSessionUser(undefined)).resolves.toBeNull();
+  });
+
+  it('resolves the user of the current request from its cookie', async () => {
+    const user = await createUser();
+    startRequest({ sid: await createSession(user.id) });
+    await expect(currentUser()).resolves.toMatchObject({ id: user.id });
+    await expect(requireUser()).resolves.toMatchObject({ id: user.id });
+  });
+
+  it('sends anonymous visitors of pages to the login', async () => {
+    startRequest();
+    await expect(requireUser()).rejects.toThrow('NEXT_REDIRECT');
   });
 
   it('rejects expired sessions', async () => {
-    const { cookie } = await login();
+    const token = await createSession((await createUser()).id);
     await testDb().update(sessions).set({ expiresAt: new Date(Date.now() - 1000) });
-    await expect(getSessionUser(requestWith(cookie))).resolves.toBeNull();
+    await expect(findSessionUser(token)).resolves.toBeNull();
   });
 
   it('extends sessions that are older than a day', async () => {
-    const { cookie } = await login();
+    const token = await createSession((await createUser()).id);
     await testDb().update(sessions).set({ expiresAt: new Date(Date.now() + 10 * DAY) });
-
-    const { res, cookies } = fakeResponse();
-    await getSessionUser(requestWith(cookie), res);
-
+    await findSessionUser(token);
     const [row] = await testDb().select().from(sessions);
     expect(row.expiresAt.getTime()).toBeGreaterThan(Date.now() + 29 * DAY);
-    expect(cookies).toHaveLength(1);
   });
 
   it('does not touch fresh sessions', async () => {
-    const { cookie } = await login();
-    const { res, cookies } = fakeResponse();
-    await getSessionUser(requestWith(cookie), res);
-    expect(cookies).toHaveLength(0);
+    const token = await createSession((await createUser()).id);
+    const [before] = await testDb().select().from(sessions);
+    await findSessionUser(token);
+    const [after] = await testDb().select().from(sessions);
+    expect(after.expiresAt).toEqual(before.expiresAt);
   });
 
-  it('destroys the session and clears the cookie', async () => {
-    const { cookie } = await login();
-    const { res, cookies } = fakeResponse();
-    await destroySession(requestWith(cookie), res);
-    expect(cookies[0]).toMatch(/^sid=; .*Max-Age=0/);
-    await expect(getSessionUser(requestWith(cookie))).resolves.toBeNull();
+  it('logs out: deletes the session and clears the cookie', async () => {
+    const token = await createSession((await createUser()).id);
+    startRequest({ sid: token });
+    await logOut();
+    expect(setCookies).toEqual([expect.objectContaining({ name: 'sid', value: '', maxAge: 0 })]);
+    await expect(findSessionUser(token)).resolves.toBeNull();
   });
 
   it('removes expired sessions on login', async () => {
-    await login();
+    const user = await createUser();
+    await createSession(user.id);
     await testDb().update(sessions).set({ expiresAt: new Date(Date.now() - 1000) });
-    await login();
+    await createSession(user.id);
     expect(await testDb().select().from(sessions)).toHaveLength(1);
   });
 });

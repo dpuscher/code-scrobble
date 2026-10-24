@@ -2,6 +2,7 @@ import {
   and, asc, desc, eq, notInArray, sql,
 } from 'drizzle-orm';
 import type { SearchFormat } from '../lib/formats';
+import type { Session } from '../lib/types';
 import {
   describeSelection, type PartScope, type PartsPreference, toSelection,
 } from '../lib/parts';
@@ -28,7 +29,7 @@ export async function upsertUser(data: {
   return user;
 }
 
-export const toSessionJSON = (user: User) => ({
+export const toSessionJSON = (user: User): Session => ({
   id: user.id,
   name: user.name,
   url: user.url,

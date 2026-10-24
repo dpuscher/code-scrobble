@@ -19,6 +19,8 @@
  * - The sides and discs become parts that can be scrobbled on their own.
  */
 
+import type { Part } from '../lib/types';
+
 export type DiscogsArtist = { name: string; join?: string };
 
 export type DiscogsTrack = {
@@ -38,21 +40,6 @@ export type PlayableTrack = {
   /** Seconds, 0 when unknown. */
   duration: number;
   artists?: DiscogsArtist[];
-};
-
-/** A side or disc of a release, to scrobble on its own. */
-export type Part = {
-  /** Stable key, also used in URLs: "A", "2-A", "CD-B", "D2", "CD1". */
-  id: string;
-  /** Short name: "A", "2A" (side A of the second record), "CD", "CD 2", "Record 3". */
-  name: string;
-  kind: 'side' | 'disc';
-  /** The record, tape or disc it is on; sides A and B of a record share it. */
-  item: string;
-  /** What the item is: "record", "tape", "CD", "SACD", "MiniDisc" or "disc". */
-  medium: string;
-  /** On another medium than the main one, e.g. the CD of a vinyl release. Not scrobbled unless picked. */
-  bonus?: boolean;
 };
 
 export type GroupedTrack = PlayableTrack & { part?: string };
