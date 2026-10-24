@@ -33,9 +33,7 @@ E2E needs the compose Postgres (database `codescrobble_e2e`, override with `E2E_
 
 **Legacy URLs are rewrites** in `next.config.ts` (`/auth/lastfm`, `/auth/lastfm/callback`, `/logout`, `/health` → `/api/...`). The Last.fm callback URL is registered with Last.fm, so these paths must not change.
 
-**Database.** `src/server/db/schema.ts` (snake_case casing). Migrations run at startup from `src/instrumentation.ts` → `src/server/startup.ts` → `runStartupTasks()` under a Postgres advisory lock; startup failure exits the process. `releases` is a local cache of Discogs releases (refreshed after 7 days); `barcode_lookups` caches barcode→release including misses; `search_cache` caches searches. `scrobbles` is the per-user history, trimmed to 20 entries.
-
-**Legacy MongoDB import.** While `MONGODB_URI` is set, startup imports CodeScrobble 1.x data once (`src/server/legacy-import.ts`, single transaction, recorded in `app_meta`). Production holds real user data: back up on the server (`ssh hetzner2`) before any schema or data change.
+**Database.** `src/server/db/schema.ts` (snake_case casing). Migrations run at startup from `src/instrumentation.ts` → `src/server/startup.ts` → `runStartupTasks()` under a Postgres advisory lock; startup failure exits the process. `releases` is a local cache of Discogs releases (refreshed after 7 days); `barcode_lookups` caches barcode→release including misses; `search_cache` caches searches. `scrobbles` is the per-user history, trimmed to 20 entries. Production holds real user data: back up on the server (`ssh hetzner2`) before any schema or data change.
 
 **Sessions** are DB-backed: cookie `sid` holds a random token, only its SHA-256 is stored (`sessions` table), rolling 30 days. Pages cannot set cookies, so `src/proxy.ts` renews the cookie on page requests and `findSessionUser()` the database expiry. Logout is a POST form.
 
