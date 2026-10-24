@@ -1,4 +1,6 @@
-import { convertTimecode, selectTracks, type DiscogsTrack } from './tracklist';
+import {
+  convertTimecode, groupTracks, selectTracks, type DiscogsTrack,
+} from './tracklist';
 
 const track = (position: string, title = position, duration = ''): DiscogsTrack => ({
   position, title, duration, type_: 'track',
@@ -178,5 +180,79 @@ describe('selectTracks', () => {
     const artists = [{ name: 'Eminem' }];
     expect(selectTracks([{ ...track('1'), artists }])[0].artists).toEqual(artists);
     expect(selectTracks([index('Suite', [{ ...track('1a'), artists }])])[0].artists).toEqual(artists);
+  });
+});
+
+describe('groupTracks', () => {
+  const vinyl = (qty = '1') => [{ name: 'Vinyl', qty }];
+  // Part names, with * for bonus parts, and the tracks of each.
+  const grouped = (tracklist: DiscogsTrack[], formats: { name: string; qty?: string }[] = []) => {
+    const { tracks, parts } = groupTracks(tracklist, formats);
+    return Object.fromEntries(parts.map(({ id, name, bonus }) => [
+      `${name}${bonus ? '*' : ''}`, tracks.filter(({ part }) => part === id).map(({ title }) => title),
+    ]));
+  };
+
+  it('has no parts for a single disc or side', () => {
+    expect(groupTracks([track('1'), track('2')]).parts).toEqual([]);
+    expect(groupTracks([track('A1'), track('A2')], vinyl()).parts).toEqual([]);
+  });
+
+  it('groups a record by sides, two to a record', () => {
+    const { parts } = groupTracks(['A1', 'B1', 'C1', 'D1'].map((p) => track(p)), vinyl('2'));
+    expect(parts.map(({ name, item, medium }) => [name, item, medium])).toEqual([
+      ['A', '~1', 'record'], ['B', '~1', 'record'], ['C', '~2', 'record'], ['D', '~2', 'record'],
+    ]);
+  });
+
+  it('calls the sides of cassettes tape', () => {
+    expect(groupTracks([track('A1'), track('B1')], [{ name: 'Cassette' }]).parts[0].medium).toBe('tape');
+  });
+
+  it('numbers sides that repeat on every record', () => {
+    expect(Object.keys(grouped(['1-A1', '1-B1', '2-A1', '2-B1'].map((p) => track(p)), vinyl('2'))))
+      .toEqual(['1A', '1B', '2A', '2B']);
+    expect(Object.keys(grouped(['LP1-A1', 'LP1-B1', 'LP2-A1'].map((p) => track(p)), vinyl('2'))))
+      .toEqual(['1A', '1B', '2A']);
+  });
+
+  it('groups discs by number and names them by format', () => {
+    expect(grouped([track('1-1'), track('1-2'), track('2-1')], [{ name: 'CD', qty: '2' }]))
+      .toEqual({ 'CD 1': ['1-1', '1-2'], 'CD 2': ['2-1'] });
+    expect(Object.keys(grouped([track('1-1'), track('2-1')], vinyl('2')))).toEqual(['Record 1', 'Record 2']);
+  });
+
+  it('keeps the other media of a set as bonus parts', () => {
+    expect(grouped([track('A1'), track('B1'), track('1'), track('2')], [{ name: 'Vinyl' }, { name: 'CD' }]))
+      .toEqual({ A: ['A1'], B: ['B1'], 'CD*': ['1', '2'] });
+    expect(grouped([track('CD-1'), track('A1'), track('B1')], [{ name: 'CD' }, { name: 'Cassette' }]))
+      .toEqual({ CD: ['CD-1'], 'A*': ['A1'], 'B*': ['B1'] });
+  });
+
+  it('tells sides of different media apart by their prefix', () => {
+    expect(Object.keys(grouped(['LP-A1', 'LP-B1', '7"-A', '7"-B'].map((p) => track(p)), vinyl('2'))))
+      .toEqual(['LP A', 'LP B', '7" A*', '7" B*']);
+  });
+
+  it('puts tracks without a position with the track before them', () => {
+    expect(grouped([track(''), track('A1'), track(''), track('B1')], vinyl()))
+      .toEqual({ A: ['', 'A1', ''], B: ['B1'] });
+  });
+
+  it('leaves video out of the parts', () => {
+    expect(grouped([track('A1'), track('B1'), track('DVD-1')], [{ name: 'Vinyl' }, { name: 'DVD' }]))
+      .toEqual({ A: ['A1'], B: ['B1'] });
+  });
+
+  it('reads movements numbered I, II, III as parts of a work, not sides', () => {
+    const tracklist = [track('1', 'Symphony'), track('I'), track('II'), track('III'), track('2', 'Overture')];
+    expect(titles(tracklist, [{ name: 'CD' }])).toEqual(['Symphony', 'I', 'II', 'III', 'Overture']);
+    // Sides of a record may be numbered so.
+    expect(Object.keys(grouped([track('I'), track('II')], vinyl()))).toEqual(['I', 'II']);
+  });
+
+  it('finds the side in A, AI and AIII', () => {
+    expect(Object.keys(grouped(['A', 'AA'].map((p) => track(p)), vinyl()))).toEqual(['A', 'AA']);
+    expect(grouped(['AI', 'AII', 'BIII'].map((p) => track(p)), vinyl())).toEqual({ A: ['AI', 'AII'], B: ['BIII'] });
   });
 });

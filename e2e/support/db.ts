@@ -16,5 +16,5 @@ export async function withDb<T>(fn: (sql: postgres.Sql) => Promise<T>) {
 /** Clears per-test user data but keeps the logged-in user and releases. */
 export const resetUserData = () => withDb(async (sql) => {
   await sql`truncate scrobbles, auto_scrobbles restart identity`;
-  await sql`update users set search_format = null`;
+  await sql`update users set search_format = null, parts_preference = null`;
 });

@@ -21,6 +21,10 @@ export type CatalogRelease = {
   catno?: string;
   /** Discogs users who have it in their collection. */
   collected?: number;
+  /** CDs the tracks are spread over, numbered 1-1, 2-1. */
+  discs?: number;
+  /** Tracks of a bonus CD that comes with the record. */
+  bonus?: [title: string, duration: string][];
 };
 
 /** The Last.fm account the mock logs you in as during development. */
@@ -89,7 +93,14 @@ export const catalog: CatalogRelease[] = [
     format: ['CD', 'Album'], catno: 'SR 0042-2', collected: 812,
   }),
   version(neonHarbour, 2014, {
-    year: 2018, format: ['Vinyl', '2×LP', 'Album', 'Reissue', 'Remastered'], country: 'Europe', label: 'Harbour Lights Music', catno: 'HLM 018', collected: 233,
+    year: 2018,
+    format: ['Vinyl', '2×LP', 'Album', 'Reissue', 'Remastered'],
+    country: 'Europe',
+    label: 'Harbour Lights Music',
+    catno: 'HLM 018',
+    collected: 233,
+    tracks: [...neonHarbour.tracks, ['Lighthouse Keeper', '4:02'], ['Fog Horn', '3:36']],
+    bonus: [['Low Tide (Demo)', '4:30'], ['Signal Fire (Live)', '5:40']],
   }),
   version(neonHarbour, 2015, {
     format: ['Cassette', 'Album'], catno: 'SR 0042-4', collected: 41,
@@ -140,6 +151,13 @@ export const catalog: CatalogRelease[] = [
   release(2011, 'Grey Matter Collective', 'Thinking Out Loud', 2005, ['#8395a7', '#222f3e'], [
     ['Cortex', '4:24'], ['Synapse', '3:58'], ['Neurons Firing', '5:13'], ['Daydream', '6:40'], ['Recall', '3:01'],
   ]),
+  {
+    ...release(2019, 'Velvet Static', 'Live at the Lighthouse', 2009, ['#576574', '#feca57'], [
+      ['Intro', '1:12'], ['Low Tide', '4:40'], ['Harbour Lights', '4:02'], ['Signal Fire', '6:15'],
+      ['Orbit', '3:50'], ['Paper Satellites', '4:31'], ['Last Ferry', '7:20'], ['Goodnight', '2:05'],
+    ], ['CD', 'Album', 'Live']),
+    discs: 2,
+  },
   // A long name, to check that lists truncate it.
   release(2012, 'The Extraordinarily Long-Winded Name Ensemble', 'An Album Whose Title Simply Refuses To End Politely', 2023,
     ['#5f27cd', '#ff6b6b'], [['Prologue', '1:30'], ['The Middle Part, Which Is Also Long', '8:15'], ['Epilogue', '2:10']]),
@@ -158,6 +176,19 @@ export function coverImage({ artist, title, colors: [from, to] }: CatalogRelease
   return `data:image/svg+xml,${encodeURIComponent(svg)}`;
 }
 
+// Records and tapes in a release, or its CDs.
+const itemsOf = (r: CatalogRelease) => r.discs ?? Number(/^(\d)×/.exec(r.format[1] ?? '')?.[1] ?? 1);
+
+/** Positions as on Discogs: sides A1, B1 of records and tapes, 1-1 of several CDs, 1 of one. */
+function positionOf(r: CatalogRelease, i: number) {
+  const sided = r.format[0] === 'Vinyl' || r.format[0] === 'Cassette';
+  const groups = sided ? itemsOf(r) * 2 : itemsOf(r);
+  if (groups < 2) return String(i + 1);
+  const per = Math.ceil(r.tracks.length / groups);
+  const group = Math.floor(i / per);
+  return sided ? `${String.fromCharCode(65 + group)}${(i % per) + 1}` : `${group + 1}-${(i % per) + 1}`;
+}
+
 /** The release as the Discogs API returns it. */
 export function toDiscogs(r: CatalogRelease) {
   return {
@@ -168,14 +199,22 @@ export function toDiscogs(r: CatalogRelease) {
     artists: [{ name: r.artist }],
     images: [{ uri: coverImage(r) }],
     identifiers: [{ type: 'Barcode', value: r.barcode }],
-    formats: [{ name: r.format[0], qty: '1', descriptions: r.format.slice(1) }],
+    formats: [
+      { name: r.format[0], qty: String(itemsOf(r)), descriptions: r.format.slice(1) },
+      ...(r.bonus ? [{ name: 'CD', qty: '1', descriptions: ['Bonus'] }] : []),
+    ],
     master_id: r.master,
     country: r.country,
     label: r.label,
     catno: r.catno,
     collected: r.collected,
-    tracklist: r.tracks.map(([title, duration], i) => ({
-      position: String(i + 1), title, duration, type_: 'track',
-    })),
+    tracklist: [
+      ...r.tracks.map(([title, duration], i) => ({
+        position: positionOf(r, i), title, duration, type_: 'track',
+      })),
+      ...(r.bonus ?? []).map(([title, duration], i) => ({
+        position: `CD-${i + 1}`, title, duration, type_: 'track',
+      })),
+    ],
   };
 }

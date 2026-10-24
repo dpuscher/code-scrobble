@@ -15,6 +15,20 @@
       "when": 1792772918667,
       "tag": "0001_search_versions",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792787424450,
+      "tag": "0002_release_parts",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1792789045176,
+      "tag": "0003_parts_preference",
+      "breakpoints": true
     }
   ]
 }

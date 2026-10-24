@@ -1,3 +1,6 @@
+import {
+  preferenceKey, scopeOf, selectedTracks, toSelection,
+} from '@/lib/parts';
 import { authenticatedApi } from '@/server/api';
 import { getDb } from '@/server/db';
 import {
@@ -5,7 +8,7 @@ import {
 } from '@/server/lastfm';
 import { destroySession } from '@/server/session';
 import { config } from '@/server/config';
-import { addAutoScrobble, addToHistory } from '@/server/users';
+import { addAutoScrobble, addToHistory, setPartsPreference } from '@/server/users';
 
 export default authenticatedApi({
   POST: async (req, res, user) => {
@@ -15,11 +18,20 @@ export default authenticatedApi({
       : undefined;
     if (!release) return res.status(400).json({ error: 'Release not found' });
 
+    // The sides or discs to scrobble, by default all but bonus ones.
+    const parts = release.parts ?? [];
+    const selection = toSelection(parts, req.body.parts);
+    const tracks = selectedTracks(release.tracks, parts, selection);
+    if (!tracks.length) return res.status(400).json({ error: 'No tracks selected' });
+
     // Tracks an earlier attempt sent before it failed; a retry continues after them.
-    const from = Math.min(Math.max(Math.trunc(Number(req.body.from) || 0), 0), release.tracks.length);
+    const from = Math.min(Math.max(Math.trunc(Number(req.body.from) || 0), 0), tracks.length);
     const record = async () => {
       await addToHistory(user.id, release.id);
-      if (req.body.autoScrobble) await addAutoScrobble(user.id, release.id);
+      if (req.body.autoScrobble) await addAutoScrobble(user.id, release.id, selection);
+      // Picked on the release page: preselect the same next time.
+      const scope = req.body.remember ? scopeOf(parts, selection) : undefined;
+      if (scope) await setPartsPreference(user.id, preferenceKey(parts), scope);
     };
 
     if (!config.lastfm.scrobblingEnabled) {
@@ -31,7 +43,7 @@ export default authenticatedApi({
     try {
       const result = await scrobbleTracks(
         user.sessionKey,
-        buildScrobbles({ ...release, tracks: release.tracks.slice(from) }),
+        buildScrobbles({ ...release, tracks: tracks.slice(from) }),
       );
       // Nothing reached the profile when Last.fm ignored every track.
       if (result.accepted > 0 || from > 0) await record();

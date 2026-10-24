@@ -19,6 +19,7 @@ describe('getRelease', () => {
         { title: 'One', trackNumber: 1, duration: 180 },
         { title: 'Two', trackNumber: 2, duration: 3723 },
       ],
+      parts: [],
     });
     const headers = fetch.mock.calls[0][1]?.headers as Record<string, string>;
     expect(headers.Authorization).toBe('Discogs key=discogs-key, secret=discogs-secret');

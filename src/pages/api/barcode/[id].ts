@@ -1,6 +1,7 @@
 import { authenticatedApi } from '@/server/api';
 import { findByBarcode, findByDiscogsId, toReleaseJSON } from '@/server/releases';
-import { isAutoScrobble } from '@/server/users';
+import { toSelection } from '@/lib/parts';
+import { findAutoScrobble } from '@/server/users';
 
 // `id` is either a scanned barcode or `id:<discogs release id>`.
 export default authenticatedApi({
@@ -12,7 +13,14 @@ export default authenticatedApi({
       : await findByBarcode(param);
     if (!release) return res.json({});
 
-    const instantScrobble = await isAutoScrobble(user.id, release.id);
-    return res.json({ instantScrobble, ...toReleaseJSON(release) });
+    const json = toReleaseJSON(release);
+    const autoScrobble = await findAutoScrobble(user.id, release.id);
+    // Saved parts the release no longer has are dropped; none left means the default.
+    const instantParts = toSelection(json.parts, autoScrobble?.parts);
+    return res.json({
+      instantScrobble: Boolean(autoScrobble),
+      instantParts: instantParts?.length ? instantParts : null,
+      ...json,
+    });
   },
 });
