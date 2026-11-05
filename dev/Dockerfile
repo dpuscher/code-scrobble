@@ -2,7 +2,7 @@
 
 # Tooling for the local stack in docker-compose.yml: the mock Last.fm and
 # Discogs APIs and the seed script. Not part of the production image.
-FROM node:24-alpine
+FROM node:26-alpine
 WORKDIR /app
 RUN corepack enable
 COPY package.json yarn.lock .yarnrc.yml ./
