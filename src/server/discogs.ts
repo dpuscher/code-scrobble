@@ -1,6 +1,6 @@
 import { config } from './config';
 import {
-  selectTracks, type DiscogsArtist, type DiscogsFormat, type DiscogsTrack,
+  groupTracks, type DiscogsArtist, type DiscogsFormat, type DiscogsTrack,
 } from './tracklist';
 import type {
   MasterVersions, SearchResult, Track, Version,
@@ -91,13 +91,15 @@ export function joinArtists(artists: DiscogsArtist[] = []) {
 export async function getRelease(id: number) {
   const data = await request<DiscogsRelease>(`/releases/${id}`);
   const artist = joinArtists(data.artists);
-  const tracks: Track[] = selectTracks(data.tracklist, data.formats).map((track, index) => {
+  const { tracks: grouped, parts } = groupTracks(data.tracklist, data.formats);
+  const tracks: Track[] = grouped.map((track, index) => {
     const trackArtist = track.artists?.length ? joinArtists(track.artists) : artist;
     return {
       title: track.title,
       trackNumber: index + 1,
       duration: track.duration,
       ...(trackArtist !== artist ? { artist: trackArtist } : {}),
+      ...(track.part ? { part: track.part } : {}),
     };
   });
   return {
@@ -108,6 +110,7 @@ export async function getRelease(id: number) {
     url: data.uri,
     year: data.year ? String(data.year) : null,
     tracks,
+    parts,
     barcode: data.identifiers?.find((i) => i.type === 'Barcode')?.value ?? null,
   };
 }

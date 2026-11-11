@@ -2,7 +2,7 @@ import { testDb } from '@/test/db';
 import { createRelease, createUser } from '@/test/factories';
 import { scrobbles } from './db/schema';
 import {
-  addAutoScrobble, addToHistory, HISTORY_LENGTH, isAutoScrobble, listAutoScrobbles,
+  addAutoScrobble, addToHistory, findAutoScrobble, HISTORY_LENGTH, listAutoScrobbles,
   listHistory, removeAutoScrobble, upsertUser,
 } from './users';
 
@@ -32,10 +32,10 @@ describe('auto scrobbles', () => {
     await addAutoScrobble(user.id, b.id); // idempotent
 
     expect((await listAutoScrobbles(user.id)).map((r) => r.id)).toEqual([a1.id, a2.id, b.id]);
-    expect(await isAutoScrobble(user.id, b.id)).toBe(true);
+    expect(await findAutoScrobble(user.id, b.id)).toBeDefined();
 
     await removeAutoScrobble(user.id, b.id);
-    expect(await isAutoScrobble(user.id, b.id)).toBe(false);
+    expect(await findAutoScrobble(user.id, b.id)).toBeUndefined();
   });
 
   it('is scoped per user', async () => {

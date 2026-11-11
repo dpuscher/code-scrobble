@@ -20,6 +20,7 @@ export async function createRelease(overrides: Partial<typeof releases.$inferIns
     artist: 'Artist',
     title: `Release ${sequence}`,
     tracks: [{ title: 'Track', trackNumber: 1, duration: 60 }],
+    parts: [],
     ...overrides,
   }).returning();
   return release;

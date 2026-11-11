@@ -20,10 +20,10 @@ const ProfileAutoScrobbles = () => {
             </Fallback>
           )}
           {data?.map(({
-            id, artist, title, year, image,
+            id, artist, title, year, image, scope,
           }) => (
             <ListItem key={id}>
-              <Row image={image} title={title} details={[artist, year].filter(Boolean).join(' · ')} />
+              <Row image={image} title={title} details={[artist, year, scope].filter(Boolean).join(' · ')} />
               <button
                 type="button"
                 onClick={() => remove(id)}

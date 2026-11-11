@@ -2,6 +2,10 @@ import {
   index, integer, jsonb, pgTable, primaryKey, text, timestamp,
 } from 'drizzle-orm/pg-core';
 import type { SearchFormat } from '../../lib/formats';
+import type { PartsPreference } from '../../lib/parts';
+import type { Part } from '../tracklist';
+
+export type { Part };
 
 export type Track = {
   title: string;
@@ -9,6 +13,8 @@ export type Track = {
   duration: number;
   /** Only when it differs from the release artist, e.g. on compilations. */
   artist?: string;
+  /** The side or disc it is on, see `Release.parts`. */
+  part?: string;
 };
 
 const createdAt = () => timestamp({ withTimezone: true }).notNull().defaultNow();
@@ -26,6 +32,8 @@ export const users = pgTable('users', {
   imageXLarge: text(),
   // Format the release search is narrowed to; null searches all formats.
   searchFormat: text().$type<SearchFormat>(),
+  // How much of a record was last scrobbled at once, to preselect it.
+  partsPreference: jsonb().$type<PartsPreference>(),
   createdAt: createdAt(),
   updatedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
 });
@@ -41,6 +49,9 @@ export const releases = pgTable('releases', {
   // Digits only, see normalizeBarcode().
   barcode: text(),
   tracks: jsonb().$type<Track[]>().notNull(),
+  // Sides and discs, when there are several; null for releases fetched
+  // before parts existed.
+  parts: jsonb().$type<Part[]>(),
   fetchedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   createdAt: createdAt(),
 }, (t) => [
@@ -117,6 +128,8 @@ export const versionsCache = pgTable('versions_cache', {
 export const autoScrobbles = pgTable('auto_scrobbles', {
   userId: integer().notNull().references(() => users.id, { onDelete: 'cascade' }),
   releaseId: integer().notNull().references(() => releases.id, { onDelete: 'cascade' }),
+  // Ids of the parts to scrobble; null for the default ones.
+  parts: jsonb().$type<string[]>(),
   createdAt: createdAt(),
 }, (t) => [
   primaryKey({ columns: [t.userId, t.releaseId] }),

@@ -62,7 +62,7 @@ describe('GET /api/session', () => {
     const { user, cookies } = await loggedInUser({ name: 'jane', image: 'img' });
     const res = await callApi(session, { cookies });
     expect(res.body).toEqual({
-      id: user.id, name: 'jane', url: null, image: 'img', imageLarge: null, imageXLarge: null, searchFormat: null,
+      id: user.id, name: 'jane', url: null, image: 'img', imageLarge: null, imageXLarge: null, searchFormat: null, partsPreference: null,
     });
   });
 });
@@ -186,6 +186,88 @@ describe('POST /api/scrobble', () => {
     const res = await callApi(scrobble, { method: 'POST', body: { id: 'nope' }, cookies });
     expect(res.status).toBe(400);
   });
+
+  describe('with sides', () => {
+    const parts = ['A', 'B', 'CD'].map((id) => ({
+      id, name: id, kind: id === 'CD' ? 'disc' as const : 'side' as const, item: id === 'CD' ? 'CD' : '~1', medium: 'record', ...(id === 'CD' ? { bonus: true } : {}),
+    }));
+    const tracks = ['A', 'B', 'CD'].map((part, i) => ({
+      title: `${part} track`, trackNumber: i + 1, duration: 10, part,
+    }));
+    const scrobbled = () => {
+      const sent: string[] = [];
+      mockFetch({
+        '/2.0/': (_url, init) => {
+          const body = new URLSearchParams(String(init?.body));
+          for (let i = 0; body.has(`track[${i}]`); i += 1) sent.push(body.get(`track[${i}]`)!);
+          return { scrobbles: { '@attr': { accepted: 1 } } };
+        },
+      });
+      return sent;
+    };
+
+    it('scrobbles all but the bonus parts by default', async () => {
+      vi.stubEnv('NODE_ENV', 'production');
+      const { cookies } = await loggedInUser();
+      const release = await createRelease({ tracks, parts });
+      const sent = scrobbled();
+      await callApi(scrobble, { method: 'POST', body: { id: release.id }, cookies });
+      expect(sent).toEqual(['A track', 'B track']);
+    });
+
+    it('scrobbles the picked parts and remembers them for auto-scrobbling', async () => {
+      vi.stubEnv('NODE_ENV', 'production');
+      const { user, cookies } = await loggedInUser();
+      const release = await createRelease({ tracks, parts, barcode: '4006381333931' });
+      const sent = scrobbled();
+
+      const res = await callApi(scrobble, {
+        method: 'POST', body: { id: release.id, parts: ['CD', 'B'], autoScrobble: true }, cookies,
+      });
+
+      expect(res.status).toBe(200);
+      expect(sent).toEqual(['B track', 'CD track']);
+      expect((await testDb().select().from(autoScrobbles))[0].parts).toEqual(['B', 'CD']);
+      const lookup = await callApi(barcode, { query: { id: '4006381333931' }, cookies });
+      expect(lookup.body).toMatchObject({ instantScrobble: true, instantParts: ['B', 'CD'] });
+      const list = await callApi(autoscrobbles, { cookies });
+      expect(list.body).toMatchObject([{ id: release.id, scope: 'Side B + CD' }]);
+      expect((await testDb().select().from(scrobbles).where(eq(scrobbles.userId, user.id)))).toHaveLength(1);
+    });
+
+    it('remembers how much was picked on the release page', async () => {
+      const { user, cookies } = await loggedInUser();
+      vi.spyOn(console, 'log').mockImplementation(() => {});
+      const release = await createRelease({ tracks, parts });
+      const preference = async () => (await testDb().select().from(users).where(eq(users.id, user.id)))[0].partsPreference;
+
+      await callApi(scrobble, { method: 'POST', body: { id: release.id, parts: ['A'] }, cookies });
+      expect(await preference()).toBeNull();
+      await callApi(scrobble, { method: 'POST', body: { id: release.id, parts: ['A'], remember: true }, cookies });
+      expect(await preference()).toEqual({ sides: 'first-part' });
+      // Side B alone says nothing about how much someone scrobbles.
+      await callApi(scrobble, { method: 'POST', body: { id: release.id, parts: ['B'], remember: true }, cookies });
+      expect(await preference()).toEqual({ sides: 'first-part' });
+      await callApi(scrobble, { method: 'POST', body: { id: release.id, remember: true }, cookies });
+      expect(await preference()).toEqual({ sides: 'all' });
+    });
+
+    it('rejects a selection without tracks', async () => {
+      const { cookies } = await loggedInUser();
+      const release = await createRelease({ tracks, parts });
+      const res = await callApi(scrobble, { method: 'POST', body: { id: release.id, parts: ['X'] }, cookies });
+      expect(res).toMatchObject({ status: 400, body: { error: 'No tracks selected' } });
+      expect(await testDb().select().from(scrobbles)).toHaveLength(0);
+    });
+
+    it('drops saved parts the release no longer has', async () => {
+      const { user, cookies } = await loggedInUser();
+      const release = await createRelease({ tracks, parts, barcode: '5012345678900' });
+      await testDb().insert(autoScrobbles).values({ userId: user.id, releaseId: release.id, parts: ['Z'] });
+      const lookup = await callApi(barcode, { query: { id: '5012345678900' }, cookies });
+      expect(lookup.body).toMatchObject({ instantScrobble: true, instantParts: null });
+    });
+  });
 });
 
 describe('/api/user/autoscrobbles', () => {
@@ -196,7 +278,7 @@ describe('/api/user/autoscrobbles', () => {
 
     const list = await callApi(autoscrobbles, { cookies });
     expect(list.body).toEqual([{
-      id: release.id, artist: 'Artist', title: release.title, year: '1999', image: release.image,
+      id: release.id, artist: 'Artist', title: release.title, year: '1999', image: release.image, scope: null,
     }]);
 
     const del = await callApi(autoscrobbles, { method: 'DELETE', body: { id: release.id }, cookies });

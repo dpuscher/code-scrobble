@@ -28,10 +28,11 @@ async function fetchAndStore(id: number, scannedBarcode?: string) {
   return release;
 }
 
-// Refreshes cached release data once a week. A failing Discogs request falls
-// back to the stale copy rather than failing the scan.
+// Refreshes cached release data once a week, and releases fetched before
+// they had parts. A failing Discogs request falls back to the stale copy
+// rather than failing the scan.
 async function refreshIfStale(release: Release) {
-  if (Date.now() - release.fetchedAt.getTime() < RELEASE_MAX_AGE) return release;
+  if (release.parts && Date.now() - release.fetchedAt.getTime() < RELEASE_MAX_AGE) return release;
   try {
     return await fetchAndStore(release.id);
   } catch (error) {
@@ -119,4 +120,5 @@ export const toReleaseJSON = (release: Release) => ({
   url: release.url,
   year: release.year,
   tracks: release.tracks,
+  parts: release.parts ?? [],
 });

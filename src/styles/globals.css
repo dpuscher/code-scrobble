@@ -23,9 +23,27 @@
   --animate-pop-in: pop-in 0.25s var(--ease-out-strong);
   --animate-scan: scan 2.4s ease-in-out infinite alternate;
   --animate-slide-in: slide-in 0.25s var(--ease-out-strong);
+  /* Loading indicators: only shown when loading takes long enough to notice. */
+  --animate-appear-late: appear 0.2s ease-out 0.3s both;
+  --animate-vanish-late: vanish 0.2s ease-out 0.3s both;
 
   @keyframes fade-in {
     from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes appear {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes vanish {
+    to {
       opacity: 0;
     }
   }
