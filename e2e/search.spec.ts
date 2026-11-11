@@ -1,4 +1,4 @@
-import { expect, test } from './support/test.ts';
+import { expect, serverAction, test } from './support/test.ts';
 
 const formatOption = (page: import('@playwright/test').Page, name: string) => (
   page.locator('label').filter({ hasText: new RegExp(`^${name}$`) })
@@ -50,9 +50,9 @@ test.describe('release search', () => {
     await page.keyboard.press('Enter');
     await expect(page.getByRole('link', { name: /Quiet Hours/ })).toBeVisible();
 
-    const saved = page.waitForResponse('**/api/user/settings');
+    const saved = serverAction(page);
     await formatOption(page, 'CD').click();
-    expect((await saved).status()).toBe(204);
+    expect((await saved).ok()).toBe(true);
     await expect(page.getByRole('link', { name: /Quiet Hours/ })).toHaveCount(0);
     // A single matching version opens without the extra step.
     await page.getByRole('button', { name: /Night Drive/ }).click();
@@ -76,4 +76,10 @@ test.describe('release search', () => {
     await page.getByRole('button', { name: 'Close' }).click();
     await expect(page.getByRole('searchbox')).toHaveCount(0);
   });
+});
+
+test('searches for text that looks URL-encoded', async ({ page }) => {
+  await page.goto('/');
+  const response = await page.request.get('/api/search/100%25');
+  expect(response.status()).toBe(200);
 });

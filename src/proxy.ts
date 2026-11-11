@@ -1,9 +1,14 @@
 import { type NextRequest, NextResponse } from 'next/server';
+import { SESSION_COOKIE, sessionCookie } from './server/sessionCookie';
 
 /**
- * Sets a per-request nonce-based Content-Security-Policy for pages. Next.js
- * reads the nonce from the request header and applies it to its own inline
- * bootstrap script, so no 'unsafe-inline' is needed for scripts.
+ * For pages:
+ * - Sets a per-request nonce-based Content-Security-Policy. Next.js reads the
+ *   nonce from the request header and applies it to its own scripts, so no
+ *   'unsafe-inline' is needed for scripts.
+ * - Renews the session cookie, so it expires 30 days after the last visit.
+ *   Pages cannot set cookies themselves; the database side of the session is
+ *   renewed in src/server/session.ts.
  */
 export function proxy(request: NextRequest) {
   const nonce = Buffer.from(crypto.randomUUID()).toString('base64');
@@ -15,7 +20,7 @@ export function proxy(request: NextRequest) {
     // (it does not allow eval of JavaScript).
     `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' 'wasm-unsafe-eval'${isDev ? " 'unsafe-eval'" : ''}`,
     // Stylesheets are files; only style attributes (cover art backgrounds,
-    // Next.js' route announcer, nprogress) are inline. The dev server injects
+    // Next.js' route announcer) are inline. The dev server injects
     // CSS through <style> tags without a nonce.
     isDev ? "style-src 'self' 'unsafe-inline'" : `style-src 'self' 'nonce-${nonce}'`,
     "style-src-attr 'unsafe-inline'",
@@ -36,6 +41,8 @@ export function proxy(request: NextRequest) {
 
   const response = NextResponse.next({ request: { headers: requestHeaders } });
   response.headers.set('Content-Security-Policy', policy);
+  const session = request.cookies.get(SESSION_COOKIE)?.value;
+  if (session) response.cookies.set(sessionCookie(session));
   return response;
 }
 

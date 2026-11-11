@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { IoIosArrowBack } from 'react-icons/io';
 import { useVersions } from '../../lib/api';

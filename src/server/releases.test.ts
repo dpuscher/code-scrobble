@@ -1,10 +1,10 @@
 import { eq } from 'drizzle-orm';
 import { testDb } from '@/test/db';
-import { createRelease } from '@/test/factories';
+import { createRelease, createUser } from '@/test/factories';
 import { discogsRelease, mockFetch } from '@/test/fetch';
-import { barcodeLookups, releases } from './db/schema';
+import { autoScrobbles, barcodeLookups, releases } from './db/schema';
 import {
-  findByBarcode, findByDiscogsId, findVersions, normalizeBarcode, search,
+  findByBarcode, findByDiscogsId, findReleaseFor, findVersions, normalizeBarcode, search,
 } from './releases';
 
 const DAY = 24 * 60 * 60 * 1000;
@@ -138,5 +138,46 @@ describe('findVersions', () => {
     await findVersions(7);
     await findVersions(7, 'CD');
     expect(fetch).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('findReleaseFor', () => {
+  it('resolves barcodes and flags auto-scrobbles', async () => {
+    const user = await createUser();
+    const release = await createRelease({ barcode: '4006381333931' });
+    await testDb().insert(autoScrobbles).values({ userId: user.id, releaseId: release.id });
+
+    const found = await findReleaseFor('4006381333931', user.id);
+    expect(found).toMatchObject({ instantScrobble: true, instantParts: null, id: release.id, title: release.title });
+    expect(found).not.toHaveProperty('barcode');
+  });
+
+  it('resolves Discogs ids passed as id:<n>', async () => {
+    const user = await createUser();
+    mockFetch({ '/releases/42': () => discogsRelease(42) });
+    await expect(findReleaseFor('id:42', user.id)).resolves.toMatchObject({ id: 42, instantScrobble: false });
+  });
+
+  it.each(['id:abc', 'id:-1', 'nodigits'])('finds nothing for %s', async (code) => {
+    const user = await createUser();
+    mockFetch({});
+    await expect(findReleaseFor(code, user.id)).resolves.toBeNull();
+  });
+
+  it('finds nothing when Discogs fails', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const user = await createUser();
+    mockFetch({ '/database/search': () => new Response('', { status: 500 }) });
+    await expect(findReleaseFor('5012345678900', user.id)).resolves.toBeNull();
+  });
+
+  it('drops saved parts the release no longer has', async () => {
+    const user = await createUser();
+    const parts = [{ id: 'A', name: 'A', kind: 'side' as const, item: '~1', medium: 'record' }, { id: 'B', name: 'B', kind: 'side' as const, item: '~1', medium: 'record' }];
+    const release = await createRelease({ barcode: '5012345678900', parts });
+    await testDb().insert(autoScrobbles).values({ userId: user.id, releaseId: release.id, parts: ['Z'] });
+    await expect(findReleaseFor('5012345678900', user.id)).resolves.toMatchObject({ instantScrobble: true, instantParts: null });
+    await testDb().update(autoScrobbles).set({ parts: ['B'] });
+    await expect(findReleaseFor('5012345678900', user.id)).resolves.toMatchObject({ instantParts: ['B'] });
   });
 });

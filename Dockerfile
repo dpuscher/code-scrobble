@@ -43,10 +43,8 @@ USER node
 
 EXPOSE 3000
 
-# Probes /health, which also checks the database connection. The long start
-# period covers the one-time MongoDB import on the first boot after the
-# Postgres migration.
-HEALTHCHECK --interval=30s --timeout=5s --start-period=120s --retries=3 \
+# Probes /health, which also checks the database connection.
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
   CMD node -e "fetch('http://localhost:'+process.env.PORT+'/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
 
 CMD ["node", "server.js"]

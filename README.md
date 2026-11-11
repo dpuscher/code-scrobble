@@ -39,7 +39,6 @@ Migrations run automatically on startup. Outside production nothing is sent to L
 | `SERVER_URL` | Public URL; used for the Last.fm callback and secure cookies |
 | `DISCOGS_KEY`, `DISCOGS_SECRET` | [Discogs application](https://www.discogs.com/settings/developers) |
 | `LASTFM_KEY`, `LASTFM_SECRET` | [Last.fm API account](https://www.last.fm/api/account/create) |
-| `MONGODB_URI` | Optional. Imports the CodeScrobble 1.x MongoDB data once on startup (see below) |
 
 ### Database changes
 
@@ -61,10 +60,6 @@ The end-to-end tests run the standalone server (as in Docker) against Postgres (
 Pushing to `staging` or `production` runs `.github/workflows/deploy.yml`. It runs CI, then builds a multi-arch image (`ghcr.io/dpuscher/code-scrobble:<branch>` and `:<branch>-<sha>`) and deploys it with the Dokploy API. It then waits until `/health` reports the new revision. A successful staging deploy keeps a "Staging to Production" PR open; merging it releases to production.
 
 The GitHub repository needs the `DOKPLOY_API_KEY` secret. On Dokploy, the apps pull the image and need the environment variables above.
-
-### Migrating from CodeScrobble 1.x (MongoDB)
-
-While `MONGODB_URI` is set, the first start copies users, releases, auto-scrobbles and history from MongoDB into Postgres. It runs in a single transaction and is recorded in the `app_meta` table, so it runs exactly once. MongoDB is only read. Duplicate user documents (from an old login race) are merged. Login sessions are not migrated: users log in once more. After verifying the import, remove `MONGODB_URI`, the MongoDB and Redis services, and the `mongodb` dependency.
 
 ## License
 
