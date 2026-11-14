@@ -36,7 +36,7 @@
     "mongodb": "^7.0.0",
     "next": "^16.4.1",
     "nprogress": "^0.2.0",
-    "postgres": "^3.4.9",
+    "postgres": "^4.0.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "react-icons": "^5.7.0",
