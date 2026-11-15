@@ -5159,8 +5159,8 @@ __metadata:
   linkType: hard
 
 "mongodb@npm:^7.0.0":
-  version: 7.8.0
-  resolution: "mongodb@npm:7.8.0"
+  version: 7.9.0
+  resolution: "mongodb@npm:7.9.0"
   dependencies:
     "@mongodb-js/saslprep": "npm:^1.5.0"
     bson: "npm:^7.3.2"
@@ -5188,7 +5188,7 @@ __metadata:
       optional: true
     socks:
       optional: true
-  checksum: 10c0/abdf1e7465717963839c26cc2d785ca73036a8ef84574080e6ac59077182c396a0a310f726dbe432efa05c5d9b72deb4049cf395bbe2976a2d3b58c299462017
+  checksum: 10c0/383053508163ac9ce4c39718165387b1df8f9db11b4801e2c6b7b846825cd940734064e4134bc61ddd0d03ef956b47a397ad35b7bcfb81f220b63ea36ee50b47
   languageName: node
   linkType: hard
 
