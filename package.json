@@ -42,7 +42,7 @@
     "react-icons": "^5.7.0",
     "react-timeago": "^8.3.0",
     "swr": "^2.3.0",
-    "zxing-wasm": "3.1.6"
+    "zxing-wasm": "3.1.7"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.0",
