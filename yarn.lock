@@ -2830,7 +2830,7 @@ __metadata:
     typescript: "npm:~6.0.3"
     vite: "npm:^8"
     vitest: "npm:^5.0.0"
-    zxing-wasm: "npm:3.1.6"
+    zxing-wasm: "npm:3.1.7"
   languageName: unknown
   linkType: soft
 
@@ -7113,14 +7113,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zxing-wasm@npm:3.1.6":
-  version: 3.1.6
-  resolution: "zxing-wasm@npm:3.1.6"
+"zxing-wasm@npm:3.1.7":
+  version: 3.1.7
+  resolution: "zxing-wasm@npm:3.1.7"
   dependencies:
     "@types/emscripten": "npm:^1.41.6"
     type-fest: "npm:^5.10.0"
   peerDependencies:
     "@types/emscripten": ">=1.39.6"
-  checksum: 10c0/5df631ec1ca2ef53c6c22ffbc0cb4a27f28cf40d120eb64733bfa7c3070e844f46ad1c9c629f345e110c128db6a46afd3663c26f402d360b997f000ca7925387
+  checksum: 10c0/766cb7ec8a1bda6eacfb942819e4b8f2a5313efdb75942a15ba9dfb7176a67d0e18bd60a97467b96faf5b28617649f6b6860339b3999492b99a68e3e0b3d9065
   languageName: node
   linkType: hard
