@@ -46,7 +46,7 @@
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.0",
-    "@eslint/js": "^9.39.0",
+    "@eslint/js": "^10.0.0",
     "@next/bundle-analyzer": "^16.4.1",
     "@playwright/test": "^1.64.0",
     "@tailwindcss/postcss": "^4.3.3",
@@ -60,7 +60,7 @@
     "@types/react-dom": "^19.3.0",
     "@vitest/coverage-v8": "^5.0.0",
     "drizzle-kit": "^0.31.10",
-    "eslint": "^9.39.0",
+    "eslint": "^10.0.0",
     "eslint-config-next": "^16.4.1",
     "jsdom": "^30.0.0",
     "tailwindcss": "^4.3.3",
