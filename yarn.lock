@@ -2820,7 +2820,7 @@ __metadata:
     mongodb: "npm:^7.0.0"
     next: "npm:^16.4.1"
     nprogress: "npm:^0.2.0"
-    postgres: "npm:^3.4.9"
+    postgres: "npm:^4.0.0"
     react: "npm:^19.3.0"
     react-dom: "npm:^19.3.0"
     react-icons: "npm:^5.7.0"
@@ -5599,10 +5599,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postgres@npm:^3.4.9":
-  version: 3.4.9
-  resolution: "postgres@npm:3.4.9"
-  checksum: 10c0/b767dd2258df0f6523ce1ec0bce0a87e93c6fb961c97be0059f8ea2bc4c57c6057689258361a0988f0bb61d636483d35f0c591620566218f7083c78ab7955862
+"postgres@npm:^4.0.0":
+  version: 4.1.1
+  resolution: "postgres@npm:4.1.1"
+  checksum: 10c0/55d67cedf142bde1970377dda36c72d437a3ea4f2661c4765ba83eb544f1840b14b55fc17f59e52fb4bf0051b79d6c986d66dcb688bae4baf6beda961a7d13b5
   languageName: node
   linkType: hard
 
