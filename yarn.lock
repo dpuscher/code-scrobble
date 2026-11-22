@@ -317,9 +317,9 @@ __metadata:
   linkType: hard
 
 "@electric-sql/pglite@npm:^0.5.0":
-  version: 0.5.16
-  resolution: "@electric-sql/pglite@npm:0.5.16"
-  checksum: 10c0/33262e864d2b288a133f27d18f7def9a92666729a65dc2fa5828d16b5e0f0c8cd2484b27386d7f8cf933573aa57f13eb1e9da4803d3aa6d8829182d30e000fd0
+  version: 0.5.17
+  resolution: "@electric-sql/pglite@npm:0.5.17"
+  checksum: 10c0/a109204ae7ad8a2033161f17551c0ae97422262a06b0e2a22352b1b704f0894feea49e44e99412838471fe633e6f56c1f2caa966a716726da35fb52620e5870d
   languageName: node
   linkType: hard
 
@@ -5150,8 +5150,8 @@ __metadata:
   linkType: hard
 
 "mongodb@npm:^7.0.0":
-  version: 7.9.0
-  resolution: "mongodb@npm:7.9.0"
+  version: 7.9.1
+  resolution: "mongodb@npm:7.9.1"
   dependencies:
     "@mongodb-js/saslprep": "npm:^1.5.0"
     bson: "npm:^7.3.2"
@@ -5179,7 +5179,7 @@ __metadata:
       optional: true
     socks:
       optional: true
-  checksum: 10c0/383053508163ac9ce4c39718165387b1df8f9db11b4801e2c6b7b846825cd940734064e4134bc61ddd0d03ef956b47a397ad35b7bcfb81f220b63ea36ee50b47
+  checksum: 10c0/d62b1fe8db85301fbc31fb0b9777132643e10b93b477e6ffba449ea74f90af44a4d0e13179b23de450df6769319c316dd22967539c7427c47c45d812b09da74c
   languageName: node
   linkType: hard
 
