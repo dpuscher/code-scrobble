@@ -316,10 +316,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@electric-sql/pglite@npm:^0.5.0":
-  version: 0.5.17
-  resolution: "@electric-sql/pglite@npm:0.5.17"
-  checksum: 10c0/a109204ae7ad8a2033161f17551c0ae97422262a06b0e2a22352b1b704f0894feea49e44e99412838471fe633e6f56c1f2caa966a716726da35fb52620e5870d
+"@electric-sql/pglite@npm:^0.6.0":
+  version: 0.6.0
+  resolution: "@electric-sql/pglite@npm:0.6.0"
+  checksum: 10c0/925ebc5fc8fce1ba60b5dfa94ca04131db65f73971822e2e22d60d391e3c58ed43aebcd27f2b25bb666fe40047a720471261e8da139554d2b0ceda5f87773620
   languageName: node
   linkType: hard
 
@@ -2798,7 +2798,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "code-scrobble@workspace:."
   dependencies:
-    "@electric-sql/pglite": "npm:^0.5.0"
+    "@electric-sql/pglite": "npm:^0.6.0"
     "@eslint/js": "npm:^9.39.0"
     "@next/bundle-analyzer": "npm:^16.4.1"
     "@playwright/test": "npm:^1.64.0"
