@@ -2830,7 +2830,7 @@ __metadata:
     typescript: "npm:~6.0.3"
     vite: "npm:^8"
     vitest: "npm:^5.0.0"
-    zxing-wasm: "npm:3.1.7"
+    zxing-wasm: "npm:3.1.8"
   languageName: unknown
   linkType: soft
 
@@ -6339,13 +6339,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tagged-tag@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "tagged-tag@npm:1.0.0"
-  checksum: 10c0/91d25c9ffb86a91f20522cefb2cbec9b64caa1febe27ad0df52f08993ff60888022d771e868e6416cf2e72dab68449d2139e8709ba009b74c6c7ecd4000048d1
-  languageName: node
-  linkType: hard
-
 "tailwindcss@npm:4.3.5, tailwindcss@npm:^4.3.3":
   version: 4.3.5
   resolution: "tailwindcss@npm:4.3.5"
@@ -6514,15 +6507,6 @@ __metadata:
   dependencies:
     prelude-ls: "npm:^1.2.1"
   checksum: 10c0/7b3fd0ed43891e2080bf0c5c504b418fbb3e5c7b9708d3d015037ba2e6323a28152ec163bcb65212741fa5d2022e3075ac3c76440dbd344c9035f818e8ecee58
-  languageName: node
-  linkType: hard
-
-"type-fest@npm:^5.10.0":
-  version: 5.10.0
-  resolution: "type-fest@npm:5.10.0"
-  dependencies:
-    tagged-tag: "npm:^1.0.0"
-  checksum: 10c0/313c5d0e37a3f1cc82e942f3228f897623c8b54a63a8a95532d0c2c21ab200793caa70bd8904a83fd713eb28d87ba32468b09b345ef6efa25cecb345b467226f
   languageName: node
   linkType: hard
 
@@ -7104,14 +7088,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zxing-wasm@npm:3.1.7":
-  version: 3.1.7
-  resolution: "zxing-wasm@npm:3.1.7"
+"zxing-wasm@npm:3.1.8":
+  version: 3.1.8
+  resolution: "zxing-wasm@npm:3.1.8"
   dependencies:
     "@types/emscripten": "npm:^1.41.6"
-    type-fest: "npm:^5.10.0"
   peerDependencies:
     "@types/emscripten": ">=1.39.6"
-  checksum: 10c0/766cb7ec8a1bda6eacfb942819e4b8f2a5313efdb75942a15ba9dfb7176a67d0e18bd60a97467b96faf5b28617649f6b6860339b3999492b99a68e3e0b3d9065
+  checksum: 10c0/762e5a264d36c7678b49a8980d71e8492ec597f22ea301fd78e66d4bc15269cfbbc89db718d751aed4505212783d8e97beb7870448ea2f84ec59d00822892f0c
   languageName: node
   linkType: hard
